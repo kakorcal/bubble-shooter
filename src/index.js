@@ -1,7 +1,10 @@
 import "./index.html";
-import 'pixi';
-import 'p2';
-import Phaser from 'phaser';
+import Game from "./Game";
 
-console.log('bye jj');
-console.log('jojo');
+// gameboy aspect ratio = 1.11 (160x144)
+// will scale by 3 (480, 432)
+new Game(480, 432);
+
+
+
+
