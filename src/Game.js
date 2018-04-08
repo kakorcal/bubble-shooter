@@ -2,6 +2,7 @@ import 'pixi';
 import 'p2';
 import Phaser from 'phaser';
 import Logger from './utils/Logger';
+import Bubble from './entities/Bubble';
 
 class Game extends Phaser.Game {
     constructor(width, height) {        
@@ -10,28 +11,22 @@ class Game extends Phaser.Game {
             height,
             renderer: Phaser.AUTO,
             state: {
-                preload: () => this.preload(),
-                create: () => this.create()
+                preload: () => {
+                    Logger.logState('PRELOAD');
+                    // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+                    this.scale.pageAlignHorizontally = true;
+                    this.scale.pageAlignVertically = true;
+                    this.stage.backgroundColor = '#fff';
+                },
+                create: () => {
+                    Logger.logState('CREATE');
+                    for(var i = 0; i < 30; i++) {
+                        this.add.existing(new Bubble(this, 30 * i + 1, 30 * i + 1, 30));
+                    }
+                }
             }
         });        
-    }
-
-    preload() {
-        Logger.logState('PRELOAD');
-        // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        this.scale.pageAlignHorizontally = true;
-        this.scale.pageAlignVertically = true;
-        this.stage.backgroundColor = '#eee';
-    }
-
-    create() {
-        // this.state.add('load', Load);
-        // this.state.add('menu', Menu);
-        // this.state.add('play', Play);
-        // this.state.add('gameover', GameOver);
-        // this.state.add('victory', Victory);
-        // this.state.start('load');
-    }
+    }        
 }
 
 export default Game;
