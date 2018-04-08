@@ -1,0 +1,31 @@
+{
+  "name": "bubble-shooter",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "clean-webpack-plugin": "^0.1.19",
+    "expose-loader": "^0.7.5",
+    "html-webpack-plugin": "^3.2.0",
+    "raw-loader": "^0.5.1",
+    "webpack": "^4.5.0",
+    "webpack-dev-middleware": "^3.1.2",
+    "webpack-hot-middleware": "^2.21.2"
+  },
+  "dependencies": {
+    "express": "^4.16.3",
+    "phaser": "^3.3.0",
+    "phaser-ce": "^2.10.3",
+    "webfontloader": "^1.6.28"
+  }
+}
