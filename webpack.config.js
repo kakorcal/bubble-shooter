@@ -61,7 +61,7 @@ module.exports = {
         }
     },
     mode: 'development',
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     optimization: {
         splitChunks: {
             cacheGroups: {

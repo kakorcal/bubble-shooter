@@ -3,6 +3,7 @@ import 'p2';
 import Phaser from 'phaser';
 import Logger from './utils/Logger';
 import Bubble from './entities/Bubble';
+import Colors from './utils/Colors';
 
 class Game extends Phaser.Game {
     constructor(width, height) {        
@@ -20,8 +21,10 @@ class Game extends Phaser.Game {
                 },
                 create: () => {
                     Logger.logState('CREATE');
-                    for(var i = 0; i < 30; i++) {
-                        this.add.existing(new Bubble(this, 30 * i + 1, 30 * i + 1, 30));
+                    this.physics.startSystem(Phaser.Physics.ARCADE);
+                    
+                    for(var i = 0; i < 20; i++) {
+                        this.add.existing(new Bubble(this, 20 * i + 1, 20 * i + 1, 24, Colors.red));
                     }
                 }
             }
