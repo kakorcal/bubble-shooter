@@ -4,8 +4,10 @@ import Phaser from 'phaser';
 import Logger from './utils/Logger';
 import Bubble from './entities/Bubble';
 import Sprite from './entities/Sprite';
-import {Colors, ColorMap} from './utils/Colors';
-import {BUBBLE_ROW_START, BUBBLE_ROW_END, COLUMNS, BUBBLE_DIAMETER, BUBBLE_OFFSET} from './utils/Constants';
+import Boundary from './entities/Boundary';
+import {Colors} from './utils/Colors';
+import {EntityMap} from './utils/EntityMap';
+import {CANVAS_WIDTH, CANVAS_HEIGHT, BUBBLE_ROW_START, BUBBLE_ROW_END, COLUMNS, BUBBLE_DIAMETER, BUBBLE_OFFSET, BUBBLE_LAUNCHER_HEIGHT, SCOREBOARD_HEIGHT} from './utils/Constants';
 import level1 from './levels/1';
 
 class Game extends Phaser.Game {
@@ -21,30 +23,56 @@ class Game extends Phaser.Game {
                     this.scale.pageAlignHorizontally = true;
                     this.scale.pageAlignVertically = true;
                     this.stage.backgroundColor = '#fff';
+
+                    // load image sprites
+                    this.load.image('tile', 'assets/checkered.png');
                 },
                 create: () => {
                     Logger.logState('CREATE');
                     this.physics.startSystem(Phaser.Physics.ARCADE);
                     this.physics.setBoundsToWorld();
                     
+                    // todo: add bubble to group to make collision detection easier
                     for(let i = 0; i < level1.length; i++) {
                         for(let j = 0; j < level1[i].length; j++) {
-                            let bubbleType = level1[i][j];
-                            if(level1[i][j] === 0) continue;
+                            let value = level1[i][j];
+                            if(value === EntityMap.zero) continue;
+                            if (value >= EntityMap.COLOR_START && value <= EntityMap.COLOR_END) {
+                                let x = i % 2 === 0 ? j * BUBBLE_DIAMETER + BUBBLE_DIAMETER : j * BUBBLE_DIAMETER + BUBBLE_OFFSET;
+                                let y = i * BUBBLE_DIAMETER + BUBBLE_OFFSET;
+                                let bubbleGraphic = new Bubble(this, BUBBLE_DIAMETER, Colors[EntityMap.colors[value]]);
+                                let bubbleSprite = new Sprite(this, x, y);
 
-                            let x = i % 2 === 0 ? j * BUBBLE_DIAMETER + BUBBLE_DIAMETER : j * BUBBLE_DIAMETER + BUBBLE_OFFSET;
-                            let y = i * BUBBLE_DIAMETER + BUBBLE_OFFSET;
-                            let bubbleGraphic = new Bubble(this, BUBBLE_DIAMETER, Colors[bubbleType]);
-                            let bubbleSprite = new Sprite(this, x, y);
-
-                            bubbleGraphic.addDot(() => bubbleType === ColorMap.gold);
-                            bubbleSprite.spritify(bubbleGraphic);
-                            bubbleSprite.setScale(0.9, 0.9);
-                            this.add.existing(bubbleSprite);
-                            this.physics.enable(bubbleSprite, Phaser.Physics.ARCADE);
-                            bubbleSprite.setCollisionDetection();
+                                bubbleGraphic.addDot(() => value === EntityMap.gold);
+                                bubbleSprite.spritify(bubbleGraphic);
+                                bubbleSprite.setScale(0.9, 0.9);
+                                this.add.existing(bubbleSprite);
+                                this.physics.enable(bubbleSprite, Phaser.Physics.ARCADE);
+                                bubbleSprite.setCollisionDetection();
+                            } else if (value >= EntityMap.GAME_OBJECT_START && value <= EntityMap.GAME_OBJECT_END) {
+                                // this.add.sprite(, 'checker');
+                            }
                         }
-                    } 
+                    }
+
+                    let topBoundarySprite = new Sprite(this, 0, 0);
+                    topBoundarySprite.spritify(new Boundary(this,
+                        { x1: 0, y1: SCOREBOARD_HEIGHT },
+                        { x2: CANVAS_WIDTH, y2: SCOREBOARD_HEIGHT },
+                        Colors.red
+                    ));
+                    this.physics.enable(topBoundarySprite, Phaser.Physics.ARCADE);
+                    let topBoundary = this.add.existing(topBoundarySprite);
+
+                    let bottomBoundarySprite = new Sprite(this, 0, 0);
+                    bottomBoundarySprite.spritify(new Boundary(this,
+                        { x1: 0, y1: CANVAS_HEIGHT - BUBBLE_LAUNCHER_HEIGHT },
+                        { x2: CANVAS_WIDTH, y2: CANVAS_HEIGHT - BUBBLE_LAUNCHER_HEIGHT },
+                        Colors.red
+                    ));
+                    let bottomBoundary = this.add.existing(bottomBoundarySprite);
+                    this.physics.enable(bottomBoundarySprite, Phaser.Physics.ARCADE);                    
+                    // move boundary by => boundary.x += val;
                 }
             }
         });        

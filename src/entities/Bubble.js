@@ -1,7 +1,6 @@
 import 'pixi';
 import 'p2';
 import Phaser from 'phaser';
-//import Logger from './utils/Logger';
 
 class Bubble extends Phaser.Graphics {
     constructor(game, diameter, {fill, alpha, stroke, strokeWidth}) {
@@ -12,6 +11,7 @@ class Bubble extends Phaser.Graphics {
         this.alpha = alpha;
         this.stroke = stroke;
         this.strokeWidth = strokeWidth;
+        
         this.lineStyle(strokeWidth, stroke);
         this.beginFill(fill, alpha);
         // position will be determined by sprite

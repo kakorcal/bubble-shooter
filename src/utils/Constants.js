@@ -7,4 +7,4 @@ export const COLUMNS = 17;
 export const BUBBLE_ROW_START = 1;
 export const BUBBLE_ROW_END = 8;
 export const SCOREBOARD_HEIGHT = 30;
-export const BUBBLE_LAUNCHER_HEIGHT = 90;
+export const BUBBLE_LAUNCHER_HEIGHT = 60;
