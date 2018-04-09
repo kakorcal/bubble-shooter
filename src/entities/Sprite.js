@@ -5,9 +5,7 @@ import Phaser from 'phaser';
 class Sprite extends Phaser.Sprite {
     constructor(game, x, y) {
         super(...arguments);
-        this.anchor.setTo(0.5, 0.5);
-        this.scale.x = 0.9;
-        this.scale.y = 0.9;   
+        this.anchor.setTo(0.5, 0.5); 
     }
 
     // http://www.html5gamedevs.com/topic/6476-collision-with-gameaddgraphics-and-a-sprite/
@@ -18,7 +16,12 @@ class Sprite extends Phaser.Sprite {
 
     setCollisionDetection() {
         this.body.collideWorldBounds = true;
-        this.body.bounce.set(0.5);
+        //this.body.bounce.set(0.5);
+    }
+
+    setScale(x, y) {
+        this.scale.x = x;
+        this.scale.y = y;  
     }
 }
 
