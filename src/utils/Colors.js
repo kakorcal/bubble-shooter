@@ -1,51 +1,58 @@
 export default {
-    red: {
+    1: {
         fill: 0xFF0000,
         alpha: 0.7,
         stroke: 0xFF0000,
         strokeWidth: 1,
-        tile: 1
+        name: 'red'
     },
-    blue: {
+    2: {
         fill: 0x0000FF,
         alpha: 0.7,
         stroke: 0x0000FF,
         strokeWidth: 1,
-        tile: 2
+        name: 'blue'
     },
-    green: {
+    3: {
         fill: 0x90EE90,
         alpha: 0.7,
         stroke: 0x90EE90,
         strokeWidth: 1, 
-        tile: 3
+        name: 'green'
     },
-    yellow: {
+    4: {
         fill: 0xd7df01,
         alpha: 0.7,
         stroke: 0xd7df01,
         strokeWidth: 1, 
-        tile: 4
+        name: 'yellow'
     },
-    purple: {
+    5: {
         fill: 0xA020F0,
         alpha: 0.7,
         stroke: 0xA020F0,
         strokeWidth: 1, 
-        tile: 5
+        name: 'purple'
     },
-    skyBlue: {
+    6: {
         fill: 0xaeebff,
         alpha: 0.7,
         stroke: 0xaeebff,
         strokeWidth: 1, 
-        tile: 6
+        name: 'sky blue'
     },
-    orange: {
+    7: {
         fill: 0xFFA500, 
         alpha: 0.7,
         stroke: 0xFFA500,
         strokeWidth: 1,  
-        tile: 7  
+        name: 'orange'  
+    },
+    8: {
+        fill: 0xFFD700,
+        alpha: 0.7,
+        stroke: 0xDAA520,
+        strokeWidth: 1,
+        name: 'gold'
     }
 };
