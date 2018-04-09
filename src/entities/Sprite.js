@@ -16,7 +16,7 @@ class Sprite extends Phaser.Sprite {
 
     setCollisionDetection() {
         this.body.collideWorldBounds = true;
-        this.body.bounce.set(1);
+        this.body.bounce.set(0.5);
     }
 }
 
