@@ -3,6 +3,7 @@ import 'p2';
 import Phaser from 'phaser';
 import Logger from './utils/Logger';
 import Bubble from './entities/Bubble';
+import Sprite from './entities/Sprite';
 import Colors from './utils/Colors';
 
 class Game extends Phaser.Game {
@@ -22,10 +23,17 @@ class Game extends Phaser.Game {
                 create: () => {
                     Logger.logState('CREATE');
                     this.physics.startSystem(Phaser.Physics.ARCADE);
-                    
-                    for(var i = 0; i < 20; i++) {
-                        this.add.existing(new Bubble(this, 20 * i + 1, 20 * i + 1, 24, Colors.red));
-                    }
+                    this.physics.setBoundsToWorld();
+
+                    let s = new Sprite(this, 230, 180);
+                    s.spritify(new Bubble(this, 24, Colors.red));
+                    this.add.existing(s);
+                    this.physics.enable(s, Phaser.Physics.ARCADE);
+                    s.setCollisionDetection();
+                    s.body.velocity.set(100, 0);
+                    // for(var i = 0; i < 20; i++) {
+                    //     this.add.existing(new Bubble(this, 20 * i + 1, 20 * i + 1, 24, Colors.red));
+                    // }
                 }
             }
         });        
