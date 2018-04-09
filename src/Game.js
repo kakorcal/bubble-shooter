@@ -9,6 +9,7 @@ import {Colors} from './utils/Colors';
 import {EntityMap} from './utils/EntityMap';
 import {CANVAS_WIDTH, CANVAS_HEIGHT, BUBBLE_ROW_START, BUBBLE_ROW_END, COLUMNS, BUBBLE_DIAMETER, BUBBLE_OFFSET, BUBBLE_LAUNCHER_HEIGHT, SCOREBOARD_HEIGHT} from './utils/Constants';
 import level1 from './levels/1';
+import TileImg from './assets/checkered.png';
 
 class Game extends Phaser.Game {
     constructor(width, height) {        
@@ -25,7 +26,7 @@ class Game extends Phaser.Game {
                     this.stage.backgroundColor = '#fff';
 
                     // load image sprites
-                    this.load.image('tile', 'assets/checkered.png');
+                    this.load.image('tile', TileImg);
                 },
                 create: () => {
                     Logger.logState('CREATE');
@@ -41,7 +42,7 @@ class Game extends Phaser.Game {
                                 let x = i % 2 === 0 ? j * BUBBLE_DIAMETER + BUBBLE_DIAMETER : j * BUBBLE_DIAMETER + BUBBLE_OFFSET;
                                 let y = i * BUBBLE_DIAMETER + BUBBLE_OFFSET;
                                 let bubbleGraphic = new Bubble(this, BUBBLE_DIAMETER, Colors[EntityMap.colors[value]]);
-                                let bubbleSprite = new Sprite(this, x, y);
+                                let bubbleSprite = new Sprite(this, x, y, null);
 
                                 bubbleGraphic.addDot(() => value === EntityMap.gold);
                                 bubbleSprite.spritify(bubbleGraphic);
@@ -50,25 +51,29 @@ class Game extends Phaser.Game {
                                 this.physics.enable(bubbleSprite, Phaser.Physics.ARCADE);
                                 bubbleSprite.setCollisionDetection();
                             } else if (value >= EntityMap.GAME_OBJECT_START && value <= EntityMap.GAME_OBJECT_END) {
-                                // this.add.sprite(, 'checker');
+                                let x = j * BUBBLE_DIAMETER + BUBBLE_OFFSET;
+                                let y = i * BUBBLE_DIAMETER + BUBBLE_OFFSET;
+                                let tileSprite = new Sprite(this, x, y, 'tile');
+                                tileSprite.setDimensions(BUBBLE_DIAMETER, BUBBLE_DIAMETER);
+                                this.add.existing(tileSprite);
                             }
                         }
                     }
 
-                    let topBoundarySprite = new Sprite(this, 0, 0);
+                    let topBoundarySprite = new Sprite(this, 0, 0, null);
                     topBoundarySprite.spritify(new Boundary(this,
                         { x1: 0, y1: SCOREBOARD_HEIGHT },
                         { x2: CANVAS_WIDTH, y2: SCOREBOARD_HEIGHT },
-                        Colors.red
+                        Colors.blue
                     ));
                     this.physics.enable(topBoundarySprite, Phaser.Physics.ARCADE);
                     let topBoundary = this.add.existing(topBoundarySprite);
 
-                    let bottomBoundarySprite = new Sprite(this, 0, 0);
+                    let bottomBoundarySprite = new Sprite(this, 0, 0, null);
                     bottomBoundarySprite.spritify(new Boundary(this,
                         { x1: 0, y1: CANVAS_HEIGHT - BUBBLE_LAUNCHER_HEIGHT },
                         { x2: CANVAS_WIDTH, y2: CANVAS_HEIGHT - BUBBLE_LAUNCHER_HEIGHT },
-                        Colors.red
+                        Colors.blue
                     ));
                     let bottomBoundary = this.add.existing(bottomBoundarySprite);
                     this.physics.enable(bottomBoundarySprite, Phaser.Physics.ARCADE);                    

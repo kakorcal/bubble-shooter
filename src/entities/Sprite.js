@@ -3,7 +3,7 @@ import 'p2';
 import Phaser from 'phaser';
 
 class Sprite extends Phaser.Sprite {
-    constructor(game, x, y) {
+    constructor(game, x, y, key) {
         super(...arguments);
         this.anchor.setTo(0.5, 0.5); 
     }
@@ -22,6 +22,11 @@ class Sprite extends Phaser.Sprite {
     setScale(x, y) {
         this.scale.x = x;
         this.scale.y = y;  
+    }
+
+    setDimensions(width, height) {
+        this.width = width;
+        this.height = height;
     }
 }
 
