@@ -1,0 +1,30 @@
+{"frames": {
+
+"polnareff-sm-1.png":
+{
+	"frame": {"x":0,"y":0,"w":60,"h":60},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":60,"h":60},
+	"sourceSize": {"w":60,"h":60},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"polnareff-sm-2.png":
+{
+	"frame": {"x":60,"y":0,"w":60,"h":60},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":60,"h":60},
+	"sourceSize": {"w":60,"h":60},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "polnareff.png",
+	"format": "RGBA8888",
+	"size": {"w":120,"h":60},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:1d8cfc706a40bf85dea5c5be8e8c3a45:e48e0a0244b8d79cc3e0329e80fbaa06:055ca5f834b7294c94bc4e51ee453fa2$"
+}
+}

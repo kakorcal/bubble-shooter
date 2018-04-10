@@ -11,8 +11,7 @@ import {CANVAS_WIDTH, CANVAS_HEIGHT, BUBBLE_ROW_START, BUBBLE_ROW_END, COLUMNS, 
 import level1 from './levels/1';
 import Tile1 from './assets/tile-sm-1.png';
 import Arrow1 from './assets/arrow-sm-1.png';
-import Polnareff1 from './assets/polnareff-sm-1.png';
-import Polnareff2 from './assets/polnareff-sm-2.png';
+import PolnareffSS from './assets/polnareff-sp-1.png';
 
 class Game extends Phaser.Game {
     constructor(width, height) {        
@@ -31,8 +30,9 @@ class Game extends Phaser.Game {
                     // load image sprites
                     this.load.image('Tile1', Tile1);
                     this.load.image('Arrow1', Arrow1);
-                    this.load.image('Polnareff1', Polnareff1);
-                    this.load.image('Polnareff2', Polnareff2);
+                    // polnareff spritesheet
+                    // key, url, frameWidth, frameHeight, frameMax, margin, spacing
+                    this.load.spritesheet('Polnareff', PolnareffSS, 60, 60, 2, 0, 0);
                 },
                 create: () => {
                     Logger.logState('CREATE');
@@ -52,12 +52,14 @@ class Game extends Phaser.Game {
                     }
 
                     let d1 = BUBBLE_DIAMETER + (CANVAS_HEIGHT - BUBBLE_LAUNCHER_HEIGHT);
-                    let polnareff1 = new Sprite(this, 140, d1, 'Polnareff1');
-                    this.add.existing(polnareff1);
+                    let polnareffSprite = new Sprite(this, 140, d1, 'Polnareff', 0);
+                    polnareffSprite.animations.add('bounce', [0,1], 2, true);
+                    polnareffSprite.animations.play('bounce');
+                    this.add.existing(polnareffSprite);
 
                     let d2 = (CANVAS_HEIGHT - BUBBLE_LAUNCHER_HEIGHT + 15);
                     let launcherSprite = new Sprite(this, this.world.centerX, d2, 'Arrow1');
-                    launcherSprite.setAnchor(0.5, 1);
+                    launcherSprite.setAnchor(0.5, 0.95);
                     let launcher = this.add.existing(launcherSprite);
 
                     this.launcher = launcher;
