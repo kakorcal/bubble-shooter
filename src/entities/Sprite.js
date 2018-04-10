@@ -28,6 +28,10 @@ class Sprite extends Phaser.Sprite {
         this.width = width;
         this.height = height;
     }
+
+    setAnchor(x, y) {
+        this.anchor.setTo(x, y);
+    }
 }
 
 export default Sprite;
