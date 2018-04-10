@@ -17,5 +17,5 @@ export default [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
-     [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k]
+     [k,k,k,k,k,k,k,k,k,k,c,g,h,k,k,k,k]
 ];
