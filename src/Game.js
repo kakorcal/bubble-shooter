@@ -6,11 +6,6 @@ import Load from './states/Load';
 import Menu from './states/Menu';
 import Play from './states/Play';
 import Tutorial from './states/Tutorial';
-import Bubble from './entities/Bubble';
-import Sprite from './entities/Sprite';
-import Boundary from './entities/Boundary';
-import {Colors} from './utils/Colors';
-import {EntityMap} from './utils/EntityMap';
 import {CANVAS_WIDTH, CANVAS_HEIGHT, BUBBLE_ROW_START, BUBBLE_ROW_END, COLUMNS, BUBBLE_DIAMETER, BUBBLE_OFFSET, BUBBLE_LAUNCHER_HEIGHT, SCOREBOARD_HEIGHT} from './utils/Constants';
 import level1 from './levels/1';
 
@@ -29,66 +24,6 @@ class Game extends Phaser.Game {
                     this.state.start('load');                    
                 }
     //             create: () => {
-    //                 /* 
-    //                     * @param {number} x - X coordinate to display the BitmapText object at.
-    // * @param {number} y - Y coordinate to display the BitmapText object at.
-    // * @param {string} font - The key of the BitmapText as stored in Phaser.Cache.
-    // * @param {string} [text=''] - The text that will be rendered. This can also be set later via BitmapText.text.
-    // * @param {number} [size=32] - The size the font will be rendered at in pixels.
-    //                 */
-                    
-    //                 for (let i = 0; i < level1.length; i++) {
-    //                     for (let j = 0; j < level1[i].length; j++) {
-    //                         let value = level1[i][j];
-    //                         let x = j * BUBBLE_DIAMETER + BUBBLE_OFFSET;
-    //                         let y = i * BUBBLE_DIAMETER + BUBBLE_OFFSET;
-    //                         let tile3 = new Sprite(this, x, y, 'Tile3');
-    //                         tile3.setDimensions(BUBBLE_DIAMETER, BUBBLE_DIAMETER);
-    //                         this.add.existing(tile3);
-    //                     }
-    //                 }
-                    
-
-    //                 var cloud = this.add.sprite(this.world.centerX, this.world.centerY - 10, 'Cloud1');
-    //                 cloud.anchor.x = 0.5;
-    //                 cloud.anchor.y = 0.5;
-
-    //                 var text1 = this.add.bitmapText(this.world.centerX - 50, this.world.centerY - 45, 'Happy-Hell', 'BUBBLE', 80);
-    //                 var text2 = this.add.bitmapText(this.world.centerX + 30, this.world.centerY + 40, 'Happy-Hell', 'SHOOTER', 80);
-    //                 text1.anchor.x = 0.5;
-    //                 text1.anchor.y = 0.5;
-    //                 text2.anchor.x = 0.5;
-    //                 text2.anchor.y = 0.5;
-
-    //                 var text3 = this.add.bitmapText(this.world.centerX, this.world.centerY + 100, 'Upheaval', 'NEW GAME', 30);
-    //                 // var text4 = this.add.bitmapText(this.world.centerX - 50, this.world.centerY - 80, 'Upheaval', 'CONTINUE', 50);
-    //                 var text5 = this.add.bitmapText(this.world.centerX, this.world.centerY + 140, 'Upheaval', 'TUTORIAL', 30);
-    //                 text3.anchor.x = 0.5;
-    //                 text3.anchor.y = 0.5;
-    //                 text5.anchor.x = 0.5;
-    //                 text5.anchor.y = 0.5;
-
-                    
-
-
-    //             //     Logger.logState('CREATE');
-    //             //         // this.state.add('load', Load);
-    //             //         // //this.state.add('menu', Menu);
-    //             //         // this.state.add('play', Play);
-    //             //     this.physics.startSystem(Phaser.Physics.ARCADE);
-    //             //     this.physics.setBoundsToWorld();
-    //             //     this.cursors = this.input.keyboard.createCursorKeys();
-
-    //             //     for (let i = 0; i < level1.length; i++) {
-    //             //         for (let j = 0; j < level1[i].length; j++) {
-    //             //             let value = level1[i][j];
-    //             //             let x = j * BUBBLE_DIAMETER + BUBBLE_OFFSET;
-    //             //             let y = i * BUBBLE_DIAMETER + BUBBLE_OFFSET;
-    //             //             let tile1 = new Sprite(this, x, y, 'Tile1');
-    //             //             tile1.setDimensions(BUBBLE_DIAMETER, BUBBLE_DIAMETER);
-    //             //             this.add.existing(tile1);
-    //             //         }
-    //             //     }
 
     //                 let d1 = this.world.centerY + 103;
     //                 let polnareffSprite = new Sprite(this, 155, d1, 'Polnareff', 0);

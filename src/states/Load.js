@@ -2,7 +2,7 @@
 // webpack loaders available for the fnt extension
 const cloud1 = './assets/images/cloud-md-1.png';
 const tile1 = './assets/images/tile-sm-1.png';
-const tile2 = './assets/images/tile-sm-1.png';
+const tile2 = './assets/images/tile-sm-2.png';
 const arrow1 = './assets/images/arrow-sm-1.png';
 const polnareff1 = './assets/images/polnareff-sp-1.png';
 const happyHellPng = './assets/fonts/happy-hell/font.png';
@@ -15,21 +15,25 @@ const upheavalFnt = './assets/fonts/upheaval/font.fnt';
 class Load extends Phaser.State {
     preload() {
         // Preload text
-        let loadingText = this.add.text(
-            this.world.centerX,
-            this.world.centerY,
-            "LOADING...",
-            { font: "40px monospace", fill: "yellow", align: "center", strokeThickness: 5 }
-        );
-        // Set relative to center, not top left
-        loadingText.anchor.set(0.5);
-        loadingText.alpha = 0;
-
-        // Yoyo the text
-        let loadingTween = this.add.tween(loadingText).
-            to({ alpha: 1 }, 500, "Linear", true, 0, -1);
-
-        loadingTween.yoyo(true, 300);
+        // TODO: test this
+        this.timerId = setTimeout(() => {
+            document.getElementsByTagName('canvas')[0].style.opacity = 1;
+            let loadingText = this.add.text(
+                this.world.centerX,
+                this.world.centerY,
+                "LOADING...",
+                { font: "40px monospace", fill: "yellow", align: "center", strokeThickness: 5 }
+            );
+            // Set relative to center, not top left
+            loadingText.anchor.set(0.5);
+            loadingText.alpha = 0;
+    
+            // Yoyo the text
+            let loadingTween = this.add.tween(loadingText).
+                to({ alpha: 1 }, 500, "Linear", true, 0, -1);
+    
+            loadingTween.yoyo(true, 300); 
+        }, 1000);
 
         // load image sprites
         this.load.image('tile1', tile1);
@@ -65,10 +69,16 @@ class Load extends Phaser.State {
     }
 
     create() {
+        document.getElementsByTagName('canvas')[0].style.opacity = 1;
         this.state.start('menu');
 
-        // enable input keys. namespace cursors prop so others
-        this.cursors = this.input.keyboard.createCursorKeys();
+        // enable physics
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.game.physics.setBoundsToWorld();
+    }
+
+    shutdown() {
+        clearTimeout(this.timerId);
     }
 }
 

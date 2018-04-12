@@ -1,9 +1,9 @@
 import {AlphabetizedMap} from '../utils/EntityMap';
 
-let {a,b,c,d,e,f,g,h,i,j,k} = AlphabetizedMap;
+let {a,b,c,d,e,f,g,h,i} = AlphabetizedMap;
 
 export default [
-     [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
+     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [i,0,i,i,i,i,i,i,b,i,i,i,i,i,i,0,i],
      [i,i,0,0,0,0,0,b,b,0,0,0,0,0,i,i,0],
     [0,i,0,f,f,f,b,b,d,b,b,e,e,e,0,i,0],
@@ -16,6 +16,6 @@ export default [
      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k],
-     [k,k,k,k,k,k,k,k,k,k,c,g,h,k,k,k,k]
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+     [0,0,0,0,0,0,0,0,0,0,c,g,h,0,0,0,0]
 ];
