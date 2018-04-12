@@ -11,7 +11,7 @@ class Play extends Phaser.State {
     create() {
         this.createTiles();
         this.createBoundaries();
-        this.createLauncherPlatform();
+        this.createLauncher();
         this.createStage();
         // this.startTimer();
     }
@@ -46,18 +46,32 @@ class Play extends Phaser.State {
         // move boundary by => boundary.x += val;
     }
 
-    createLauncherPlatform() {
+    createLauncher() {
         // polnareff
-        this.polnareff = this.add.sprite(155, CANVAS_HEIGHT - TILE_SIZE, 'polnareff', 0);
+        this.polnareff = this.add.sprite(this.world.centerX - 75, CANVAS_HEIGHT - TILE_SIZE, 'polnareff', 0);
+        this.polnareff.scale.set(0.9, 0.9);
         this.polnareff.anchor.set(0.5, 0.5);
         this.polnareff.animations.add('bounce', [0, 1], 2, true);
         this.polnareff.animations.play('bounce'); 
         
-        // launcher
-        this.launcher = this.add.sprite(this.world.centerX, CANVAS_HEIGHT - BUBBLE_LAUNCHER_HEIGHT + SPRITE_OFFSET, 'arrow1');
-        this.launcher.anchor.set(0.5, 0.95);
+        // launcher pieces
+        this.arrow = this.add.sprite(this.world.centerX, CANVAS_HEIGHT - BUBBLE_LAUNCHER_HEIGHT + SPRITE_OFFSET, 'arrow1');
+        this.arrow.anchor.set(0.5, 0.95);
+
+        // wheel
+        this.launcherWheel = this.add.sprite(this.world.centerX - 14, CANVAS_HEIGHT - 30, 'launcher-wheel1');
+        this.launcherWheel.anchor.set(0.5, 0.5);
+        this.launcherWheel.width = 57;
+        this.launcherWheel.height = 57;
+
 
         // platform
+        this.launcherPlatform = this.add.sprite(this.world.centerX, CANVAS_HEIGHT, 'launcher-platform1');
+        this.launcherPlatform.anchor.set(0.26, 1);
+        this.launcherPlatform.width = 90;
+        this.launcherPlatform.height = 62;
+        
+        // this.launcherPlatform.scale.set(0.3, 0.3);
     }
 
     createStage() {
@@ -83,10 +97,13 @@ class Play extends Phaser.State {
     }
 
     update() {
+        // handling cursor movement
         if(this.game.keyLeft.isDown) {
-            this.launcher.angle -= 1.4;
+            this.arrow.angle -= 1.4;
+            this.launcherWheel.angle -= 1.4;
         }else if(this.game.keyRight.isDown) {
-            this.launcher.angle += 1.4;
+            this.arrow.angle += 1.4;
+            this.launcherWheel.angle += 1.4;
         }
     }
 }
