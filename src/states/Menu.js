@@ -2,16 +2,16 @@ import {ROWS, COLUMNS, TILE_SIZE, SPRITE_OFFSET, CANVAS_HEIGHT} from '../utils/C
 
 class Menu extends Phaser.State {
     create() {
+        // TODO: https://stackoverflow.com/questions/39152877/consider-marking-event-handler-as-passive-to-make-the-page-more-responsive
         // TODO: check localStorage for stats and add continue option if it exists
         this.createTiles();
         this.createLogo();
         this.createNavigation();
 
-        // events
-        // fire this only once
-        this.game.keyEnter.onDown.addOnce(this.changeState.bind(this));
-        this.game.keyDown.onDown.add(this.changeCurrentNavigation.bind(this));
-        this.game.keyUp.onDown.add(this.changeCurrentNavigation.bind(this));  
+        // event listeners
+        this.game.keyEnter.onDown.addOnce(this.changeState, this);
+        this.game.keyDown.onDown.add(this.changeCurrentNavigation, this);
+        this.game.keyUp.onDown.add(this.changeCurrentNavigation, this);  
     }
 
     createTiles() {
@@ -71,11 +71,11 @@ class Menu extends Phaser.State {
     }
 
     changeCurrentNavigation(e) {
-        if (e.keyCode === Phaser.Keyboard.DOWN && this.navigationIndex < this.polnareffPosition.length - 1) {
+        if (e.keyCode === this.game.keyDown.keyCode && this.navigationIndex < this.polnareffPosition.length - 1) {
             this.polnareff.y = this.polnareffPosition[++this.navigationIndex];
         }
 
-        if (e.keyCode === Phaser.Keyboard.UP && this.navigationIndex > 0) {
+        if (e.keyCode === this.game.keyUp.keyCode && this.navigationIndex > 0) {
             this.polnareff.y = this.polnareffPosition[--this.navigationIndex];
         }
     }
@@ -91,8 +91,11 @@ class Menu extends Phaser.State {
         }, this);
     }
 
-    // TODO: https://stackoverflow.com/questions/39152877/consider-marking-event-handler-as-passive-to-make-the-page-more-responsive
-    // TODO: add shutdown method to remove event listeners
+    shutdown() {
+        this.game.keyEnter.onDown.remove(this.changeState, this);
+        this.game.keyDown.onDown.remove(this.changeCurrentNavigation, this);
+        this.game.keyUp.onDown.remove(this.changeCurrentNavigation, this);  
+    }
 }
 
 export default Menu;
