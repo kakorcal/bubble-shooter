@@ -3,6 +3,7 @@ import 'p2';
 import Phaser from 'phaser';
 import Logger from './utils/Logger';
 import Load from './states/Load';
+import Menu from './states/Menu';
 import Bubble from './entities/Bubble';
 import Sprite from './entities/Sprite';
 import Boundary from './entities/Boundary';
@@ -10,7 +11,6 @@ import {Colors} from './utils/Colors';
 import {EntityMap} from './utils/EntityMap';
 import {CANVAS_WIDTH, CANVAS_HEIGHT, BUBBLE_ROW_START, BUBBLE_ROW_END, COLUMNS, BUBBLE_DIAMETER, BUBBLE_OFFSET, BUBBLE_LAUNCHER_HEIGHT, SCOREBOARD_HEIGHT} from './utils/Constants';
 import level1 from './levels/1';
-
 
 class Game extends Phaser.Game {
     constructor(width, height) {        
@@ -41,11 +41,8 @@ class Game extends Phaser.Game {
                 // },
                 create: () => {
                     this.state.add('load', Load);
-                    this.state.start('load');
-                    console.log('GAME');
-                    
-                    console.log(this);
-                    
+                    this.state.add('menu', Menu);
+                    this.state.start('load');                    
                 }
     //             create: () => {
     //                 /* 

@@ -1,7 +1,3 @@
-import 'pixi';
-import 'p2';
-import Phaser from 'phaser';
-
 // images and fonts will be served from express static since there are no 
 // webpack loaders available for the fnt extension
 const cloud1 = './assets/images/cloud-md-1.png';
@@ -48,10 +44,31 @@ class Load extends Phaser.State {
         // load fonts
         this.load.bitmapFont('happy-hell', happyHellPng, happyHellFnt);
         this.load.bitmapFont('upheaval', upheavalPng, upheavalFnt);
+
+        // register keys. registering through the game object so each state can have access
+        this.game.keyLeft = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        this.game.keyRight = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        this.game.keyUp = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        this.game.keyDown = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+        this.game.keySpace = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        this.game.keyEnter = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+
+        // prevent key event propagating up to the browser
+        this.game.input.keyboard.addKeyCapture([
+            Phaser.Keyboard.LEFT, 
+            Phaser.Keyboard.RIGHT, 
+            Phaser.Keyboard.UP, 
+            Phaser.Keyboard.DOWN, 
+            Phaser.Keyboard.SPACEBAR,
+            Phaser.Keyboard.ENTER
+        ]);
     }
 
     create() {
-        // this.state.start('menu');
+        this.state.start('menu');
+
+        // enable input keys. namespace cursors prop so others
+        this.cursors = this.input.keyboard.createCursorKeys();
     }
 }
 
