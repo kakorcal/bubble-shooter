@@ -67,7 +67,7 @@ class Menu extends Phaser.State {
             { font: "12px monospace", fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
         );
 
-        instructions.anchor.set(0.5);
+        instructions.anchor.set(0.5, 0.5);
     }
 
     changeCurrentNavigation(e) {
@@ -91,6 +91,7 @@ class Menu extends Phaser.State {
         }, this);
     }
 
+    // TODO: https://stackoverflow.com/questions/39152877/consider-marking-event-handler-as-passive-to-make-the-page-more-responsive
     // TODO: add shutdown method to remove event listeners
 }
 

@@ -4,6 +4,8 @@ import Phaser from 'phaser';
 import Logger from './utils/Logger';
 import Load from './states/Load';
 import Menu from './states/Menu';
+import Play from './states/Play';
+import Tutorial from './states/Tutorial';
 import Bubble from './entities/Bubble';
 import Sprite from './entities/Sprite';
 import Boundary from './entities/Boundary';
@@ -19,29 +21,11 @@ class Game extends Phaser.Game {
             height,
             renderer: Phaser.AUTO,
             state: {
-                // preload: () => {
-                //     Logger.logState('PRELOAD');
-                //     // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-                //     this.scale.pageAlignHorizontally = true;
-                //     this.scale.pageAlignVertically = true;
-                //     this.stage.backgroundColor = '#fff';
-
-                //     // load image sprites
-                //     this.load.image('Cloud1', cloud1);
-                //     this.load.image('Tile3', tile3);
-                //     this.load.image('Arrow1', arrow1);
-                //     // polnareff spritesheet
-                //     // key, url, frameWidth, frameHeight, frameMax, margin, spacing
-                //     this.load.spritesheet('Polnareff', polnareffSS, 60, 60, 2, 0, 0);
-
-                //     // load fonts
-                //     this.load.bitmapFont('Big-Bottom-Cartoon', bigBottomCartoonPng, bigBottomCartoonFnt);
-                //     this.load.bitmapFont('Upheaval', upheavalPng, upheavalFnt);
-                //     this.load.bitmapFont('Happy-Hell', happyHellPng, happyHellFnt);
-                // },
                 create: () => {
                     this.state.add('load', Load);
                     this.state.add('menu', Menu);
+                    this.state.add('play', Play);
+                    this.state.add('tutorial', Tutorial);
                     this.state.start('load');                    
                 }
     //             create: () => {
