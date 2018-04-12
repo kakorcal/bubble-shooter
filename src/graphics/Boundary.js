@@ -1,7 +1,3 @@
-import 'pixi';
-import 'p2';
-import Phaser from 'phaser';
-
 class Boundary extends Phaser.Graphics {
     constructor(game, {x1, y1}, {x2, y2},  {fill, alpha, stroke, strokeWidth}) {
         super(game);

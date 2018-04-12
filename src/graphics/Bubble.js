@@ -1,7 +1,3 @@
-import 'pixi';
-import 'p2';
-import Phaser from 'phaser';
-
 class Bubble extends Phaser.Graphics {
     constructor(game, diameter, {fill, alpha, stroke, strokeWidth}) {
         super(game);    

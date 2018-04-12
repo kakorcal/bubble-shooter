@@ -1,8 +1,8 @@
 import { CANVAS_WIDTH, CANVAS_HEIGHT, ROWS, COLUMNS, TILE_SIZE, SPRITE_OFFSET, BUBBLE_LAUNCHER_HEIGHT, SCOREBOARD_HEIGHT } from '../utils/Constants';
-import GraphicSprite from '../entities/GraphicSprite';
+import GraphicSprite from '../graphics/GraphicSprite';
 import level1 from '../levels/1';
-import Bubble from '../entities/Bubble';
-import Boundary from '../entities/Boundary';
+import Bubble from '../graphics/Bubble';
+import Boundary from '../graphics/Boundary';
 import { Colors } from '../utils/Colors';
 import { EntityMap } from '../utils/EntityMap';
 

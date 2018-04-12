@@ -3,9 +3,6 @@ const app = express();
 const path = require('path');
 const PORT = 3000;
 
-console.log(path.join(__dirname, 'src/assets'));
-
-
 app.use('/assets', express.static(path.join(__dirname, 'src/assets')))
 
 // TODO: add condition for production
