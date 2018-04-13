@@ -52,7 +52,7 @@ class Menu extends Phaser.State {
             let initialPosition = this.world.centerY + 93;
             return idx === 0 ? initialPosition : initialPosition + (38 * idx);
         });
-        this.polnareff = this.add.sprite(155, this.polnareffPosition[this.navigationIndex], 'polnareff', 0);
+        this.polnareff = this.add.sprite(150, this.polnareffPosition[this.navigationIndex], 'polnareff', 0);
         this.polnareff.scale.set(0.6, 0.6);
         this.polnareff.anchor.set(0.5, 0.5);
         this.polnareff.animations.add('bounce', [0,1], 2, true);

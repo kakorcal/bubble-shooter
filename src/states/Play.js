@@ -11,6 +11,7 @@ class Play extends Phaser.State {
     create() {
         this.createTiles();
         this.createBoundaries();
+        this.createScoreboard();
         this.createLauncher();
         this.createStage();
         // this.startTimer();
@@ -46,6 +47,12 @@ class Play extends Phaser.State {
         // move boundary by => boundary.x += val;
     }
 
+    createScoreboard() {
+        this.score = 0;
+        this.scoreText = this.add.bitmapText(5, 11, 'upheaval', 'SCORE 000000000', 25);
+        this.scoreText.anchor.set(0, 0.5);
+    }
+
     createLauncher() {
         // polnareff
         this.polnareff = this.add.sprite(this.world.centerX - 75, CANVAS_HEIGHT - TILE_SIZE, 'polnareff', 0);
@@ -63,7 +70,6 @@ class Play extends Phaser.State {
         this.launcherWheel.anchor.set(0.5, 0.5);
         this.launcherWheel.width = 57;
         this.launcherWheel.height = 57;
-
 
         // platform
         this.launcherPlatform = this.add.sprite(this.world.centerX, CANVAS_HEIGHT, 'launcher-platform1');
