@@ -1,4 +1,4 @@
-import { CANVAS_WIDTH, CANVAS_HEIGHT, CENTER_X, CENTER_Y, ROWS, COLUMNS, TILE_SIZE, SPRITE_OFFSET, LAUNCHER_HEIGHT, SCOREBOARD_HEIGHT } from '../utils/Constants';
+import { CANVAS_WIDTH, CANVAS_HEIGHT, CENTER_X, CENTER_Y, ROWS, COLUMNS, TILE_SIZE, SPRITE_OFFSET, LAUNCHER_HEIGHT, SCOREBOARD_HEIGHT, MAX_ARROW_RANGE } from '../utils/Constants';
 import GraphicSprite from '../graphics/GraphicSprite';
 import level1 from '../levels/1';
 import Bubble from '../graphics/Bubble';
@@ -130,11 +130,21 @@ class Play extends Phaser.State {
     update() {
         // handling cursor movement
         if(this.game.keyLeft.isDown) {
-            this.arrow.angle -= 1.4;
-            this.launcherWheel.angle -= 1.4;
+            if(this.arrow.angle >= -MAX_ARROW_RANGE) {
+                this.arrow.angle -= 1.4;
+                this.launcherWheel.angle -= 1.4;
+            }else {
+                this.arrow.angle = -MAX_ARROW_RANGE;
+                this.launcherWheel.angle = -MAX_ARROW_RANGE;
+            }
         }else if(this.game.keyRight.isDown) {
-            this.arrow.angle += 1.4;
-            this.launcherWheel.angle += 1.4;
+            if (this.arrow.angle <= MAX_ARROW_RANGE) {
+                this.arrow.angle += 1.4;
+                this.launcherWheel.angle += 1.4;
+            }else {
+                this.arrow.angle = MAX_ARROW_RANGE;
+                this.launcherWheel.angle = MAX_ARROW_RANGE;
+            }
         }
     }
 }

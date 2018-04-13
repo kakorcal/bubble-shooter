@@ -8,3 +8,4 @@ export const ROWS = 17;
 export const COLUMNS = 19;
 export const SCOREBOARD_HEIGHT = 30;
 export const LAUNCHER_HEIGHT = 120;
+export const MAX_ARROW_RANGE = 74;
