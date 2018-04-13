@@ -7,6 +7,7 @@ const arrow1 = './assets/images/arrow-sm-1.png';
 const block1 = './assets/images/block-md-1.png';
 const blockContour1 = './assets/images/block-contour-md-1.png';
 const polnareff1 = './assets/images/polnareff-sp-1.png';
+const speechBubble1 = './assets/images/speech-bubble-sm-1.png';
 const launcherPlatform1 = './assets/images/launcher-platform-md-1.png';
 const launcherWheel1 = './assets/images/launcher-wheel-md-1.png';
 const happyHellPng = './assets/fonts/happy-hell/font.png';
@@ -40,17 +41,18 @@ class Load extends Phaser.State {
         }, 1000);
 
         // load image sprites
-        this.load.image('tile1', tile1);
-        this.load.image('tile2', tile2);
-        this.load.image('cloud1', cloud1);
-        this.load.image('arrow1', arrow1);
-        this.load.image('block1', block1);
-        this.load.image('launcher-platform1', launcherPlatform1);
-        this.load.image('launcher-wheel1', launcherWheel1);
+        this.load.image('tile-1', tile1);
+        this.load.image('tile-2', tile2);
+        this.load.image('cloud-1', cloud1);
+        this.load.image('arrow-1', arrow1);
+        this.load.image('block-1', block1);
+        this.load.image('launcher-platform-1', launcherPlatform1);
+        this.load.image('launcher-wheel-1', launcherWheel1);
+        this.load.image('speech-bubble-1', speechBubble1);
 
         // polnareff spritesheet
         // key, url, frameWidth, frameHeight, frameMax, margin, spacing
-        this.load.spritesheet('polnareff', polnareff1, 60, 60, 2, 0, 0);
+        this.load.spritesheet('polnareff-1', polnareff1, 60, 60, 2, 0, 0);
 
         // load fonts
         this.load.bitmapFont('happy-hell', happyHellPng, happyHellFnt);

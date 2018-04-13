@@ -1,4 +1,4 @@
-import {ROWS, COLUMNS, TILE_SIZE, SPRITE_OFFSET, CANVAS_HEIGHT} from '../utils/Constants';
+import {ROWS, COLUMNS, TILE_SIZE, SPRITE_OFFSET, CANVAS_HEIGHT, CENTER_X, CENTER_Y} from '../utils/Constants';
 
 class Menu extends Phaser.State {
     create() {
@@ -16,7 +16,7 @@ class Menu extends Phaser.State {
 
     createTiles() {
         let tiles = this.add.group();
-        tiles.createMultiple(ROWS * COLUMNS, 'tile1', null, true);
+        tiles.createMultiple(ROWS * COLUMNS, 'tile-1', null, true);
         tiles.setAll('width', TILE_SIZE);
         tiles.setAll('height', TILE_SIZE);
         // rows and columns are opposites for this method
@@ -25,10 +25,10 @@ class Menu extends Phaser.State {
 
     createLogo() {
         let logo = this.add.group();
-        logo.create(this.world.centerX, this.world.centerY - 10, 'cloud1');
+        logo.create(CENTER_X, CENTER_Y - 10, 'cloud-1');
         // x, y, font, text, size, group
-        this.add.bitmapText(this.world.centerX - 50, this.world.centerY - 55, 'happy-hell', 'BUBBLE', 80, logo);
-        this.add.bitmapText(this.world.centerX + 30, this.world.centerY + 30, 'happy-hell', 'SHOOTER', 80, logo);
+        this.add.bitmapText(CENTER_X - 50, CENTER_Y - 45, 'happy-hell', 'BUBBLE', 80, logo);
+        this.add.bitmapText(CENTER_X + 30, CENTER_Y + 40, 'happy-hell', 'SHOOTER', 80, logo);
         logo.setAll('anchor.x', 0.5);
         logo.setAll('anchor.y', 0.5);
     }
@@ -38,10 +38,10 @@ class Menu extends Phaser.State {
         this.navigationIndex = 0;
         
         // adding logo text
-        this.newGameText = this.add.bitmapText(this.world.centerX, this.world.centerY + 90, 'upheaval', 'NEW GAME', 30, this.navigation);
+        this.newGameText = this.add.bitmapText(CENTER_X, CENTER_Y + 110, 'upheaval', 'NEW GAME', 30, this.navigation);
         this.newGameText.stateName = 'play';
-        // this.continueText = this.add.bitmapText(this.world.centerX, this.world.centerY + 170, 'upheaval', 'CONTINUE', 30, this.navigation);
-        this.tutorialText = this.add.bitmapText(this.world.centerX, this.world.centerY + 130, 'upheaval', 'TUTORIAL', 30, this.navigation);
+        // this.continueText = this.add.bitmapText(CENTER_X, CENTER_Y + 170, 'upheaval', 'CONTINUE', 30, this.navigation);
+        this.tutorialText = this.add.bitmapText(CENTER_X, CENTER_Y + 150, 'upheaval', 'TUTORIAL', 30, this.navigation);
         this.tutorialText.stateName = 'tutorial';
 
         this.navigation.setAll('anchor.x', 0.5);
@@ -49,10 +49,10 @@ class Menu extends Phaser.State {
 
         // adding polnareff and it's animation
         this.polnareffPosition = this.navigation.children.map((cur, idx) => {
-            let initialPosition = this.world.centerY + 93;
+            let initialPosition = CENTER_Y + 113;
             return idx === 0 ? initialPosition : initialPosition + (38 * idx);
         });
-        this.polnareff = this.add.sprite(150, this.polnareffPosition[this.navigationIndex], 'polnareff', 0);
+        this.polnareff = this.add.sprite(CENTER_X - 105, this.polnareffPosition[this.navigationIndex], 'polnareff-1', 0);
         this.polnareff.scale.set(0.6, 0.6);
         this.polnareff.anchor.set(0.5, 0.5);
         this.polnareff.animations.add('bounce', [0,1], 2, true);
@@ -61,13 +61,12 @@ class Menu extends Phaser.State {
 
         // adding instruction text
         let instructions = this.add.text(
-            this.world.centerX - 72,
-            CANVAS_HEIGHT - 10,
+            7, CANVAS_HEIGHT - 10,
             "Use arrow keys to move and press ENTER to select",
             { font: "12px monospace", fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
         );
 
-        instructions.anchor.set(0.5, 0.5);
+        instructions.anchor.set(0, 0.5);
     }
 
     changeCurrentNavigation(e) {
