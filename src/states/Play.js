@@ -10,10 +10,10 @@ import { EntityMap } from '../utils/EntityMap';
 class Play extends Phaser.State {
     create() {
         this.createTiles();
+        this.createStage();
         this.createBoundaries();
         this.createScoreboard();
         this.createLauncher();
-        this.createStage();
         // this.startTimer();
     }
 
@@ -51,6 +51,10 @@ class Play extends Phaser.State {
         this.score = 0;
         this.scoreText = this.add.bitmapText(5, 11, 'upheaval', 'SCORE 000000000', 25);
         this.scoreText.anchor.set(0, 0.5);
+
+        this.round = 1;
+        this.roundText = this.add.bitmapText(CANVAS_WIDTH - 130, 11, 'upheaval', 'ROUND 001', 25);
+        this.roundText.anchor.set(0, 0.5);
     }
 
     createLauncher() {
@@ -77,29 +81,45 @@ class Play extends Phaser.State {
         this.launcherPlatform.width = 90;
         this.launcherPlatform.height = 62;
         
-        // this.launcherPlatform.scale.set(0.3, 0.3);
+        // next text
+        this.nextText = this.add.bitmapText(this.world.centerX + 115, CANVAS_HEIGHT - BUBBLE_LAUNCHER_HEIGHT + 20, 'upheaval', 'NEXT', 25);
+        this.nextText.anchor.set(0.5, 0.5);
     }
 
     createStage() {
         this.bubbles = this.add.group();
+        this.blocks = this.add.group();
 
         for(let i = 0; i < level1.length; i++) {
             for(let j = 0; j < level1[i].length; j++) {
                 let value = level1[i][j];
                 if(value === EntityMap.zero) continue;
 
-                let x = i % 2 === 0 ? j * TILE_SIZE + TILE_SIZE : j * TILE_SIZE + SPRITE_OFFSET;
-                let y = i * TILE_SIZE + SPRITE_OFFSET;
-                let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[EntityMap.colors[value]]);
-                let bubbleSprite = new GraphicSprite(this.game, x, y, null);
-                bubbleGraphic.addDot(() => value === EntityMap.gold);
-                bubbleSprite.spritify(bubbleGraphic);
-                bubbleSprite.setScale(0.9, 0.9);
-                this.bubbles.add(bubbleSprite);
-                // this.physics.enable(bubbleSprite, Phaser.Physics.ARCADE);
-                // bubbleSprite.setCollisionDetection();
+                if(value >= EntityMap.COLOR_START && value <= EntityMap.COLOR_END) {
+                    let x = i % 2 === 0 ? j * TILE_SIZE + TILE_SIZE : j * TILE_SIZE + SPRITE_OFFSET;
+                    let y = i * TILE_SIZE + SPRITE_OFFSET;
+                    let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[EntityMap.colors[value]]);
+                    let bubbleSprite = new GraphicSprite(this.game, x, y, null);
+                    bubbleGraphic.addDot(() => value === EntityMap.gold);
+                    bubbleSprite.spritify(bubbleGraphic);
+                    bubbleSprite.setScale(0.9, 0.9);
+                    this.bubbles.add(bubbleSprite);
+                    // this.physics.enable(bubbleSprite, Phaser.Physics.ARCADE);
+                    // bubbleSprite.setCollisionDetection();
+                }
+
+                if (value >= EntityMap.GAME_OBJECT_START && value <= EntityMap.GAME_OBJECT_END) {
+                    let x = j * TILE_SIZE;
+                    let y = i * TILE_SIZE;
+                    let block = this.add.sprite(x, y, 'block1', this.blocks);
+                    block.width = TILE_SIZE;
+                    block.height = TILE_SIZE;
+                }
             }
         }
+
+        this.blocks.setAll('anchor.x', 0.5);
+        this.blocks.setAll('anchor.y', 0.5);
     }
 
     update() {

@@ -4,6 +4,8 @@ const cloud1 = './assets/images/cloud-md-1.png';
 const tile1 = './assets/images/tile-sm-1.png';
 const tile2 = './assets/images/tile-sm-2.png';
 const arrow1 = './assets/images/arrow-sm-1.png';
+const block1 = './assets/images/block-md-1.png';
+const blockContour1 = './assets/images/block-contour-md-1.png';
 const polnareff1 = './assets/images/polnareff-sp-1.png';
 const launcherPlatform1 = './assets/images/launcher-platform-md-1.png';
 const launcherWheel1 = './assets/images/launcher-wheel-md-1.png';
@@ -42,6 +44,7 @@ class Load extends Phaser.State {
         this.load.image('tile2', tile2);
         this.load.image('cloud1', cloud1);
         this.load.image('arrow1', arrow1);
+        this.load.image('block1', block1);
         this.load.image('launcher-platform1', launcherPlatform1);
         this.load.image('launcher-wheel1', launcherWheel1);
 
