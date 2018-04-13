@@ -1,6 +1,11 @@
-import { CANVAS_WIDTH, CANVAS_HEIGHT, CENTER_X, CENTER_Y, ROWS, COLUMNS, TILE_SIZE, SPRITE_OFFSET, LAUNCHER_HEIGHT, SCOREBOARD_HEIGHT, MAX_ARROW_RANGE } from '../utils/Constants';
+import { 
+    CANVAS_WIDTH, CANVAS_HEIGHT, CENTER_X, CENTER_Y, 
+    ROWS, COLUMNS, TILE_SIZE, SPRITE_OFFSET, LAUNCHER_HEIGHT, 
+    SCOREBOARD_HEIGHT, MAX_ARROW_RANGE, CURRENT_BUBBLE_X, 
+    CURRENT_BUBBLE_Y, NEXT_BUBBLE_X, NEXT_BUBBLE_Y
+} from '../utils/Constants';
 import GraphicSprite from '../graphics/GraphicSprite';
-import level1 from '../levels/1';
+import round1 from '../rounds/1';
 import Bubble from '../graphics/Bubble';
 import Boundary from '../graphics/Boundary';
 import { Colors } from '../utils/Colors';
@@ -44,13 +49,14 @@ class Play extends Phaser.State {
         this.createLauncher();
         this.createStage();
         this.createScoreboard();
+        this.createInitialLaunchBubbles();
         this.createOverlay();
 
         // game logic
         this.pregame(this.startGame);
 
         // events
-        this.game.keyEnter.onDown.add(this.launchBubble, this);
+        this.game.keySpace.onDown.add(this.launchBubble, this);
     }
 
     createTiles() {
@@ -93,7 +99,7 @@ class Play extends Phaser.State {
 
     createLauncher() {
         // polnareff
-        this.polnareff = this.add.sprite(CENTER_X - 75, CANVAS_HEIGHT - (2 * TILE_SIZE), 'polnareff-1', 0);
+        this.polnareff = this.add.sprite(CENTER_X - 75, CANVAS_HEIGHT + 2 - (2 * TILE_SIZE), 'polnareff-1', 0);
         this.polnareff.scale.set(0.9, 0.9);
         this.polnareff.anchor.set(0.5, 0.5);
         this.polnareff.animations.add('bounce', [0, 1], 2, true);
@@ -116,7 +122,7 @@ class Play extends Phaser.State {
         this.launcherPlatform.height = 62;
         
         // next text
-        this.nextText = this.add.bitmapText(CENTER_X + 90, CANVAS_HEIGHT - LAUNCHER_HEIGHT + TILE_SIZE + 5, 'upheaval', 'NEXT', 25);
+        this.nextText = this.add.bitmapText(CENTER_X + 91, CANVAS_HEIGHT - LAUNCHER_HEIGHT + TILE_SIZE + 13, 'upheaval', 'NEXT', 25);
         this.nextText.anchor.set(0.5, 0.5);
 
         // speech bubble 
@@ -129,9 +135,9 @@ class Play extends Phaser.State {
         this.bubbles = this.add.group();
         this.blocks = this.add.group();
 
-        for(let i = 0; i < level1.length; i++) {
-            for(let j = 0; j < level1[i].length; j++) {
-                let value = level1[i][j];
+        for(let i = 0; i < round1.length; i++) {
+            for(let j = 0; j < round1[i].length; j++) {
+                let value = round1[i][j];
                 if(value === EntityMap.zero) continue;
 
                 if(value >= EntityMap.COLOR_START && value <= EntityMap.COLOR_END) {
@@ -159,6 +165,35 @@ class Play extends Phaser.State {
 
         this.blocks.setAll('anchor.x', 0.5);
         this.blocks.setAll('anchor.y', 0.5);
+
+        this.bubbles.enableBody = true;
+        this.bubbles.physicsBodyType = Phaser.Physics.ARCADE;
+        this.bubbles.checkWorldBounds = true;
+    }
+
+    createInitialLaunchBubbles() {     
+        this.currentBubble = this.createRandomBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
+        this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
+
+        this.bubbles.add(this.currentBubble);
+        this.bubbles.add(this.nextBubble);
+    }
+
+    createRandomBubble(x, y) {
+        let randomColor = this.getRandomBubbleColor();
+        let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[randomColor]);
+        let bubbleSprite = new GraphicSprite(this.game, x, y, null);
+        bubbleSprite.spritify(bubbleGraphic);
+        bubbleSprite.setScale(0.9, 0.9);
+
+        return bubbleSprite;
+    }
+
+    getRandomBubbleColor() {
+        let min = EntityMap.BUBBLE_START;
+        let max = EntityMap.BUBBLE_END;
+        let random = Math.floor(Math.random() * (max - min) + min);
+        return EntityMap.colors[random];
     }
 
     createOverlay() {
@@ -177,9 +212,9 @@ class Play extends Phaser.State {
         // create a one-off timers that autodestroys itself
         // TODO: maybe use async await / yield / promises?
         let pregameTimer1 = this.time.create(true);
-        pregameTimer1.add(Phaser.Timer.SECOND * 1.5, () => {
+        pregameTimer1.add(Phaser.Timer.SECOND * 1.7, () => {
             let pregameTimer2 = this.time.create(true);
-            pregameTimer2.add(Phaser.Timer.SECOND * 1.5, cb, this);
+            pregameTimer2.add(Phaser.Timer.SECOND * 1.7, cb, this);
             pregameTimer2.start();
             this.readyGoText.setText('GO');
         }, this);
@@ -190,12 +225,15 @@ class Play extends Phaser.State {
     // remove overlay, starts timer, setups stats, enable input
     startGame() {
         console.log('NOW PLAYING...');
-
         this.overlay.destroy();
         this.readyGoText.destroy();
-
         this.nowPlaying = true;
-        
+        this.gameloop();    
+    }
+
+    // add 
+    gameloop() {
+
     }
 
     update() {
@@ -206,7 +244,20 @@ class Play extends Phaser.State {
 
     launchBubble() {
         if (this.nowPlaying) {
+            console.log('LAUNCH BUBBLE');
+            
+            this.physics.arcade.velocityFromAngle(
+                // https://phaser.io/docs/2.4.4/Phaser.Physics.Arcade.html#velocityFromRotation
+                // need to subtract 90 to get the coordinates adjusted
+                this.arrow.angle - 90, 200, this.currentBubble.body.velocity);
 
+            // detect collision
+
+            // replenish bubble
+            this.nextBubble.position.set(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
+            this.currentBubble = this.nextBubble;
+            this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
+            this.bubbles.add(this.nextBubble);
         }
     }
 
