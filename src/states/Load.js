@@ -20,7 +20,7 @@ const upheavalFnt = './assets/fonts/upheaval/font.fnt';
 class Load extends Phaser.State {
     preload() {
         // Preload text
-        // TODO: test this
+        // TODO: user phaser's timer instead of settimeout. make sure to test
         this.timerId = setTimeout(() => {
             document.getElementsByTagName('canvas')[0].style.opacity = 1;
             let loadingText = this.add.text(

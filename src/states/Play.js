@@ -9,12 +9,48 @@ import { EntityMap } from '../utils/EntityMap';
 
 class Play extends Phaser.State {
     create() {
+        // TODO: need to parametize the stat values
+        /* 
+            STATE FLOW:
+            player plays
+                if win
+                    if win all
+                        goto congradulation state
+                    else
+                        restart state with updated stats
+                if lose
+                    goto continue state
+                        if continue
+                            goto play state
+                        else
+                            save stats to localStorage
+                            goto menu state
+        */
+        
+        // stats
+        this.totalScore = 0;
+        this.score = 0
+        this.round = 1;
+        this.nowPlaying = false;
+        this.roundComplete = false;
+        this.gameover = false;
+        this.paused = false;
+        this.playTime = 0;
+        this.launchCountdown = 10;
+
+        // builders
         this.createTiles();
         this.createBoundaries();
         this.createLauncher();
         this.createStage();
         this.createScoreboard();
-        // this.startTimer();
+        this.createOverlay();
+
+        // game logic
+        this.pregame(this.startGame);
+
+        // events
+        this.game.keyEnter.onDown.add(this.launchBubble, this);
     }
 
     createTiles() {
@@ -48,11 +84,9 @@ class Play extends Phaser.State {
     }
 
     createScoreboard() {
-        this.score = 0;
         this.scoreText = this.add.bitmapText(5, 11, 'upheaval', 'SCORE 000000000', 25);
         this.scoreText.anchor.set(0, 0.5);
 
-        this.round = 1;
         this.roundText = this.add.bitmapText(CANVAS_WIDTH - 130, 11, 'upheaval', 'ROUND 001', 25);
         this.roundText.anchor.set(0, 0.5);
     }
@@ -127,25 +161,77 @@ class Play extends Phaser.State {
         this.blocks.setAll('anchor.y', 0.5);
     }
 
+    createOverlay() {
+        this.overlay = this.add.graphics(0, 0);
+        this.overlay.beginFill(0x000000);
+        this.overlay.drawRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        this.overlay.alpha = 0.3;
+
+        this.readyGoText = this.add.bitmapText(CENTER_X, CENTER_Y, 'upheaval', 'READY', 30);
+        this.readyGoText.anchor.set(0.5, 0.5);
+    }
+
+    // add 'ready go' text before starting the game.
+    // calls the startGame function after 'ready go' text disappears
+    pregame(cb) {
+        // create a one-off timers that autodestroys itself
+        // TODO: maybe use async await / yield / promises?
+        let pregameTimer1 = this.time.create(true);
+        pregameTimer1.add(Phaser.Timer.SECOND * 1.5, () => {
+            let pregameTimer2 = this.time.create(true);
+            pregameTimer2.add(Phaser.Timer.SECOND * 1.5, cb, this);
+            pregameTimer2.start();
+            this.readyGoText.setText('GO');
+        }, this);
+
+        pregameTimer1.start();
+    }
+
+    // remove overlay, starts timer, setups stats, enable input
+    startGame() {
+        console.log('NOW PLAYING...');
+
+        this.overlay.destroy();
+        this.readyGoText.destroy();
+
+        this.nowPlaying = true;
+        
+    }
+
     update() {
-        // handling cursor movement
-        if(this.game.keyLeft.isDown) {
-            if(this.arrow.angle >= -MAX_ARROW_RANGE) {
+        if(this.nowPlaying) {
+            this.handleCursorInput();
+        }
+    }
+
+    launchBubble() {
+        if (this.nowPlaying) {
+
+        }
+    }
+
+    handleCursorInput() {
+        if (this.game.keyLeft.isDown) {
+            if (this.arrow.angle >= -MAX_ARROW_RANGE) {
                 this.arrow.angle -= 1.4;
                 this.launcherWheel.angle -= 1.4;
-            }else {
+            } else {
                 this.arrow.angle = -MAX_ARROW_RANGE;
                 this.launcherWheel.angle = -MAX_ARROW_RANGE;
             }
-        }else if(this.game.keyRight.isDown) {
+        } else if (this.game.keyRight.isDown) {
             if (this.arrow.angle <= MAX_ARROW_RANGE) {
                 this.arrow.angle += 1.4;
                 this.launcherWheel.angle += 1.4;
-            }else {
+            } else {
                 this.arrow.angle = MAX_ARROW_RANGE;
                 this.launcherWheel.angle = MAX_ARROW_RANGE;
             }
         }
+    }
+
+    shutdown() {
+
     }
 }
 
