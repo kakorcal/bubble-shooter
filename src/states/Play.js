@@ -69,23 +69,23 @@ class Play extends Phaser.State {
     }
 
     createBoundaries() {
-        let topBoundarySprite = new GraphicSprite(this.game, 0, 0, null);
-        topBoundarySprite.spritify(new Boundary(this.game,
-            { x1: TILE_SIZE, y1: SCOREBOARD_HEIGHT },
-            { x2: CANVAS_WIDTH - TILE_SIZE, y2: SCOREBOARD_HEIGHT },
-            Colors.skyBlue
-        ));
-        this.physics.enable(topBoundarySprite, Phaser.Physics.ARCADE);
-        this.topBoundary = this.add.existing(topBoundarySprite);
+        let topBoundarySprite = this.add.sprite(0, 0);
+        this.topBoundary = topBoundarySprite.addChild(
+            new Boundary(this.game,
+                { x1: TILE_SIZE, y1: SCOREBOARD_HEIGHT },
+                { x2: CANVAS_WIDTH - TILE_SIZE, y2: SCOREBOARD_HEIGHT },
+                Colors.skyBlue
+            )
+        );
 
-        let bottomBoundarySprite = new GraphicSprite(this.game, 0, 0, null);
-        bottomBoundarySprite.spritify(new Boundary(this.game,
-            { x1: TILE_SIZE, y1: CANVAS_HEIGHT - LAUNCHER_HEIGHT },
-            { x2: CANVAS_WIDTH - TILE_SIZE, y2: CANVAS_HEIGHT - LAUNCHER_HEIGHT },
-            Colors.skyBlue
-        ));
-        this.bottomBoundary = this.add.existing(bottomBoundarySprite);
-        this.physics.enable(bottomBoundarySprite, Phaser.Physics.ARCADE);                    
+        let bottomBoundarySprite = this.add.sprite(0, 0);
+        this.bottomBoundary = bottomBoundarySprite.addChild(
+            new Boundary(this.game,
+                { x1: TILE_SIZE, y1: CANVAS_HEIGHT - LAUNCHER_HEIGHT },
+                { x2: CANVAS_WIDTH - TILE_SIZE, y2: CANVAS_HEIGHT - LAUNCHER_HEIGHT },
+                Colors.skyBlue
+            )
+        );
         // move boundary by => boundary.x += val;
     }
 
@@ -144,27 +144,22 @@ class Play extends Phaser.State {
                     let x = i % 2 === 0 ? j * TILE_SIZE + TILE_SIZE : j * TILE_SIZE + SPRITE_OFFSET;
                     let y = i * TILE_SIZE + SPRITE_OFFSET;
                     let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[EntityMap.colors[value]]);
-                    let bubbleSprite = new GraphicSprite(this.game, x, y, null);
+                    let bubbleSprite = this.add.sprite(x, y, null, null, this.bubbles);
                     bubbleGraphic.addDot(() => value === EntityMap.gold);
-                    bubbleSprite.spritify(bubbleGraphic);
-                    bubbleSprite.setScale(0.9, 0.9);
-                    this.bubbles.add(bubbleSprite);
-                    // this.physics.enable(bubbleSprite, Phaser.Physics.ARCADE);
-                    // bubbleSprite.setCollisionDetection();
+                    bubbleSprite.addChild(bubbleGraphic);
+                    bubbleSprite.scale.set(0.9, 0.9);
                 }
 
                 if (value >= EntityMap.GAME_OBJECT_START && value <= EntityMap.GAME_OBJECT_END) {
-                    let x = j * TILE_SIZE;
-                    let y = i * TILE_SIZE;
-                    let block = this.add.sprite(x, y, 'block-1', this.blocks);
+                    let x = j * TILE_SIZE + SPRITE_OFFSET;
+                    let y = i * TILE_SIZE + SPRITE_OFFSET;
+                    let block = this.add.sprite(x, y, 'block-1', null, this.blocks);
+                    block.anchor.set(0.5, 0.5);
                     block.width = TILE_SIZE;
                     block.height = TILE_SIZE;
                 }
             }
         }
-
-        this.blocks.setAll('anchor.x', 0.5);
-        this.blocks.setAll('anchor.y', 0.5);
 
         this.bubbles.enableBody = true;
         this.bubbles.physicsBodyType = Phaser.Physics.ARCADE;
@@ -249,7 +244,7 @@ class Play extends Phaser.State {
             this.physics.arcade.velocityFromAngle(
                 // https://phaser.io/docs/2.4.4/Phaser.Physics.Arcade.html#velocityFromRotation
                 // need to subtract 90 to get the coordinates adjusted
-                this.arrow.angle - 90, 200, this.currentBubble.body.velocity);
+                this.arrow.angle - 90, 360, this.currentBubble.body.velocity);
 
             // detect collision
 
@@ -257,7 +252,7 @@ class Play extends Phaser.State {
             this.nextBubble.position.set(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
             this.currentBubble = this.nextBubble;
             this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
-            this.bubbles.add(this.nextBubble);
+            this.bubbles.add(this.nextBubble);            
         }
     }
 

@@ -58,7 +58,6 @@ class Menu extends Phaser.State {
         this.polnareff.animations.add('bounce', [0,1], 2, true);
         this.polnareff.animations.play('bounce');        
 
-
         // adding instruction text
         let instructions = this.add.text(
             7, CANVAS_HEIGHT - 10,
