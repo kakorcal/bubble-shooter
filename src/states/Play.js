@@ -129,6 +129,7 @@ class Play extends Phaser.State {
         
         // launcher pieces
         this.arrow = this.add.sprite(CENTER_X, CANVAS_HEIGHT - LAUNCHER_HEIGHT + ANCHOR_OFFSET, 'arrow-1');
+        this.arrow.height = 200;
         this.arrow.anchor.set(0.5, 0.95);
 
         // wheel
@@ -160,26 +161,33 @@ class Play extends Phaser.State {
             for(let j = 0; j < round1[i].length; j++) {
                 let value = round1[i][j];
                 if(value === EntityMap.zero) continue;
-
-                if(value >= EntityMap.COLOR_START && value <= EntityMap.COLOR_END) {
-                    let x = i % 2 === 0 ? j * TILE_SIZE + TILE_SIZE : j * TILE_SIZE + ANCHOR_OFFSET;
-                    let y = i * TILE_SIZE + ANCHOR_OFFSET;
-                    let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[EntityMap.colors[value]]);
-                    let bubbleSprite = this.add.sprite(x, y, null, null, this.bubbles);
-                    bubbleGraphic.addDot(() => value === EntityMap.gold);
-                    bubbleSprite.addChild(bubbleGraphic);
-                }
-
-                // if (value >= EntityMap.GAME_OBJECT_START && value <= EntityMap.GAME_OBJECT_END) {
-                //     let x = j * TILE_SIZE + ANCHOR_OFFSET;
-                //     let y = i * TILE_SIZE + ANCHOR_OFFSET;
-                //     this.blocks.create(x, y, 'block-1');
-                // }
+                let coord = this.getBubbleCoordinate(i, j);                
+                let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[EntityMap.colors[value]]);
+                let bubbleSprite = this.add.sprite(coord.x, coord.y, null, null, this.bubbles);
+                this.getBubbleIndex(coord.x, coord.y);
+                bubbleGraphic.addDot(() => value === EntityMap.gold);
+                bubbleSprite.addChild(bubbleGraphic);
             }
         }        
 
         this.bubbles.setAll('anchor', { x: 0.5, y: 0.5 });
         this.bubbles.setAll('scale', { x: 0.9, y: 0.9 });
+        this.bubbles.setAll('body.immovable', true);
+        this.bubbles.setAll('body.allowGravity', false);
+    }
+
+    getBubbleCoordinate(i, j) {        
+        let x = i % 2 === 0 ? j * TILE_SIZE + TILE_SIZE : j * TILE_SIZE + ANCHOR_OFFSET;
+        let y = i * TILE_SIZE + ANCHOR_OFFSET;
+        console.log({x, y, i, j});
+        return {x, y};
+    }
+
+    getBubbleIndex(x, y) {        
+        let i = Math.abs(Math.floor((y - ANCHOR_OFFSET) / TILE_SIZE));
+        let j = x % TILE_SIZE === 0 ? Math.abs(Math.floor((x - TILE_SIZE) / TILE_SIZE)) : Math.abs(Math.floor((x - ANCHOR_OFFSET) / TILE_SIZE));
+        console.log({i, j, x, y});
+        return {i, j};
     }
 
     createInitialLaunchBubbles() {     
@@ -261,7 +269,7 @@ class Play extends Phaser.State {
             this.physics.arcade.velocityFromAngle(
                 // https://phaser.io/docs/2.4.4/Phaser.Physics.Arcade.html#velocityFromRotation
                 // need to subtract 90 to get the coordinates adjusted
-                this.arrow.angle - 90, 360, this.currentBubble.body.velocity);
+                this.arrow.angle - 90, 250, this.currentBubble.body.velocity);
 
             // detect collision
 
@@ -294,15 +302,12 @@ class Play extends Phaser.State {
     }
 
     handleCollision() {
-        if(this.physics.arcade.collide(this.currentBubble, this.blocks, this.blockCollision, null, this)) {
-        }
+        this.physics.arcade.collide(this.currentBubble, this.blocks, null, null, this);
+        this.physics.arcade.collide(this.currentBubble, this.bubbles, this.snapToGrid, null, this);
     }
 
-    // ensure velocity vector points to the reflected angle
-    // http://www.html5gamedevs.com/topic/23162-breakout-game-incorrect-ball-rebound-question/
-    blockCollision() {
-        console.log('BLOCK COLLISION');
-        console.log(this.currentBubble.body.velocity.x + ' ' + this.currentBubble.body.velocity.y);
+    snapToGrid() {
+
     }
 
     shutdown() {
