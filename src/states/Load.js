@@ -1,3 +1,5 @@
+import {CENTER_X, CENTER_Y} from '../utils/Constants';
+
 // images and fonts will be served from express static since there are no 
 // webpack loaders available for the fnt extension
 const cloud1 = './assets/images/cloud-md-1.png';
@@ -5,6 +7,8 @@ const tile1 = './assets/images/tile-sm-1.png';
 const tile2 = './assets/images/tile-sm-2.png';
 const arrow1 = './assets/images/arrow-sm-1.png';
 const block1 = './assets/images/block-md-1.png';
+const blocksVertical1 = './assets/images/blocks-vertical-md-1.png';
+const blocksHorizontal1 = './assets/images/blocks-horizontal-md-1.png';
 const blockContour1 = './assets/images/block-contour-md-1.png';
 const polnareff1 = './assets/images/polnareff-sp-1.png';
 const speechBubble1 = './assets/images/speech-bubble-sm-1.png';
@@ -23,10 +27,8 @@ class Load extends Phaser.State {
         // TODO: user phaser's timer instead of settimeout. make sure to test
         this.timerId = setTimeout(() => {
             document.getElementsByTagName('canvas')[0].style.opacity = 1;
-            let loadingText = this.game.add.text(
-                this.world.centerX,
-                this.world.centerY,
-                "LOADING...",
+            let loadingText = this.add.text(
+                CENTER_X, CENTER_Y, "LOADING...",
                 { font: "40px monospace", fill: "yellow", align: "center", strokeThickness: 5 }
             );
             // Set relative to center, not top left
@@ -34,29 +36,31 @@ class Load extends Phaser.State {
             loadingText.alpha = 0;
     
             // Yoyo the text
-            let loadingTween = this.game.add.tween(loadingText).
+            let loadingTween = this.add.tween(loadingText).
                 to({ alpha: 1 }, 500, "Linear", true, 0, -1);
     
             loadingTween.yoyo(true, 300); 
         }, 1000);
 
         // load image sprites
-        this.game.load.image('tile-1', tile1);
-        this.game.load.image('tile-2', tile2);
-        this.game.load.image('cloud-1', cloud1);
-        this.game.load.image('arrow-1', arrow1);
-        this.game.load.image('block-1', block1);
-        this.game.load.image('launcher-platform-1', launcherPlatform1);
-        this.game.load.image('launcher-wheel-1', launcherWheel1);
-        this.game.load.image('speech-bubble-1', speechBubble1);
+        this.load.image('tile-1', tile1);
+        this.load.image('tile-2', tile2);
+        this.load.image('cloud-1', cloud1);
+        this.load.image('arrow-1', arrow1);
+        this.load.image('block-1', block1);
+        this.load.image('blocks-vertical-1', blocksVertical1);
+        this.load.image('blocks-horizontal-1', blocksHorizontal1);
+        this.load.image('launcher-platform-1', launcherPlatform1);
+        this.load.image('launcher-wheel-1', launcherWheel1);
+        this.load.image('speech-bubble-1', speechBubble1);
 
         // polnareff spritesheet
         // key, url, frameWidth, frameHeight, frameMax, margin, spacing
-        this.game.load.spritesheet('polnareff-1', polnareff1, 60, 60, 2, 0, 0);
+        this.load.spritesheet('polnareff-1', polnareff1, 60, 60, 2, 0, 0);
 
         // load fonts
-        this.game.load.bitmapFont('happy-hell', happyHellPng, happyHellFnt);
-        this.game.load.bitmapFont('upheaval', upheavalPng, upheavalFnt);
+        this.load.bitmapFont('happy-hell', happyHellPng, happyHellFnt);
+        this.load.bitmapFont('upheaval', upheavalPng, upheavalFnt);
 
         // register keys. registering through the game object so each state can have access
         this.game.keyLeft = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -67,7 +71,7 @@ class Load extends Phaser.State {
         this.game.keyEnter = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
 
         // prevent key event propagating up to the browser
-        this.game.input.keyboard.addKeyCapture([
+        this.input.keyboard.addKeyCapture([
             Phaser.Keyboard.LEFT, 
             Phaser.Keyboard.RIGHT, 
             Phaser.Keyboard.UP, 
@@ -79,10 +83,10 @@ class Load extends Phaser.State {
 
     create() {
         document.getElementsByTagName('canvas')[0].style.opacity = 1;
-        this.game.state.start('menu');
+        this.state.start('menu');
 
         // enable physics
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.physics.startSystem(Phaser.Physics.ARCADE);
         // this.game.physics.setBoundsToWorld();
     }
 

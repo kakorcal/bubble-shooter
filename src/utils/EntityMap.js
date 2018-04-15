@@ -28,18 +28,20 @@ const EntityMap = {
 
     // Game Objects
     GAME_OBJECT_START: 50,
-    GAME_OBJECT_END: 54,
+    GAME_OBJECT_END: 55,
     tile: 50,
     polnareff: 51,
     launcher: 52,
     bubble: 53,
     block: 54,
+    blocks: 55,
     gameObjects: {
         50: 'tile',
         51: 'polnareff',
         52: 'launcher',
         53: 'bubble',
-        54: 'block' 
+        54: 'block',
+        55: 'blocks'
     }
 };
 
@@ -62,7 +64,8 @@ const AlphabetizedMap = {
     l: 51,
     m: 52,
     n: 53,
-    o: 54
+    o: 54,
+    p: 55
 };
 
 export {EntityMap, AlphabetizedMap};
