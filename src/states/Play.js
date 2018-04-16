@@ -159,7 +159,7 @@ class Play extends Phaser.State {
         for(let i = 0; i < round1.length; i++) {
             for(let j = 0; j < round1[i].length; j++) {
                 let colorCode = round1[i][j];
-                if (colorCode === EntityMap.zero) continue;
+                if (colorCode === EntityMap.zero || colorCode === EntityMap.block) continue;
                 let { x, y } = this.getBubbleCoordinate(i, j);                
                 this.createBubble(x, y, colorCode, this.bubbles);
             }
@@ -179,7 +179,14 @@ class Play extends Phaser.State {
     getBubbleIndex(x, y) {        
         let i = Math.abs(Math.round((y - ANCHOR_OFFSET) / TILE_SIZE));
         let j = i % 2 === 0 ? Math.abs(Math.round((x - TILE_SIZE) / TILE_SIZE)) : Math.abs(Math.round((x - ANCHOR_OFFSET) / TILE_SIZE));
-        // console.log({i, j, x, y});
+        console.log({i, j, x, y});
+
+        // TODO: this won't work when adding stages with different col and rows
+        if(i === 0) i++;
+        if(i > ROWS - 1 - 2) i--;
+        if(j === 0) j++;
+        if(j === COLUMNS - 2 && i % 2 === 0) j--;
+
         return {i, j};
     }
 
@@ -203,6 +210,7 @@ class Play extends Phaser.State {
         bubble.body.setSize(BUBBLE_PHYSICS_SIZE, BUBBLE_PHYSICS_SIZE);
         bubble.body.bounce.set(1);
 
+        console.log('BUBBLE GROUP LENGTH: ', this.bubbles.children.length);
         return bubble;
     }
 
@@ -297,20 +305,32 @@ class Play extends Phaser.State {
 
     handleCollision() {
         let blockCollision = this.physics.arcade.collide(this.currentBubble, this.blocks);
-        let bubbleCollision = this.physics.arcade.overlap(this.currentBubble, this.bubbles);
-        if(bubbleCollision) this.snapToGrid();
+        let bubbleCollision = this.physics.arcade.collide(this.currentBubble, this.bubbles);
+        if(bubbleCollision) {
+            this.snapToGrid();
+            this.checkCluster();
+        }
     }
 
     snapToGrid() {
         let curx = this.currentBubble.x;
         let cury = this.currentBubble.y;
         let { i, j } = this.getBubbleIndex(curx, cury);
+        console.log('INDICES i: ' + i + ' j: ' + j);
 
-        if (round1[i][j] === 0) {
+        if(round1[i][j] !== EntityMap.zero) {
+            i++;
+            if(i % 2 !== 0) {
+                j++;
+            }
+        }
+        if (round1[i][j] === EntityMap.zero) {
             let { x, y } = this.getBubbleCoordinate(i, j);
             round1[i][j] = this.currentBubble.colorCode;
-            console.log('SNAPING TO x: ' + x + ' y: ' + y);
-            this.createBubble(x, y, this.currentBubble.colorCode, this.bubbles);
+            console.log('SNAPING TO x: ' + x + ' y: ' + y + ' i: ' + i + ' j: ' + j);
+            let newBubble = this.createBubble(x, y, this.currentBubble.colorCode, this.bubbles);
+            newBubble.body.immovable = true;
+            newBubble.body.allowGravity = false;
 
             this.currentBubble.body.velocity.x = 0;
             this.currentBubble.body.velocity.y = 0;
@@ -321,6 +341,10 @@ class Play extends Phaser.State {
             this.currentBubble.y = CURRENT_BUBBLE_Y;
             this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
         }
+    }
+
+    checkCluster() {
+
     }
 
     shutdown() {
