@@ -1,3 +1,4 @@
+import Player from '../entities/Player';
 import {CENTER_X, CENTER_Y} from '../utils/Constants';
 
 // images and fonts will be served from express static since there are no 
@@ -24,8 +25,8 @@ const upheavalFnt = './assets/fonts/upheaval/font.fnt';
 class Load extends Phaser.State {
     preload() {
         // Preload text
-        // TODO: user phaser's timer instead of settimeout. make sure to test
-        this.timerId = setTimeout(() => {
+        let loadTimer = this.time.create(true);
+        loadTimer.add(Phaser.Timer.SECOND * 1.5, () => {
             document.getElementsByTagName('canvas')[0].style.opacity = 1;
             let loadingText = this.add.text(
                 CENTER_X, CENTER_Y, "LOADING...",
@@ -34,13 +35,14 @@ class Load extends Phaser.State {
             // Set relative to center, not top left
             loadingText.anchor.set(0.5);
             loadingText.alpha = 0;
-    
+
             // Yoyo the text
             let loadingTween = this.add.tween(loadingText).
                 to({ alpha: 1 }, 500, "Linear", true, 0, -1);
-    
+
             loadingTween.yoyo(true, 300); 
-        }, 1000);
+        }, this);
+        loadTimer.start();
 
         // load image sprites
         this.load.image('tile-1', tile1);
@@ -79,6 +81,14 @@ class Load extends Phaser.State {
             Phaser.Keyboard.SPACEBAR,
             Phaser.Keyboard.ENTER
         ]);
+
+        // load continuing user if they exist
+        let player = Player.getExistingPlayer();
+        if(player) {
+            this.game.player = player;
+        }else {
+            this.game.player = null;
+        }
     }
 
     create() {
@@ -87,11 +97,6 @@ class Load extends Phaser.State {
 
         // enable physics
         this.physics.startSystem(Phaser.Physics.ARCADE);
-        // this.game.physics.setBoundsToWorld();
-    }
-
-    shutdown() {
-        clearTimeout(this.timerId);
     }
 }
 

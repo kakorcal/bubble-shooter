@@ -1,4 +1,5 @@
 const EntityMap = {
+    EMPTY: null,
     zero: 0,
     // Colors
     COLOR_START: 1,
@@ -47,6 +48,7 @@ const EntityMap = {
 
 // to make the map easier to read
 const AlphabetizedMap = {
+    _: null,
     a: 0,
     // Colors
     b: 1,

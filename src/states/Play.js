@@ -318,12 +318,13 @@ class Play extends Phaser.State {
         let { i, j } = this.getBubbleIndex(curx, cury);
         console.log('INDICES i: ' + i + ' j: ' + j);
 
+        // the case when the bubble hits the right side and the 
+        // curx and cury indices overlap with existing bubble
         if(round1[i][j] !== EntityMap.zero) {
             i++;
-            if(i % 2 !== 0) {
-                j++;
-            }
+            if(i % 2 !== 0) j++;
         }
+
         if (round1[i][j] === EntityMap.zero) {
             let { x, y } = this.getBubbleCoordinate(i, j);
             round1[i][j] = this.currentBubble.colorCode;
@@ -340,6 +341,8 @@ class Play extends Phaser.State {
             this.currentBubble.x = CURRENT_BUBBLE_X;
             this.currentBubble.y = CURRENT_BUBBLE_Y;
             this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
+        }else {
+            // TODO: find nearest empty spot
         }
     }
 

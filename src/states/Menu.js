@@ -1,3 +1,4 @@
+import Player from '../entities/Player';
 import {ROWS, COLUMNS, TILE_SIZE, CANVAS_HEIGHT, CENTER_X, CENTER_Y} from '../utils/Constants';
 
 class Menu extends Phaser.State {
@@ -38,11 +39,19 @@ class Menu extends Phaser.State {
         this.navigationIndex = 0;
         
         // adding logo text
-        this.newGameText = this.add.bitmapText(CENTER_X, CENTER_Y + 110, 'upheaval', 'NEW GAME', 30, this.navigation);
-        this.newGameText.stateName = 'play';
-        // this.continueText = this.add.bitmapText(CENTER_X, CENTER_Y + 170, 'upheaval', 'CONTINUE', 30, this.navigation);
-        this.tutorialText = this.add.bitmapText(CENTER_X, CENTER_Y + 150, 'upheaval', 'TUTORIAL', 30, this.navigation);
-        this.tutorialText.stateName = 'tutorial';
+        if(this.game.player) {
+            this.continueText = this.add.bitmapText(CENTER_X, CENTER_Y + 110, 'upheaval', 'CONTINUE', 30, this.navigation);
+            this.continueText.stateName = 'continue';
+            this.newGameText = this.add.bitmapText(CENTER_X, CENTER_Y + 150, 'upheaval', 'NEW GAME', 30, this.navigation);
+            this.newGameText.stateName = 'newGame';
+            this.tutorialText = this.add.bitmapText(CENTER_X, CENTER_Y + 190, 'upheaval', 'TUTORIAL', 30, this.navigation);
+            this.tutorialText.stateName = 'tutorial';
+        }else {
+            this.newGameText = this.add.bitmapText(CENTER_X, CENTER_Y + 110, 'upheaval', 'NEW GAME', 30, this.navigation);
+            this.newGameText.stateName = 'newGame';
+            this.tutorialText = this.add.bitmapText(CENTER_X, CENTER_Y + 150, 'upheaval', 'TUTORIAL', 30, this.navigation);
+            this.tutorialText.stateName = 'tutorial';
+        }
 
         this.navigation.setAll('anchor.x', 0.5);
         this.navigation.setAll('anchor.y', 0.5);          
@@ -78,15 +87,22 @@ class Menu extends Phaser.State {
         }
     }
 
-    changeState(e) {        
+    changeState(e) {     
+        let state = this.navigation.children[this.navigationIndex].stateName;
+
+        if(state === 'newGame') {
+            Player.clear();
+            state = 'play';
+        }else if(state === 'continue') {
+            state = 'play';
+        }
+        
         this.navigation.children[this.navigationIndex].alpha = 0;
         
         let navigationTween = this.add.tween(this.navigation.children[this.navigationIndex]).
             to({ alpha: 1 }, 100, "Linear", true, 0, 3);
         
-        navigationTween.onComplete.add(() => {
-            this.state.start(this.navigation.children[this.navigationIndex].stateName);            
-        }, this);
+        navigationTween.onComplete.add(() => this.state.start(state), this);
     }
 
     shutdown() {
