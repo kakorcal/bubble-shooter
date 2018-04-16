@@ -189,7 +189,8 @@ class Play extends Phaser.State {
                 if (colorCode === EntityMap.zero || 
                     colorCode === EntityMap.empty || 
                     colorCode === EntityMap.block) continue;
-                let { x, y } = this.round.getCoordinates(i, j);                
+                let { x, y } = this.round.getCoordinates(i, j);  
+                this.round.getIndices(x,y);
                 this.createBubble(x, y, colorCode, this.bubbles);
             }
         }        
@@ -218,7 +219,6 @@ class Play extends Phaser.State {
         bubble.body.setSize(BUBBLE_PHYSICS_SIZE, BUBBLE_PHYSICS_SIZE);
         bubble.body.bounce.set(1);
 
-        console.log('BUBBLE GROUP LENGTH: ', this.bubbles.children.length);
         return bubble;
     }
 
@@ -323,21 +323,27 @@ class Play extends Phaser.State {
     snapToGrid() {
         let curx = this.currentBubble.x;
         let cury = this.currentBubble.y;
-        let { i, j } = this.getBubbleIndex(curx, cury);
-        console.log('INDICES i: ' + i + ' j: ' + j);
+        let { i, j } = this.round.getIndices(curx, cury);
+        console.log('INDICES FOUND i: ' + i + ' j: ' + j);
 
-        // the case when the bubble hits the right side and the 
-        // curx and cury indices overlap with existing bubble
-        if(round1[i][j] !== EntityMap.zero) {
-            i++;
-            if(i % 2 !== 0) j++;
+        // adjustments for empty spaces
+        if (this.round.matrix[i][j] === EntityMap.empty) {
+            console.log('MATRIX EMPTY: adjusting j position');
+            j -= 1;
+
+            if(this.round.matrix[i][j] !== EntityMap.zero) {
+                console.log('MATRIX FILLED: adjusting i and j position');
+                i += 1;
+                j += 1;
+            }
         }
 
-        if (round1[i][j] === EntityMap.zero) {
-            let { x, y } = this.getBubbleCoordinate(i, j);
-            round1[i][j] = this.currentBubble.colorCode;
+        if (this.round.matrix[i][j] === EntityMap.zero) {
+            let { x, y } = this.round.getCoordinates(i, j);
             console.log('SNAPING TO x: ' + x + ' y: ' + y + ' i: ' + i + ' j: ' + j);
+
             let newBubble = this.createBubble(x, y, this.currentBubble.colorCode, this.bubbles);
+            this.round.matrix[i][j] = this.currentBubble.colorCode;
             newBubble.body.immovable = true;
             newBubble.body.allowGravity = false;
 
@@ -349,8 +355,6 @@ class Play extends Phaser.State {
             this.currentBubble.x = CURRENT_BUBBLE_X;
             this.currentBubble.y = CURRENT_BUBBLE_Y;
             this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
-        }else {
-            // TODO: find nearest empty spot
         }
     }
 

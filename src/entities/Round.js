@@ -35,7 +35,7 @@ class Round {
         // get the x,y coord of the bubble with respect to its center
         let x = (this.startX + ANCHOR_OFFSET) + (j * TILE_SIZE) + xOffset;
         let y = (this.startY + ANCHOR_OFFSET) + (i * TILE_SIZE);
-
+        // console.log('i: ' + i + ' j: ' + j + ' x: ' + x + ' y: ' + y);
         return {x, y};
     }
 
@@ -45,12 +45,8 @@ class Round {
         let i = Math.round((y - this.startY - ANCHOR_OFFSET) / (TILE_SIZE));
         let xOffset = this.matrix[i][this.cols - 1] === null ? ANCHOR_OFFSET : 0;
         let j = Math.round((x - this.startX - ANCHOR_OFFSET - xOffset) / (TILE_SIZE));
-
+        // console.log('x: ' + x + ' y: ' + y + ' i: ' + i + ' j: ' + j);
         return {i, j};
-    }
-
-    applyOffset(row) {
-
     }
 
     addRow(row) {
