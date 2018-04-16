@@ -4,14 +4,27 @@ import {
     SCOREBOARD_HEIGHT, MAX_ARROW_RANGE, CURRENT_BUBBLE_X, 
     CURRENT_BUBBLE_Y, NEXT_BUBBLE_X, NEXT_BUBBLE_Y, BUBBLE_PHYSICS_SIZE
 } from '../utils/Constants';
-import round1 from '../rounds/1';
-import Bubble from '../graphics/Bubble';
-import Boundary from '../graphics/Boundary';
+import Player from '../entities/Player';
+import Bubble from '../entities/Bubble';
+import Round from '../entities/Round';
+import Boundary from '../entities/Boundary';
 import { Colors } from '../utils/Colors';
 import { EntityMap } from '../utils/EntityMap';
 
-
 class Play extends Phaser.State {
+    preload() {
+        this.round = new Round(this.game.player.currentRound, TILE_SIZE, ANCHOR_OFFSET);
+        
+        // stats
+        this.score = 0
+        this.nowPlaying = false;
+        this.roundComplete = false;
+        this.gameover = false;
+        this.paused = false;
+        this.playTime = 0;
+        this.launchCountdown = 10;
+    }
+
     create() {
         // TODO: need to parametize the stat values
         /* 
@@ -31,28 +44,19 @@ class Play extends Phaser.State {
                             goto menu state
         */
         
-        // stats
-        this.totalScore = 0;
-        this.score = 0
-        this.round = 1;
-        this.nowPlaying = false;
-        this.roundComplete = false;
-        this.gameover = false;
-        this.paused = false;
-        this.playTime = 0;
-        this.launchCountdown = 10;
+
 
         // builders
-        this.createTiles();
-        this.createBoundaries();
-        this.createLauncher();
-        this.createStage();
-        this.createScoreboard();
-        this.createInitialLaunchBubbles();
-        this.createOverlay();
+        // this.createTiles();
+        // this.createBoundaries();
+        // this.createLauncher();
+        // this.createStage();
+        // this.createScoreboard();
+        // this.createInitialLaunchBubbles();
+        // this.createOverlay();
 
         // game logic
-        this.pregame(this.startGame);
+        // this.pregame(this.startGame);
 
         // events
         this.game.keySpace.onDown.add(this.launchBubble, this);
@@ -169,26 +173,26 @@ class Play extends Phaser.State {
         this.bubbles.setAll('body.allowGravity', false);
     }
 
-    getBubbleCoordinate(i, j) {        
-        let x = i % 2 === 0 ? j * TILE_SIZE + TILE_SIZE : j * TILE_SIZE + ANCHOR_OFFSET;
-        let y = i * TILE_SIZE + ANCHOR_OFFSET;
-        // console.log({x, y, i, j});
-        return {x, y};
-    }
+    // getBubbleCoordinate(i, j) {        
+    //     let x = i % 2 === 0 ? j * TILE_SIZE + TILE_SIZE : j * TILE_SIZE + ANCHOR_OFFSET;
+    //     let y = i * TILE_SIZE + ANCHOR_OFFSET;
+    //     // console.log({x, y, i, j});
+    //     return {x, y};
+    // }
 
-    getBubbleIndex(x, y) {        
-        let i = Math.abs(Math.round((y - ANCHOR_OFFSET) / TILE_SIZE));
-        let j = i % 2 === 0 ? Math.abs(Math.round((x - TILE_SIZE) / TILE_SIZE)) : Math.abs(Math.round((x - ANCHOR_OFFSET) / TILE_SIZE));
-        console.log({i, j, x, y});
+    // getBubbleIndex(x, y) {        
+    //     let i = Math.abs(Math.round((y - ANCHOR_OFFSET) / TILE_SIZE));
+    //     let j = i % 2 === 0 ? Math.abs(Math.round((x - TILE_SIZE) / TILE_SIZE)) : Math.abs(Math.round((x - ANCHOR_OFFSET) / TILE_SIZE));
+    //     console.log({i, j, x, y});
 
-        // TODO: this won't work when adding stages with different col and rows
-        if(i === 0) i++;
-        if(i > ROWS - 1 - 2) i--;
-        if(j === 0) j++;
-        if(j === COLUMNS - 2 && i % 2 === 0) j--;
+    //     // TODO: this won't work when adding stages with different col and rows
+    //     if(i === 0) i++;
+    //     if(i > ROWS - 1 - 2) i--;
+    //     if(j === 0) j++;
+    //     if(j === COLUMNS - 2 && i % 2 === 0) j--;
 
-        return {i, j};
-    }
+    //     return {i, j};
+    // }
 
     createInitialLaunchBubbles() {     
         this.currentBubble = this.createRandomBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);

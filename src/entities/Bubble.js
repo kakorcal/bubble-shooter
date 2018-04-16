@@ -1,7 +1,6 @@
 class Bubble extends Phaser.Graphics {
     constructor(game, diameter, {fill, alpha, stroke, strokeWidth}) {
         super(game);    
-        //this.boundsPadding = 0;
         this.diameter = diameter;
         this.fill = fill;
         this.alpha = alpha;
@@ -24,6 +23,7 @@ class Bubble extends Phaser.Graphics {
         }
     }
     
+    // TODO
     addGradient(cb) {
         if(cb()) {
 

@@ -92,6 +92,7 @@ class Menu extends Phaser.State {
 
         if(state === 'newGame') {
             Player.clear();
+            this.game.player = new Player();
             state = 'play';
         }else if(state === 'continue') {
             state = 'play';
