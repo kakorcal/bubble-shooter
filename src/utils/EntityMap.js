@@ -1,5 +1,5 @@
 const EntityMap = {
-    EMPTY: null,
+    empty: null,
     zero: 0,
     // Colors
     COLOR_START: 1,

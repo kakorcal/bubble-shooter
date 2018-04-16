@@ -1,7 +1,13 @@
 import {AlphabetizedMap} from '../utils/EntityMap';
 
 let {_,a,b,c,d,e,f,g,h,i,o} = AlphabetizedMap;
-
+/* 
+    b=flame=red
+    f=solidBlack=purple
+    d=coin=green
+    e=star=yellow
+    i=block=gold
+*/
 export default [
     [i,0,i,i,i,i,i,i,b,i,i,i,i,i,i,0,i],
      [i,i,0,0,0,0,0,b,b,0,0,0,0,0,i,i,_],

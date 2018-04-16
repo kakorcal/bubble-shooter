@@ -14,7 +14,7 @@ import { EntityMap } from '../utils/EntityMap';
 class Play extends Phaser.State {
     preload() {
         this.round = new Round(this.game.player.currentRound, TILE_SIZE, ANCHOR_OFFSET);
-        
+
         // stats
         this.score = 0
         this.nowPlaying = false;
@@ -46,17 +46,17 @@ class Play extends Phaser.State {
         
 
 
-        // builders
-        // this.createTiles();
-        // this.createBoundaries();
-        // this.createLauncher();
-        // this.createStage();
-        // this.createScoreboard();
-        // this.createInitialLaunchBubbles();
-        // this.createOverlay();
+        // builder
+        this.createTiles();
+        this.createBoundaries();
+        this.createLauncher();
+        this.createStage();
+        this.createScoreboard();
+        this.createInitialLaunchBubbles();
+        this.createOverlay();
 
         // game logic
-        // this.pregame(this.startGame);
+        this.pregame(this.startGame);
 
         // events
         this.game.keySpace.onDown.add(this.launchBubble, this);
@@ -73,6 +73,7 @@ class Play extends Phaser.State {
 
     createBoundaries() {
         let topBoundarySprite = this.add.sprite(0, 0);
+        // TODO: use params from Round class
         this.topBoundary = topBoundarySprite.addChild(
             new Boundary(this.game,
                 { x1: TILE_SIZE, y1: SCOREBOARD_HEIGHT },
@@ -98,17 +99,39 @@ class Play extends Phaser.State {
         this.blocks.create(0 + ANCHOR_OFFSET, 0 + ANCHOR_OFFSET, 'block-1').scale.set(0.1, 0.1)
         this.blocks.create(0 + (TILE_SIZE * COLUMNS) / 2, 0 + ANCHOR_OFFSET, 'blocks-horizontal-1');
         this.blocks.create(CANVAS_WIDTH - ANCHOR_OFFSET, 0 + ANCHOR_OFFSET, 'block-1').scale.set(0.1, 0.1);
-
-        // right
-        this.blocks.create(CANVAS_WIDTH - ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
-
+        
         // bottom
         this.blocks.create(0 + ANCHOR_OFFSET, CANVAS_HEIGHT - ANCHOR_OFFSET, 'block-1').scale.set(0.1, 0.1)
         this.blocks.create(0 + (TILE_SIZE * COLUMNS) / 2, CANVAS_HEIGHT - ANCHOR_OFFSET, 'blocks-horizontal-1');
         this.blocks.create(CANVAS_WIDTH - ANCHOR_OFFSET, CANVAS_HEIGHT - ANCHOR_OFFSET, 'block-1').scale.set(0.1, 0.1);
 
-        // left
-        this.blocks.create(0 + ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
+        let blocksLength = (COLUMNS - this.round.cols) / 2;
+
+        if(Math.ceil(blocksLength) - blocksLength !== 0) {
+            blocksLength = Math.floor(blocksLength);
+            let blockOffset = ANCHOR_OFFSET / 2;
+
+            for (let i = 0; i < blocksLength; i++) {
+                // left
+                this.blocks.create((TILE_SIZE * i) + ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
+                // this.blocks.create((ANCHOR_OFFSET * i) + blockOffset, TILE_SIZE * ROWS / 2, 'blocks-vertical-half-1');
+                // right
+                this.blocks.create(CANVAS_WIDTH - (TILE_SIZE * i) - ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
+                // this.blocks.create(CANVAS_WIDTH - (ANCHOR_OFFSET * i) - blockOffset, TILE_SIZE * ROWS / 2, 'blocks-vertical-half-1');
+            }
+
+            // add half blocks
+            this.blocks.create((ANCHOR_OFFSET * blocksLength * 2) + blockOffset, TILE_SIZE * ROWS / 2, 'blocks-vertical-half-1');
+            this.blocks.create(CANVAS_WIDTH - (ANCHOR_OFFSET * blocksLength * 2) - blockOffset, TILE_SIZE * ROWS / 2, 'blocks-vertical-half-1');
+
+        }else {
+            for (let i = 0; i < blocksLength; i++) {
+                // left
+                this.blocks.create((TILE_SIZE * i) + ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
+                // right
+                this.blocks.create(CANVAS_WIDTH - (TILE_SIZE * i) - ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
+            }
+        }
 
         this.blocks.setAll('anchor', { x: 0.5, y: 0.5 });
         this.blocks.setAll('body.immovable', true);
@@ -125,8 +148,8 @@ class Play extends Phaser.State {
 
     createLauncher() {
         // polnareff
-        this.polnareff = this.add.sprite(CENTER_X - 75, CANVAS_HEIGHT + 2 - (2 * TILE_SIZE), 'polnareff-1', 0);
-        this.polnareff.scale.set(0.9, 0.9);
+        this.polnareff = this.add.sprite(CENTER_X - 72, CANVAS_HEIGHT + 6 - (2 * TILE_SIZE), 'polnareff-1', 0);
+        this.polnareff.scale.set(0.8, 0.8);
         this.polnareff.anchor.set(0.5, 0.5);
         this.polnareff.animations.add('bounce', [0, 1], 2, true);
         this.polnareff.animations.play('bounce'); 
@@ -148,11 +171,11 @@ class Play extends Phaser.State {
         this.launcherPlatform.height = 62;
         
         // next text
-        this.nextText = this.add.bitmapText(CENTER_X + 91, CANVAS_HEIGHT - LAUNCHER_HEIGHT + TILE_SIZE + 13, 'upheaval', 'NEXT', 25);
+        this.nextText = this.add.bitmapText(CENTER_X + 91, CANVAS_HEIGHT - LAUNCHER_HEIGHT + TILE_SIZE + 13, 'upheaval', 'NEXT', 20);
         this.nextText.anchor.set(0.5, 0.5);
 
         // speech bubble 
-        this.speechBubble = this.add.sprite(CENTER_X - 135, CANVAS_HEIGHT - LAUNCHER_HEIGHT + 12, 'speech-bubble-1');
+        this.speechBubble = this.add.sprite(CENTER_X - 118, CANVAS_HEIGHT - LAUNCHER_HEIGHT + 8, 'speech-bubble-1');
         this.speechBubble.scale.set(0.7, 0.7);
         this.speechBubble.alpha = 0;
     }
@@ -160,11 +183,13 @@ class Play extends Phaser.State {
     createStage() {
         this.bubbles = this.add.physicsGroup(Phaser.Physics.ARCADE, this.world, "bubbles");
 
-        for(let i = 0; i < round1.length; i++) {
-            for(let j = 0; j < round1[i].length; j++) {
-                let colorCode = round1[i][j];
-                if (colorCode === EntityMap.zero || colorCode === EntityMap.block) continue;
-                let { x, y } = this.getBubbleCoordinate(i, j);                
+        for(let i = 0; i < this.round.matrix.length; i++) {
+            for(let j = 0; j < this.round.matrix[i].length; j++) {
+                let colorCode = this.round.matrix[i][j];
+                if (colorCode === EntityMap.zero || 
+                    colorCode === EntityMap.empty || 
+                    colorCode === EntityMap.block) continue;
+                let { x, y } = this.round.getCoordinates(i, j);                
                 this.createBubble(x, y, colorCode, this.bubbles);
             }
         }        
@@ -172,27 +197,6 @@ class Play extends Phaser.State {
         this.bubbles.setAll('body.immovable', true);
         this.bubbles.setAll('body.allowGravity', false);
     }
-
-    // getBubbleCoordinate(i, j) {        
-    //     let x = i % 2 === 0 ? j * TILE_SIZE + TILE_SIZE : j * TILE_SIZE + ANCHOR_OFFSET;
-    //     let y = i * TILE_SIZE + ANCHOR_OFFSET;
-    //     // console.log({x, y, i, j});
-    //     return {x, y};
-    // }
-
-    // getBubbleIndex(x, y) {        
-    //     let i = Math.abs(Math.round((y - ANCHOR_OFFSET) / TILE_SIZE));
-    //     let j = i % 2 === 0 ? Math.abs(Math.round((x - TILE_SIZE) / TILE_SIZE)) : Math.abs(Math.round((x - ANCHOR_OFFSET) / TILE_SIZE));
-    //     console.log({i, j, x, y});
-
-    //     // TODO: this won't work when adding stages with different col and rows
-    //     if(i === 0) i++;
-    //     if(i > ROWS - 1 - 2) i--;
-    //     if(j === 0) j++;
-    //     if(j === COLUMNS - 2 && i % 2 === 0) j--;
-
-    //     return {i, j};
-    // }
 
     createInitialLaunchBubbles() {     
         this.currentBubble = this.createRandomBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);

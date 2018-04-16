@@ -4,7 +4,7 @@ class Round {
     constructor(round) {
         this.matrix = require(`../rounds/${round}`).default;
         
-        if(matrix.length && matrix[0].length) {
+        if(this.matrix.length && this.matrix[0].length) {
             this.rows = this.matrix.length;
             this.cols = this.matrix[0].length;
 
@@ -27,24 +27,24 @@ class Round {
     }
 
     getCoordinates(i, j) {
-        if(!i || !j || i < 0 || j < 0) return;
+        if(i < 0 || j < 0) return;
 
         // add extra offset to shift the row that has one less space
         let xOffset = this.matrix[i][this.cols - 1] === null ? ANCHOR_OFFSET : 0;
         
         // get the x,y coord of the bubble with respect to its center
-        let x = this.startX + (j * (TILE_SIZE + ANCHOR_OFFSET)) + xOffset;
-        let y = this.startY + (i * (TILE_SIZE + ANCHOR_OFFSET));
+        let x = (this.startX + ANCHOR_OFFSET) + (j * TILE_SIZE) + xOffset;
+        let y = (this.startY + ANCHOR_OFFSET) + (i * TILE_SIZE);
 
         return {x, y};
     }
 
     getIndices(x, y) {
-        if(!x || !y || x < 0 || y < 0) return;
+        if(x < 0 || y < 0) return;
 
-        let i = Math.round((y - this.startY) / (TILE_SIZE + ANCHOR_OFFSET));
+        let i = Math.round((y - this.startY - ANCHOR_OFFSET) / (TILE_SIZE));
         let xOffset = this.matrix[i][this.cols - 1] === null ? ANCHOR_OFFSET : 0;
-        let j = Math.round((x - this.startX - xOffset) / (TILE_SIZE + ANCHOR_OFFSET));
+        let j = Math.round((x - this.startX - ANCHOR_OFFSET - xOffset) / (TILE_SIZE));
 
         return {i, j};
     }
