@@ -158,20 +158,13 @@ class Play extends Phaser.State {
 
         for(let i = 0; i < round1.length; i++) {
             for(let j = 0; j < round1[i].length; j++) {
-                let value = round1[i][j];
-                if(value === EntityMap.zero) continue;
-                let coord = this.getBubbleCoordinate(i, j);                
-                let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[EntityMap.colors[value]]);
-                let bubbleSprite = this.add.sprite(coord.x, coord.y, null, null, this.bubbles);
-                // this.getBubbleIndex(coord.x, coord.y);
-                bubbleGraphic.addDot(() => value === EntityMap.gold);
-                bubbleSprite.addChild(bubbleGraphic);
-                bubbleSprite.body.setSize(BUBBLE_PHYSICS_SIZE, BUBBLE_PHYSICS_SIZE);
+                let colorCode = round1[i][j];
+                if (colorCode === EntityMap.zero) continue;
+                let { x, y } = this.getBubbleCoordinate(i, j);                
+                this.createBubble(x, y, colorCode, this.bubbles);
             }
         }        
 
-        this.bubbles.setAll('anchor', { x: 0.5, y: 0.5 });
-        this.bubbles.setAll('scale', { x: 0.9, y: 0.9 });
         this.bubbles.setAll('body.immovable', true);
         this.bubbles.setAll('body.allowGravity', false);
     }
@@ -179,14 +172,14 @@ class Play extends Phaser.State {
     getBubbleCoordinate(i, j) {        
         let x = i % 2 === 0 ? j * TILE_SIZE + TILE_SIZE : j * TILE_SIZE + ANCHOR_OFFSET;
         let y = i * TILE_SIZE + ANCHOR_OFFSET;
-        console.log({x, y, i, j});
+        // console.log({x, y, i, j});
         return {x, y};
     }
 
     getBubbleIndex(x, y) {        
         let i = Math.abs(Math.round((y - ANCHOR_OFFSET) / TILE_SIZE));
         let j = i % 2 === 0 ? Math.abs(Math.round((x - TILE_SIZE) / TILE_SIZE)) : Math.abs(Math.round((x - ANCHOR_OFFSET) / TILE_SIZE));
-        console.log({i, j, x, y});
+        // console.log({i, j, x, y});
         return {i, j};
     }
 
@@ -195,26 +188,33 @@ class Play extends Phaser.State {
         this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
     }
 
-    createRandomBubble(x, y) {
-        let randomColor = this.getRandomBubbleColor();
-        let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[randomColor]);
-        let bubble = this.add.sprite(x, y, null);
+    createBubble(x, y, colorCode, group) {
+        let color = EntityMap.colors[colorCode];
+        let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[color]);
+        let bubble = this.add.sprite(x, y, null, null, group);
+        bubbleGraphic.addDot(() => colorCode === EntityMap.gold);
         bubble.addChild(bubbleGraphic);
         bubble.scale.set(0.9, 0.9);
         bubble.anchor.set(0.5, 0.5);
-        bubble.colorCode = EntityMap[randomColor];
+        bubble.colorCode = colorCode;
+
         // physics
         this.physics.enable(bubble, Phaser.Physics.ARCADE);
         bubble.body.setSize(BUBBLE_PHYSICS_SIZE, BUBBLE_PHYSICS_SIZE);
         bubble.body.bounce.set(1);
+
         return bubble;
     }
 
-    getRandomBubbleColor() {
+    createRandomBubble(x, y, group) {
+        let randomColorCode = this.getRandomBubbleCode();
+        return this.createBubble(x, y, randomColorCode, group);
+    }
+
+    getRandomBubbleCode() {
         let min = EntityMap.BUBBLE_START;
         let max = EntityMap.BUBBLE_END;
-        let random = Math.floor(Math.random() * (max - min) + min);
-        return EntityMap.colors[random];
+        return Math.floor(Math.random() * (max - min) + min);
     }
 
     createOverlay() {
@@ -272,14 +272,6 @@ class Play extends Phaser.State {
                 // https://phaser.io/docs/2.4.4/Phaser.Physics.Arcade.html#velocityFromRotation
                 // need to subtract 90 to get the coordinates adjusted
                 this.arrow.angle - 90, 330, this.currentBubble.body.velocity);
-
-            // detect collision
-
-            // replenish bubble
-            // this.bubbles.add(this.currentBubble);            
-            // this.nextBubble.position.set(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
-            // this.currentBubble = this.nextBubble;
-            // this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
         }
     }
 
@@ -304,62 +296,31 @@ class Play extends Phaser.State {
     }
 
     handleCollision() {
-        this.physics.arcade.collide(this.currentBubble, this.blocks, null, null, this);
-        if(this.physics.arcade.overlap(this.currentBubble, this.bubbles, this.snapToGrid, null, this)) {
-            let curx = this.currentBubble.x;
-            let cury = this.currentBubble.y;
-            console.log(this.currentBubble);
-            let { i, j } = this.getBubbleIndex(curx, cury);
-
-            if (round1[i][j] === 0) {
-                let { x, y } = this.getBubbleCoordinate(i, j);
-                console.log('SNAP');
-                console.log(x + ' ' + y);
-                round1[i][j] = this.currentBubble.colorCode;
-                
-                let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[EntityMap.colors[this.currentBubble.colorCode]]);
-                let bubble = this.add.sprite(x, y, null);
-                bubble.addChild(bubbleGraphic);
-                bubble.scale.set(0.9, 0.9);
-                bubble.anchor.set(0.5, 0.5);
-                this.bubbles.add(bubble);
-
-                this.currentBubble.destroy();
-
-                console.log(this.currentBubble);
-
-                this.currentBubble = this.nextBubble;
-
-                console.log(this.currentBubble);
-
-                this.currentBubble.x = CURRENT_BUBBLE_X;
-                this.currentBubble.y = CURRENT_BUBBLE_Y;
-
-                this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
-            }
-        }
+        let blockCollision = this.physics.arcade.collide(this.currentBubble, this.blocks);
+        let bubbleCollision = this.physics.arcade.overlap(this.currentBubble, this.bubbles);
+        if(bubbleCollision) this.snapToGrid();
     }
 
     snapToGrid() {
-        this.currentBubble.body.velocity.x = 0;
-        this.currentBubble.body.velocity.y = 0;
+        let curx = this.currentBubble.x;
+        let cury = this.currentBubble.y;
+        let { i, j } = this.getBubbleIndex(curx, cury);
 
-        // let curx = this.currentBubble.x;
-        // let cury = this.currentBubble.y;
-        // console.log(this.currentBubble);
-        // let {i, j} = this.getBubbleIndex(curx, cury);
+        if (round1[i][j] === 0) {
+            let { x, y } = this.getBubbleCoordinate(i, j);
+            round1[i][j] = this.currentBubble.colorCode;
+            console.log('SNAPING TO x: ' + x + ' y: ' + y);
+            this.createBubble(x, y, this.currentBubble.colorCode, this.bubbles);
 
-        // if(round1[i][j] === 0) {
-        //     let {x, y} = this.getBubbleCoordinate(i, j);
-        //     console.log('SNAP');
-        //     console.log(x + ' ' + y);
-        //     // this.currentBubble.kill();
+            this.currentBubble.body.velocity.x = 0;
+            this.currentBubble.body.velocity.y = 0;
+            this.currentBubble.destroy();
 
-        //     this.currentBubble.x = x;
-        //     this.currentBubble.y = y;
-        //     // console.log(this.currentBubble);
-        //     round1[i][j] = this.currentBubble.colorCode;
-        // }
+            this.currentBubble = this.nextBubble;
+            this.currentBubble.x = CURRENT_BUBBLE_X;
+            this.currentBubble.y = CURRENT_BUBBLE_Y;
+            this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
+        }
     }
 
     shutdown() {
