@@ -17,7 +17,7 @@ class Round {
 
             if(this.cols === 8) {
                 this.startX = (5 * TILE_SIZE) + ANCHOR_OFFSET;
-                this.endX = CANVAS_WIDTH - (5 * TILE_SIZE) + ANCHOR_OFFSET;
+                this.endX = CANVAS_WIDTH - (5 * TILE_SIZE) - ANCHOR_OFFSET;
                 this.startY = TILE_SIZE;
                 this.endY = CANVAS_HEIGHT - LAUNCHER_HEIGHT;
             }

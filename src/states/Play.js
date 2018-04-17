@@ -53,7 +53,7 @@ class Play extends Phaser.State {
         this.createStage();
         this.createScoreboard();
         this.createInitialLaunchBubbles();
-        this.createOverlay();
+        this.createOverlay('READY');
 
         // game logic
         this.pregame(this.startGame);
@@ -72,24 +72,34 @@ class Play extends Phaser.State {
     }
 
     createBoundaries() {
-        let topBoundarySprite = this.add.sprite(0, 0);
-        // TODO: use params from Round class
-        this.topBoundary = topBoundarySprite.addChild(
+        this.topBoundary = this.add.sprite(0, 0);
+        this.topBoundary.addChild(
             new Boundary(this.game,
-                { x1: TILE_SIZE, y1: SCOREBOARD_HEIGHT },
-                { x2: CANVAS_WIDTH - TILE_SIZE, y2: SCOREBOARD_HEIGHT },
+                { x1: this.round.startX, y1: this.round.startY },
+                { x2: this.round.endX, y2: this.round.startY },
                 Colors.skyBlue
             )
         );
 
-        let bottomBoundarySprite = this.add.sprite(0, 0);
-        this.bottomBoundary = bottomBoundarySprite.addChild(
+        this.bottomBoundary = this.add.sprite(0, 0);
+        this.bottomBoundary.addChild(
             new Boundary(this.game,
-                { x1: TILE_SIZE, y1: CANVAS_HEIGHT - LAUNCHER_HEIGHT },
-                { x2: CANVAS_WIDTH - TILE_SIZE, y2: CANVAS_HEIGHT - LAUNCHER_HEIGHT },
+                { x1: this.round.startX, y1: this.round.endY },
+                { x2: this.round.endX, y2: this.round.endY },
                 Colors.skyBlue
             )
         );
+
+        this.physics.enable(this.topBoundary, Phaser.Physics.ARCADE);
+        this.topBoundary.body.immovable = true;
+        this.topBoundary.body.allowGravity = false;
+        this.topBoundary.body.setSize(CANVAS_WIDTH, 31);
+
+        // this.physics.enable(this.bottomBoundary, Phaser.Physics.ARCADE);
+        // this.bottomBoundary.body.immovable = true;
+        // this.bottomBoundary.body.allowGravity = false;
+        // this.bottomBoundary.body.setSize(CANVAS_WIDTH, 31);
+
         // move boundary by => boundary.x += val;
 
         // blocks
@@ -188,7 +198,8 @@ class Play extends Phaser.State {
                 let colorCode = this.round.matrix[i][j];
                 if (colorCode === EntityMap.zero || 
                     colorCode === EntityMap.empty || 
-                    colorCode === EntityMap.block) continue;
+                    colorCode === EntityMap.block ||
+                    colorCode === EntityMap.outOfBounds) continue;
                 let { x, y } = this.round.getCoordinates(i, j);  
                 this.round.getIndices(x,y);
                 this.createBubble(x, y, colorCode, this.bubbles);
@@ -233,14 +244,19 @@ class Play extends Phaser.State {
         return Math.floor(Math.random() * (max - min) + min);
     }
 
-    createOverlay() {
+    createOverlay(message) {
         this.overlay = this.add.graphics(0, 0);
         this.overlay.beginFill(0x000000);
         this.overlay.drawRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         this.overlay.alpha = 0.3;
 
-        this.readyGoText = this.add.bitmapText(CENTER_X, CENTER_Y, 'upheaval', 'READY', 30);
-        this.readyGoText.anchor.set(0.5, 0.5);
+        this.message = this.add.bitmapText(CENTER_X, CENTER_Y, 'upheaval', message, 30);
+        this.message.anchor.set(0.5, 0.5);
+    }
+
+    removeOverlay() {
+        this.overlay.destroy();
+        this.message.destroy();
     }
 
     // add 'ready go' text before starting the game.
@@ -253,7 +269,7 @@ class Play extends Phaser.State {
             let pregameTimer2 = this.time.create(true);
             pregameTimer2.add(Phaser.Timer.SECOND * 1.7, cb, this);
             pregameTimer2.start();
-            this.readyGoText.setText('GO');
+            this.message.setText('GO');
         }, this);
 
         pregameTimer1.start();
@@ -262,15 +278,18 @@ class Play extends Phaser.State {
     // remove overlay, starts timer, setups stats, enable input
     startGame() {
         console.log('NOW PLAYING...');
-        this.overlay.destroy();
-        this.readyGoText.destroy();
         this.nowPlaying = true;
-        this.gameloop();    
+        this.removeOverlay();
     }
 
-    // add 
-    gameloop() {
+    win() {
+        console.log('GAME OVER PLAYER WINS...');
+    }
 
+    lose() {
+        console.log('GAME OVER PLAYER LOSES...');
+        this.nowPlaying = false;
+        this.createOverlay('GAME OVER');
     }
 
     update() {
@@ -312,9 +331,11 @@ class Play extends Phaser.State {
     }
 
     handleCollision() {
-        let blockCollision = this.physics.arcade.collide(this.currentBubble, this.blocks);
-        let bubbleCollision = this.physics.arcade.collide(this.currentBubble, this.bubbles);
-        if(bubbleCollision) {
+        let blockCollision = this.physics.arcade.collide(this.currentBubble, this.blocks, () => console.log('BLOCK COLLISION'), null, this);
+        let topBoundaryCollsion = this.physics.arcade.collide(this.currentBubble, this.topBoundary, () => console.log('TOP BOUNDARY COLLISION'), null, this);
+        let bubbleCollision = this.physics.arcade.collide(this.currentBubble, this.bubbles, () => console.log('BUBBLE COLLISION'), null, this);
+
+        if (topBoundaryCollsion || bubbleCollision) {
             this.snapToGrid();
             this.checkCluster();
         }
@@ -326,35 +347,39 @@ class Play extends Phaser.State {
         let { i, j } = this.round.getIndices(curx, cury);
         console.log('INDICES FOUND i: ' + i + ' j: ' + j);
 
-        // adjustments for empty spaces
-        if (this.round.matrix[i][j] === EntityMap.empty) {
-            console.log('MATRIX EMPTY: adjusting j position');
-            j -= 1;
-
-            if(this.round.matrix[i][j] !== EntityMap.zero) {
-                console.log('MATRIX FILLED: adjusting i and j position');
-                i += 1;
-                j += 1;
+        if (this.round.matrix[i][j] === EntityMap.outOfBounds) {
+            this.lose();
+        }else {
+            // adjustments for empty spaces
+            if (this.round.matrix[i][j] === EntityMap.empty) {
+                console.log('MATRIX EMPTY: adjusting j position');
+                j -= 1;
+    
+                if(this.round.matrix[i][j] !== EntityMap.zero) {
+                    console.log('MATRIX FILLED: adjusting i and j position');
+                    i += 1;
+                    j += 1;
+                }
             }
-        }
-
-        if (this.round.matrix[i][j] === EntityMap.zero) {
-            let { x, y } = this.round.getCoordinates(i, j);
-            console.log('SNAPING TO x: ' + x + ' y: ' + y + ' i: ' + i + ' j: ' + j);
-
-            let newBubble = this.createBubble(x, y, this.currentBubble.colorCode, this.bubbles);
-            this.round.matrix[i][j] = this.currentBubble.colorCode;
-            newBubble.body.immovable = true;
-            newBubble.body.allowGravity = false;
-
-            this.currentBubble.body.velocity.x = 0;
-            this.currentBubble.body.velocity.y = 0;
-            this.currentBubble.destroy();
-
-            this.currentBubble = this.nextBubble;
-            this.currentBubble.x = CURRENT_BUBBLE_X;
-            this.currentBubble.y = CURRENT_BUBBLE_Y;
-            this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
+    
+            if (this.round.matrix[i][j] === EntityMap.zero) {
+                let { x, y } = this.round.getCoordinates(i, j);
+                console.log('SNAPING TO x: ' + x + ' y: ' + y + ' i: ' + i + ' j: ' + j);
+    
+                let newBubble = this.createBubble(x, y, this.currentBubble.colorCode, this.bubbles);
+                this.round.matrix[i][j] = this.currentBubble.colorCode;
+                newBubble.body.immovable = true;
+                newBubble.body.allowGravity = false;
+    
+                this.currentBubble.body.velocity.x = 0;
+                this.currentBubble.body.velocity.y = 0;
+                this.currentBubble.destroy();
+    
+                this.currentBubble = this.nextBubble;
+                this.currentBubble.x = CURRENT_BUBBLE_X;
+                this.currentBubble.y = CURRENT_BUBBLE_Y;
+                this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
+            }
         }
     }
 
