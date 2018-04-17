@@ -21,7 +21,7 @@ class Play extends Phaser.State {
         this.roundComplete = false;
         this.gameover = false;
         this.paused = false;
-        this.time = 0;
+        this.timeCompleted = 0;
         this.bonus = 0;
         this.launchCountdown = 10;
     }

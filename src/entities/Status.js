@@ -1,4 +1,4 @@
-class Status extends Phaser.State {
+class Status extends Phaser.Group {
     constructor() {
 
     }
