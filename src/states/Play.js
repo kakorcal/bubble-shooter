@@ -338,6 +338,16 @@ class Play extends Phaser.State {
         let { i, j } = this.round.getIndices(curx, cury);
         console.log('INDICES FOUND i: ' + i + ' j: ' + j);
 
+        if(i < 0) {
+            console.log('NEGATIVE INDEX: adjusting i sign');
+            i = 0;
+        }
+
+        if(j < 0) {
+            console.log('NEGATIVE INDEX: adjusting j sign');
+            j = 0;
+        }
+
         if (this.round.matrix[i][j] === EntityMap.outOfBounds) {
             this.lose();
         }else {
