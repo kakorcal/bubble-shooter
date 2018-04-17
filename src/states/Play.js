@@ -304,16 +304,16 @@ class Play extends Phaser.State {
     handleCursorInput() {
         if (this.game.keyLeft.isDown) {
             if (this.arrow.angle >= -MAX_ARROW_RANGE) {
-                this.arrow.angle -= 1.4;
-                this.launcherWheel.angle -= 1.4;
+                this.arrow.angle -= 1.2;
+                this.launcherWheel.angle -= 1.2;
             } else {
                 this.arrow.angle = -MAX_ARROW_RANGE;
                 this.launcherWheel.angle = -MAX_ARROW_RANGE;
             }
         } else if (this.game.keyRight.isDown) {
             if (this.arrow.angle <= MAX_ARROW_RANGE) {
-                this.arrow.angle += 1.4;
-                this.launcherWheel.angle += 1.4;
+                this.arrow.angle += 1.2;
+                this.launcherWheel.angle += 1.2;
             } else {
                 this.arrow.angle = MAX_ARROW_RANGE;
                 this.launcherWheel.angle = MAX_ARROW_RANGE;
