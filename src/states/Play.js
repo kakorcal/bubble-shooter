@@ -13,7 +13,7 @@ import { EntityMap } from '../utils/EntityMap';
 
 class Play extends Phaser.State {
     preload() {
-        this.round = new Round(this.game.player.currentRound, TILE_SIZE, ANCHOR_OFFSET);
+        this.round = new Round(this.game.player.currentRound.level, TILE_SIZE, ANCHOR_OFFSET);
 
         // stats
         this.score = 0
@@ -21,31 +21,12 @@ class Play extends Phaser.State {
         this.roundComplete = false;
         this.gameover = false;
         this.paused = false;
-        this.playTime = 0;
+        this.time = 0;
+        this.bonus = 0;
         this.launchCountdown = 10;
     }
 
-    create() {
-        // TODO: need to parametize the stat values
-        /* 
-            STATE FLOW:
-            player plays
-                if win
-                    if win all
-                        goto congradulation state
-                    else
-                        restart state with updated stats
-                if lose
-                    goto continue state
-                        if continue
-                            goto play state
-                        else
-                            save stats to localStorage
-                            goto menu state
-        */
-        
-
-
+    create() {       
         // builder
         this.createTiles();
         this.createBoundaries();
@@ -265,9 +246,9 @@ class Play extends Phaser.State {
         // create a one-off timers that autodestroys itself
         // TODO: maybe use async await / yield / promises?
         let pregameTimer1 = this.time.create(true);
-        pregameTimer1.add(Phaser.Timer.SECOND * 1.7, () => {
+        pregameTimer1.add(Phaser.Timer.SECOND * 1.5, () => {
             let pregameTimer2 = this.time.create(true);
-            pregameTimer2.add(Phaser.Timer.SECOND * 1.7, cb, this);
+            pregameTimer2.add(Phaser.Timer.SECOND * 1.5, cb, this);
             pregameTimer2.start();
             this.message.setText('GO');
         }, this);
@@ -284,12 +265,22 @@ class Play extends Phaser.State {
 
     win() {
         console.log('GAME OVER PLAYER WINS...');
+        this.nowPlaying = false;
+        this.createOverlay('YOU WIN!!!');
+    }
+
+    winAll() {
+
     }
 
     lose() {
         console.log('GAME OVER PLAYER LOSES...');
         this.nowPlaying = false;
-        this.createOverlay('GAME OVER');
+        this.createOverlay('YOU LOSE');
+    }
+
+    gameover() {
+
     }
 
     update() {

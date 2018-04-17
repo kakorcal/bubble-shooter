@@ -4,7 +4,6 @@ import {ROWS, COLUMNS, TILE_SIZE, CANVAS_HEIGHT, CENTER_X, CENTER_Y} from '../ut
 class Menu extends Phaser.State {
     create() {
         // TODO: https://stackoverflow.com/questions/39152877/consider-marking-event-handler-as-passive-to-make-the-page-more-responsive
-        // TODO: check localStorage for stats and add continue option if it exists
         this.createTiles();
         this.createLogo();
         this.createNavigation();
