@@ -209,7 +209,6 @@ class Play extends Phaser.State {
                     }
                 }else {
                     let { x, y } = this.round.getCoordinates(i, j);  
-                    this.round.getIndices(x,y);
                     this.createBubble(x, y, colorCode, this.bubbles);
                 }
             }
@@ -220,14 +219,7 @@ class Play extends Phaser.State {
     }
 
     createBubble(x, y, colorCode, group) {
-        let color = EntityMap.colors[colorCode];
-        let bubbleGraphic = new Bubble(this.game, TILE_SIZE, Colors[color]);
-        let bubble = this.add.sprite(x, y, null, null, group);
-        bubbleGraphic.addDot(() => colorCode === EntityMap.gold);
-        bubble.addChild(bubbleGraphic);
-        bubble.scale.set(0.9, 0.9);
-        bubble.anchor.set(0.5, 0.5);
-        bubble.colorCode = colorCode;
+        let bubble = new Bubble(this.game, TILE_SIZE, x, y, colorCode, group);
 
         // physics
         this.physics.enable(bubble, Phaser.Physics.ARCADE);
@@ -387,7 +379,6 @@ class Play extends Phaser.State {
 
         if (topBoundaryCollsion || bubbleCollision) {
             this.snapToGrid();
-            this.checkCluster();
             this.updateTopBoundary();
         }
     }
@@ -441,11 +432,38 @@ class Play extends Phaser.State {
                 this.currentBubble.x = CURRENT_BUBBLE_X;
                 this.currentBubble.y = CURRENT_BUBBLE_Y;
                 this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
+
+                this.removeMatchingBubbles(i, j);
             }
         }
     }
 
-    checkCluster() {
+    removeMatchingBubbles(i, j) {
+        console.log(this.bubbles);
+        
+        // // start from the currentBubble indices
+        // let currentBubble = this.round.matrix[i][j];
+    
+        // // check neighbors
+        // let matches = this.checkNeighbors(i, j);
+
+        // // for each removeArr set matrix entry to 0
+
+        // // remove from this.bubbles (include points, animation, and soundfx)
+    }
+
+    // returns all matching indices, including floating indices
+    checkNeighbors(i, j) {
+        // // bubble {i, j, points, type, visited}
+        // let queue = [];
+        // let bubbles = {};
+        
+        // while(queue.length) {
+        //     let currentBubble = queue.shift();
+        //     // add to queue
+
+        // }
+
 
     }
 
