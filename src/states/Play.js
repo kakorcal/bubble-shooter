@@ -280,8 +280,8 @@ class Play extends Phaser.State {
 
         this.status = new Status(this.game,
             { fill: 0x00000 },
-            {x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU LOSE', fontSize: 45},
-            {x: CENTER_X + 10, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 50,
+            { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU LOSE', fontSize: 45},
+            { x: CENTER_X + 10, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 50,
              message: { time: 20, score: 1000, bonus: 122}}
         );  
         
@@ -439,32 +439,99 @@ class Play extends Phaser.State {
     }
 
     removeMatchingBubbles(i, j) {
-        console.log(this.bubbles);
+        // remove bubbles connected to target
+        // identify floating bubbles
+        // partition by colorCode
         
         // // start from the currentBubble indices
-        // let currentBubble = this.round.matrix[i][j];
-    
-        // // check neighbors
-        // let matches = this.checkNeighbors(i, j);
+        let targetColor = this.round.matrix[i][j];
+        let target = this.round.getBubbleHash(i, j);        
+        let matches = new Set();
+        let queue = [target];
+        
+        while (queue.length) {
+            let current = queue.shift();
+            matches.add(current);
+
+            let neighbors = this.getNeighbors(this.round.fromBubbleHash(current));
+
+            neighbors.forEach(hash => {
+                let bubble = this.round.fromBubbleHash(hash);
+                if (bubble.colorCode === targetColor && !matches.has(hash)) {
+                    queue.push(hash);
+                }
+            });
+        }
+
+        if(matches.size > 2) {
+            // find floats
+            matches.forEach(hash => {
+                let bubble = this.round.fromBubbleHash(hash);
+                let {indices} = bubble;
+                this.round.matrix[indices.i][indices.j] = EntityMap.zero;
+            });
+            this.bubbles.destroy();
+            this.createStage();
+        }
 
         // // for each removeArr set matrix entry to 0
 
         // // remove from this.bubbles (include points, animation, and soundfx)
     }
 
-    // returns all matching indices, including floating indices
-    checkNeighbors(i, j) {
+    // return array of adjacent bubbles
+    getNeighbors(bubble) {
         // // bubble {i, j, points, type, visited}
-        // let queue = [];
-        // let bubbles = {};
-        
-        // while(queue.length) {
-        //     let currentBubble = queue.shift();
-        //     // add to queue
+        let {indices, colorCode} = bubble;
+        let {i, j} = indices;
+        let neighbors = [];
 
-        // }
+        // left
+        if(this.round.isBubble(i, j-1)) {
+            neighbors.push(this.round.getBubbleHash(i, j-1));
+        }
 
+        // right
+        if(this.round.isBubble(i, j+1)) {
+            neighbors.push(this.round.getBubbleHash(i, j+1));
+        }
 
+        if(this.round.isSmallRow(i)) {
+            // top left
+            if (this.round.isBubble(i-1, j)) {
+                neighbors.push(this.round.getBubbleHash(i-1, j));
+            }
+            // top right
+            if (this.round.isBubble(i-1, j+1)) {
+                neighbors.push(this.round.getBubbleHash(i-1, j+1));
+            }
+            // bottom left
+            if (this.round.isBubble(i+1, j)) {
+                neighbors.push(this.round.getBubbleHash(i+1, j));
+            }
+            // bottom right
+            if (this.round.isBubble(i+1, j+1)) {
+                neighbors.push(this.round.getBubbleHash(i+1, j+1));
+            }
+        }else {
+            // top left
+            if (this.round.isBubble(i-1, j-1)) {
+                neighbors.push(this.round.getBubbleHash(i-1, j-1));
+            }
+            // top right
+            if (this.round.isBubble(i-1, j)) {
+                neighbors.push(this.round.getBubbleHash(i-1, j));
+            }
+            // bottom left
+            if (this.round.isBubble(i+1, j-1)) {
+                neighbors.push(this.round.getBubbleHash(i+1, j-1));
+            }
+            // bottom right
+            if (this.round.isBubble(i+1, j)) {
+                neighbors.push(this.round.getBubbleHash(i+1, j));
+            }
+        }
+        return neighbors;
     }
 
     updateTopBoundary() {

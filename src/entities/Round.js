@@ -74,6 +74,28 @@ class Round {
 
         return validMatrix;
     }
+
+    getBubbleHash(i, j) {
+        return `${i}_${j}`;
+    }
+
+    fromBubbleHash(hash) {
+        let bubble = {};
+        let [i, j] = hash.split('_');
+        i = parseInt(i);
+        j = parseInt(j);
+        bubble.indices = { i, j };
+        bubble.colorCode = this.matrix[i][j];
+        return bubble;
+    }
+
+    isBubble(i, j) {
+        return this.matrix[i][j] >= EntityMap.BUBBLE_START && this.matrix[i][j] <= EntityMap.BUBBLE_END;
+    }
+
+    isSmallRow(i) {
+        return this.matrix[i][this.cols - 1] === null;
+    }
 }
 
 export default Round;

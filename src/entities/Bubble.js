@@ -1,6 +1,7 @@
 import { EntityMap } from '../utils/EntityMap';
 import { Colors } from '../utils/Colors';
 
+// TODO: attach props to .data to prevent overwrite
 class Bubble extends Phaser.Sprite {
     constructor(game, diameter, x, y, colorCode, group) {
         super(game, x, y);
