@@ -9,8 +9,10 @@ import Bubble from '../entities/Bubble';
 import Boundary from '../entities/Boundary';
 import Round from '../entities/Round';
 import Status from '../entities/Status';
+import Navigation from '../entities/Navigation';
 import { Colors } from '../utils/Colors';
 import { EntityMap } from '../utils/EntityMap';
+import { getRandomInteger } from '../utils/Helpers';
 
 class Play extends Phaser.State {
     preload() {
@@ -24,11 +26,11 @@ class Play extends Phaser.State {
         this.timeCompleted = 0;
         this.bonus = 0;
         this.launchCountdown = 10;
+        this.navigation = null;
+        this.round = new Round(this.game.player.currentRound.level, TILE_SIZE, ANCHOR_OFFSET);
     }
 
     create() {       
-        this.round = new Round(this.game.player.currentRound.level, TILE_SIZE, ANCHOR_OFFSET);
-
         // builder
         this.createTiles();
         this.createBoundaries();
@@ -37,15 +39,11 @@ class Play extends Phaser.State {
         this.createScoreboard();
         this.createInitialLaunchBubbles();
 
-        this.status = new Status(this.game);
-        this.createStatusOverlay(
-            { fill: 0x00000 },
-            { 
-                x: CENTER_X, y: CENTER_Y, font: 'upheaval', message: 'READY', fontSize: 30 
-            }
-        );   
-
         // game logic
+        this.status = new Status(this.game,
+            { fill: 0x00000 },
+            { x: CENTER_X, y: CENTER_Y, font: 'upheaval', message: 'READY', fontSize: 30 }
+        );
         this.pregame(this.startGame);
 
         // events
@@ -87,11 +85,6 @@ class Play extends Phaser.State {
         this.topBoundary.body.immovable = true;
         this.topBoundary.body.allowGravity = false;
         this.topBoundary.body.setSize(CANVAS_WIDTH, 31);
-
-        // this.physics.enable(this.bottomBoundary, Phaser.Physics.ARCADE);
-        // this.bottomBoundary.body.immovable = true;
-        // this.bottomBoundary.body.allowGravity = false;
-        // this.bottomBoundary.body.setSize(CANVAS_WIDTH, 31);
 
         // move boundary by => boundary.x += val;
 
@@ -226,21 +219,10 @@ class Play extends Phaser.State {
     }
 
     createRandomBubble(x, y, group) {
-        let randomColorCode = this.getRandomBubbleCode();
-        return this.createBubble(x, y, randomColorCode, group);
-    }
-
-    createStatusOverlay(overlayConfig, headerConfig, statsConfig, navigationConfig) {
-        if(overlayConfig) this.status.overlay = this.status.createOverlay(overlayConfig);
-        if(headerConfig) this.status.header = this.status.createHeader(headerConfig);
-        if(statsConfig) this.status.stats = this.status.createStats(statsConfig);
-        if(navigationConfig) this.status.navigation = this.status.createNavigation(navigationConfig);
-    }
-
-    getRandomBubbleCode() {
         let min = EntityMap.BUBBLE_START;
         let max = EntityMap.BUBBLE_END;
-        return Math.floor(Math.random() * (max - min) + min);
+        let randomColorCode = getRandomInteger(min, max);
+        return this.createBubble(x, y, randomColorCode, group);
     }
 
     // add 'ready go' text before starting the game.
@@ -279,25 +261,20 @@ class Play extends Phaser.State {
     lose() {
         console.log('GAME OVER PLAYER LOSES...');
         this.nowPlaying = false;
-        this.createStatusOverlay(
-            { fill: 0x00000 },
-            {
-                x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU LOSE', fontSize: 45
-            },
-            {
-                x: CENTER_X + 10, y: CENTER_Y, font: 'upheaval', fontSize: 30, distance: 50,
-                message: { time: 20, score: 1000, bonus: 122}
-            },
-            {
-                items: [
-                    { name: 'CONTINUE', stateName: 'play', font: 'upheaval', fontSize: 30 },
-                    { name: 'QUIT', stateName: 'menu', font: 'upheaval', fontSize: 30 },
-                ], 
-                x: CENTER_X, y: CENTER_Y + 110, increment: 40
-            }
-        );   
 
-        this.status.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+        this.status = new Status(this.game,
+            { fill: 0x00000 },
+            {x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU LOSE', fontSize: 45},
+            {x: CENTER_X + 10, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 50,
+             message: { time: 20, score: 1000, bonus: 122}}
+        );  
+        
+        this.navigation = new Navigation(this.game, [
+            { name: 'CONTINUE', stateName: 'play', font: 'upheaval', fontSize: 30 },
+            { name: 'QUIT', stateName: 'menu', font: 'upheaval', fontSize: 30 },
+        ], CENTER_X, CENTER_Y + 110, 40);
+        
+        this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
     }
 
     gameover() {
@@ -305,29 +282,22 @@ class Play extends Phaser.State {
     }
 
     changeCurrentNavigation(e) {
-        if(!this.nowPlaying && this.status.navigation) {
+        if(!this.nowPlaying && this.navigation) {
             if (e.keyCode === this.game.keyDown.keyCode) {
-                this.status.navigation.changeCurrentNavigation(1);
+                this.navigation.changeCurrentNavigation(1);
             }
     
             if (e.keyCode === this.game.keyUp.keyCode) {
-                this.status.navigation.changeCurrentNavigation(-1);
+                this.navigation.changeCurrentNavigation(-1);
             }
         }
     }
 
     changeState(e) {
-        if(!this.nowPlaying && this.status.navigation) {
-            let currentIndex = this.status.navigation.currentIndex;
-            let state = this.status.navigation.children[currentIndex].stateName;
-            this.status.navigation.tweenNavigation(currentIndex, () => this.state.start(state));
-        }
-    }
-
-    update() {
-        if(this.nowPlaying) {
-            this.handleCursorInput();
-            this.handleCollision();
+        if(!this.nowPlaying && this.navigation) {
+            let currentIndex = this.navigation.currentIndex;
+            let state = this.navigation.children[currentIndex].stateName;
+            this.navigation.tweenNavigation(currentIndex, () => this.state.start(state));
         }
     }
 
@@ -342,7 +312,14 @@ class Play extends Phaser.State {
         }
     }
 
-    handleCursorInput() {
+    update() {
+        if(this.nowPlaying) {
+            this.updateCursorInput();
+            this.updateCollision();
+        }
+    }
+
+    updateCursorInput() {
         if (this.game.keyLeft.isDown) {
             if (this.arrow.angle >= -MAX_ARROW_RANGE) {
                 this.arrow.angle -= 1.2;
@@ -362,7 +339,7 @@ class Play extends Phaser.State {
         }
     }
 
-    handleCollision() {
+    updateCollision() {
         let blockCollision = this.physics.arcade.collide(this.currentBubble, this.blocks, () => console.log('BLOCK COLLISION'), null, this);
         let topBoundaryCollsion = this.physics.arcade.collide(this.currentBubble, this.topBoundary, () => console.log('TOP BOUNDARY COLLISION'), null, this);
         let bubbleCollision = this.physics.arcade.collide(this.currentBubble, this.bubbles, () => console.log('BUBBLE COLLISION'), null, this);
@@ -430,7 +407,10 @@ class Play extends Phaser.State {
     }
 
     shutdown() {
-        this.round = null;
+        this.game.keySpace.onDown.remove(this.launchBubble, this);
+        this.game.keyEnter.onDown.remove(this.changeState, this);
+        this.game.keyDown.onDown.remove(this.changeCurrentNavigation, this);
+        this.game.keyUp.onDown.remove(this.changeCurrentNavigation, this);
     }
 }
 

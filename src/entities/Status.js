@@ -2,14 +2,18 @@ import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../utils/Constants';
 import Navigation from './Navigation';
 // pseudo state that displays user stats
 class Status extends Phaser.Group {
-    constructor(game) {
+    constructor(game, overlayConfig, headerConfig, statsConfig) {
         super(game);
         this.overlay = null;
         this.header = null;
         this.stats = [];
-        this.navigation = null;
-        // TODO: the next bubble is painted on top of overlay
-        // so we have to make sure the overlay is on top
+        this.createStatus(overlayConfig, headerConfig, statsConfig);
+    }
+
+    createStatus(overlayConfig, headerConfig, statsConfig) {
+        if (overlayConfig) this.overlay = this.createOverlay(overlayConfig);
+        if (headerConfig) this.header = this.createHeader(headerConfig);
+        if (statsConfig) this.stats = this.createStats(statsConfig);
     }
 
     createOverlay(overlay) {
@@ -53,11 +57,6 @@ class Status extends Phaser.Group {
         // values.alpha = 0;
         values.anchor.set(0.5, 0.5);
         return this.addMultiple([props, values]);
-    }
-
-    createNavigation(navigation) {
-        let {items, x, y, increment} = navigation;
-        return new Navigation(this.game, items, x, y, increment);
     }
 }
 

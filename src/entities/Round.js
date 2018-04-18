@@ -3,7 +3,7 @@ import { CANVAS_WIDTH, CANVAS_HEIGHT, TILE_SIZE, ANCHOR_OFFSET, LAUNCHER_HEIGHT}
 class Round {
     constructor(roundNumber) {
         let round = require(`../rounds/${roundNumber}`).default;
-        this.matrix = this.copy(round);
+        this.matrix = round.map(row => row.slice());
         
         if(this.matrix.length && this.matrix[0].length) {
             this.rows = this.matrix.length;
@@ -23,18 +23,6 @@ class Round {
                 this.endY = CANVAS_HEIGHT - LAUNCHER_HEIGHT;
             }
         }
-    }
-
-    copy(matrix) {
-        let copy = [];
-        for(let i = 0; i < matrix.length; i++) {
-            let row = [];
-            for(let j = 0; j < matrix[i].length; j++) {
-                row.push(matrix[i][j]);
-            }
-            copy.push(row);
-        }
-        return copy;
     }
 
     getCoordinates(i, j) {
