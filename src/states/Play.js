@@ -1,8 +1,9 @@
 import { 
     CANVAS_WIDTH, CANVAS_HEIGHT, CENTER_X, CENTER_Y, 
     ROWS, COLUMNS, TILE_SIZE, ANCHOR_OFFSET, LAUNCHER_HEIGHT, 
-    SCOREBOARD_HEIGHT, MAX_ARROW_RANGE, CURRENT_BUBBLE_X, LAUNCH_COUNTDOWN,
-    CURRENT_BUBBLE_Y, NEXT_BUBBLE_X, NEXT_BUBBLE_Y, BUBBLE_PHYSICS_SIZE
+    SCOREBOARD_HEIGHT, MAX_ARROW_RANGE, CURRENT_BUBBLE_X, 
+    LAUNCH_COUNTDOWN, CURRENT_BUBBLE_Y, NEXT_BUBBLE_X, 
+    NEXT_BUBBLE_Y, BUBBLE_PHYSICS_SIZE, TOP_BOUNDARY_LAUNCH_LIMIT
 } from '../utils/Constants';
 import Player from '../entities/Player';
 import Bubble from '../entities/Bubble';
@@ -26,6 +27,7 @@ class Play extends Phaser.State {
         this.timeCompleted = 0;
         this.bonus = 0;
         this.launchCountdown = LAUNCH_COUNTDOWN;
+        this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
         this.navigation = null;
         this.round = new Round(this.game.player.currentRound.level, TILE_SIZE, ANCHOR_OFFSET);
     }
@@ -37,7 +39,9 @@ class Play extends Phaser.State {
         this.createLauncher();
         this.createStage();
         this.createScoreboard();
-        this.createInitialLaunchBubbles();
+        
+        this.currentBubble = this.createRandomBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
+        this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
 
         // game logic
         this.status = new Status(this.game,
@@ -85,8 +89,6 @@ class Play extends Phaser.State {
         this.topBoundary.body.immovable = true;
         this.topBoundary.body.allowGravity = false;
         this.topBoundary.body.setSize(CANVAS_WIDTH, 31);
-
-        // move boundary by => boundary.x += val;
 
         // blocks
         this.blocks = this.add.physicsGroup(Phaser.Physics.ARCADE, this.world, "blocks");
@@ -186,21 +188,25 @@ class Play extends Phaser.State {
                 let colorCode = this.round.matrix[i][j];
                 if (colorCode === EntityMap.zero || 
                     colorCode === EntityMap.empty || 
-                    colorCode === EntityMap.block ||
                     colorCode === EntityMap.outOfBounds) continue;
-                let { x, y } = this.round.getCoordinates(i, j);  
-                this.round.getIndices(x,y);
-                this.createBubble(x, y, colorCode, this.bubbles);
+                if (colorCode === EntityMap.block) {
+                    if(j === 0) {
+                        let topBlock = this.blocks.create((TILE_SIZE * COLUMNS) / 2, (TILE_SIZE + ANCHOR_OFFSET) + (TILE_SIZE * i), 'blocks-horizontal-1');
+                        topBlock.anchor.set(0.5, 0.5);
+                        topBlock.body.immovable = true;
+                        topBlock.body.allowGravity = false;
+                        this.topBoundary.y = TILE_SIZE + (TILE_SIZE * i);
+                    }
+                }else {
+                    let { x, y } = this.round.getCoordinates(i, j);  
+                    this.round.getIndices(x,y);
+                    this.createBubble(x, y, colorCode, this.bubbles);
+                }
             }
         }        
 
         this.bubbles.setAll('body.immovable', true);
         this.bubbles.setAll('body.allowGravity', false);
-    }
-
-    createInitialLaunchBubbles() {     
-        this.currentBubble = this.createRandomBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
-        this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
     }
 
     createBubble(x, y, colorCode, group) {
@@ -320,10 +326,6 @@ class Play extends Phaser.State {
         }
     }
 
-    launchTimer() {
-
-    }
-
     update() {
         if(this.nowPlaying) {
             this.updateCursorInput();
@@ -376,6 +378,7 @@ class Play extends Phaser.State {
         if (topBoundaryCollsion || bubbleCollision) {
             this.snapToGrid();
             this.checkCluster();
+            this.updateTopBoundary();
         }
     }
 
@@ -433,6 +436,23 @@ class Play extends Phaser.State {
 
     checkCluster() {
 
+    }
+
+    updateTopBoundary() {
+        if (this.topBoundaryLaunchLimit === 0) {
+            let isValid = this.round.shiftTopBoundary();
+
+            console.log('SHIFTING TOP BOUNDARY... RESETTING LIMIT');
+            this.bubbles.destroy();
+            this.createStage();
+
+            this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
+
+            if(!isValid) this.lose();
+        }else {
+            console.log('LAUNCH LIMIT ', this.topBoundaryLaunchLimit);
+            this.topBoundaryLaunchLimit--;
+        }
     }
 
     shutdown() {

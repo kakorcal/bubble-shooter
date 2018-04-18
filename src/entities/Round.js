@@ -1,3 +1,4 @@
+import {EntityMap} from '../utils/EntityMap';
 import { CANVAS_WIDTH, CANVAS_HEIGHT, TILE_SIZE, ANCHOR_OFFSET, LAUNCHER_HEIGHT} from '../utils/Constants';
 
 class Round {
@@ -48,12 +49,26 @@ class Round {
         return {i, j};
     }
 
-    addRow(row) {
+    shiftTopBoundary() {
+        // add blocks on top
+        // remove last row
+        // push out of bounds on bottom
+        let topRow = [];
+        for(let i = 0; i < this.cols; i++) {
+            topRow.push(EntityMap.block);
+        }
 
-    }
+        this.matrix.unshift(topRow);
+        
+        let outOfBounds = this.matrix.pop();
+        let validMatrix = this.matrix[this.rows - 1].every(el => el === EntityMap.zero || el === EntityMap.empty);
 
-    removeRow(row) {
+        if(validMatrix) {
+            this.matrix.pop();
+            this.matrix.push(outOfBounds);
+        }
 
+        return validMatrix;
     }
 }
 

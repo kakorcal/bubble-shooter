@@ -36,14 +36,14 @@ const EntityMap = {
     launcher: 52,
     bubble: 53,
     block: 54,
-    blocks: 55,
+    halfBlock: 55,
     gameObjects: {
         50: 'tile',
         51: 'polnareff',
         52: 'launcher',
         53: 'bubble',
         54: 'block',
-        55: 'blocks'
+        55: 'halfBlock'
     }
 };
 
