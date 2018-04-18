@@ -55,7 +55,11 @@ class Round {
         // push out of bounds on bottom
         let topRow = [];
         for(let i = 0; i < this.cols; i++) {
-            topRow.push(EntityMap.block);
+            if(this.cols === 17) {
+                topRow.push(EntityMap.block);
+            }else if(this.cols === 8) {
+                topRow.push(EntityMap.halfBlock);
+            }
         }
 
         this.matrix.unshift(topRow);

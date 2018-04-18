@@ -11,6 +11,7 @@ const block1 = './assets/images/block-md-1.png';
 const blocksVertical1 = './assets/images/blocks-vertical-md-1.png';
 const blocksVerticalHalf1 = './assets/images/blocks-vertical-half-md-1.png';
 const blocksHorizontal1 = './assets/images/blocks-horizontal-md-1.png';
+const blocksHorizontalHalf1 = './assets/images/blocks-horizontal-half-md-1.png';
 const blockContour1 = './assets/images/block-contour-md-1.png';
 const polnareff1 = './assets/images/polnareff-sp-1.png';
 const speechBubble1 = './assets/images/speech-bubble-sm-1.png';
@@ -54,6 +55,7 @@ class Load extends Phaser.State {
         this.load.image('blocks-vertical-1', blocksVertical1);
         this.load.image('blocks-vertical-half-1', blocksVerticalHalf1);
         this.load.image('blocks-horizontal-1', blocksHorizontal1);
+        this.load.image('blocks-horizontal-half-1', blocksHorizontalHalf1);
         this.load.image('launcher-platform-1', launcherPlatform1);
         this.load.image('launcher-wheel-1', launcherWheel1);
         this.load.image('speech-bubble-1', speechBubble1);

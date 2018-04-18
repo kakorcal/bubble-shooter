@@ -1,6 +1,6 @@
 import { AlphabetizedMap } from '../utils/EntityMap';
 
-let { _,x,a,b,c,d,e,f,g,h,i,o } = AlphabetizedMap;
+let { _,x,a,b,c,d,e,f,g,h,i,o,p } = AlphabetizedMap;
 /* 
     b=flame=red
     f=solidBlack=purple

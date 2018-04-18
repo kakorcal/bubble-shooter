@@ -180,6 +180,7 @@ class Play extends Phaser.State {
         this.speechBubbleText.anchor.set(0.5, 0.5);
     }
 
+    // TODO: refactor
     createStage() {
         this.bubbles = this.add.physicsGroup(Phaser.Physics.ARCADE, this.world, "bubbles");
 
@@ -189,12 +190,21 @@ class Play extends Phaser.State {
                 if (colorCode === EntityMap.zero || 
                     colorCode === EntityMap.empty || 
                     colorCode === EntityMap.outOfBounds) continue;
-                if (colorCode === EntityMap.block) {
+                if (colorCode === EntityMap.block || colorCode === EntityMap.halfBlock) {
                     if(j === 0) {
-                        let topBlock = this.blocks.create((TILE_SIZE * COLUMNS) / 2, (TILE_SIZE + ANCHOR_OFFSET) + (TILE_SIZE * i), 'blocks-horizontal-1');
-                        topBlock.anchor.set(0.5, 0.5);
-                        topBlock.body.immovable = true;
-                        topBlock.body.allowGravity = false;
+                        if(this.round.cols === 17) {
+                            let topBlock = this.blocks.create((TILE_SIZE * COLUMNS) / 2, (TILE_SIZE + ANCHOR_OFFSET) + (TILE_SIZE * i), 'blocks-horizontal-1');
+                            topBlock.anchor.set(0.5, 0.5);
+                            topBlock.body.immovable = true;
+                            topBlock.body.allowGravity = false;
+                        }else if(this.round.cols === 8) {
+                            let halfBlock1 = this.blocks.create(this.round.startX, (TILE_SIZE) + (TILE_SIZE * i), 'blocks-horizontal-half-1');
+                            halfBlock1.body.immovable = true;
+                            halfBlock1.body.allowGravity = false;
+                            let halfBlock2 = this.blocks.create(this.round.startX, (TILE_SIZE + ANCHOR_OFFSET) + (TILE_SIZE * i), 'blocks-horizontal-half-1');
+                            halfBlock2.body.immovable = true;
+                            halfBlock2.body.allowGravity = false;
+                        }
                         this.topBoundary.y = TILE_SIZE + (TILE_SIZE * i);
                     }
                 }else {
@@ -382,6 +392,7 @@ class Play extends Phaser.State {
         }
     }
 
+    // TODO: refactor
     snapToGrid() {
         let curx = this.currentBubble.x;
         let cury = this.currentBubble.y;
