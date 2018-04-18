@@ -9,6 +9,7 @@ export const COLUMNS = 19;
 export const SCOREBOARD_HEIGHT = 30;
 export const LAUNCHER_HEIGHT = 120;
 export const MAX_ARROW_RANGE = 74;
+export const LAUNCH_COUNTDOWN = 20;
 export const CURRENT_BUBBLE_X = CENTER_X;
 export const CURRENT_BUBBLE_Y = CANVAS_HEIGHT - LAUNCHER_HEIGHT + ANCHOR_OFFSET;
 export const NEXT_BUBBLE_X = CENTER_X + (TILE_SIZE * 3);

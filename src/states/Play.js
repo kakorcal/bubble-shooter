@@ -1,7 +1,7 @@
 import { 
     CANVAS_WIDTH, CANVAS_HEIGHT, CENTER_X, CENTER_Y, 
     ROWS, COLUMNS, TILE_SIZE, ANCHOR_OFFSET, LAUNCHER_HEIGHT, 
-    SCOREBOARD_HEIGHT, MAX_ARROW_RANGE, CURRENT_BUBBLE_X, 
+    SCOREBOARD_HEIGHT, MAX_ARROW_RANGE, CURRENT_BUBBLE_X, LAUNCH_COUNTDOWN,
     CURRENT_BUBBLE_Y, NEXT_BUBBLE_X, NEXT_BUBBLE_Y, BUBBLE_PHYSICS_SIZE
 } from '../utils/Constants';
 import Player from '../entities/Player';
@@ -25,7 +25,7 @@ class Play extends Phaser.State {
         this.paused = false;
         this.timeCompleted = 0;
         this.bonus = 0;
-        this.launchCountdown = 10;
+        this.launchCountdown = LAUNCH_COUNTDOWN;
         this.navigation = null;
         this.round = new Round(this.game.player.currentRound.level, TILE_SIZE, ANCHOR_OFFSET);
     }
@@ -173,6 +173,9 @@ class Play extends Phaser.State {
         this.speechBubble = this.add.sprite(CENTER_X - 118, CANVAS_HEIGHT - LAUNCHER_HEIGHT + 8, 'speech-bubble-1');
         this.speechBubble.scale.set(0.7, 0.7);
         this.speechBubble.alpha = 0;
+        this.speechBubbleText = this.add.bitmapText(CENTER_X - 97, CANVAS_HEIGHT - LAUNCHER_HEIGHT + 23, 'upheaval', this.launchCountdown, 20);
+        this.speechBubbleText.alpha = 0;
+        this.speechBubbleText.anchor.set(0.5, 0.5);
     }
 
     createStage() {
@@ -246,6 +249,9 @@ class Play extends Phaser.State {
         console.log('NOW PLAYING...');
         this.nowPlaying = true;
         this.status.removeAll(true);
+        this.launchTimer = this.time.create(false);
+        this.launchTimer.loop(Phaser.Timer.SECOND * 1, this.updateLaunchCountdown, this);
+        this.launchTimer.start();
     }
 
     win() {
@@ -261,6 +267,8 @@ class Play extends Phaser.State {
     lose() {
         console.log('GAME OVER PLAYER LOSES...');
         this.nowPlaying = false;
+
+        this.launchTimer.destroy();
 
         this.status = new Status(this.game,
             { fill: 0x00000 },
@@ -303,8 +311,8 @@ class Play extends Phaser.State {
 
     launchBubble() {
         if (this.nowPlaying) {
-            console.log('LAUNCH BUBBLE');
-            
+            console.log('LAUNCH BUBBLE... RESETTING COUNTDOWN ', this.launchCountdown);
+            this.launchCountdown = LAUNCH_COUNTDOWN;
             this.physics.arcade.velocityFromAngle(
                 // https://phaser.io/docs/2.4.4/Phaser.Physics.Arcade.html#velocityFromRotation
                 // need to subtract 90 to get the coordinates adjusted
@@ -312,11 +320,32 @@ class Play extends Phaser.State {
         }
     }
 
+    launchTimer() {
+
+    }
+
     update() {
         if(this.nowPlaying) {
             this.updateCursorInput();
             this.updateCollision();
         }
+    }
+
+    updateLaunchCountdown() {
+        if (this.launchCountdown <= Math.floor(LAUNCH_COUNTDOWN / 2)) {
+            this.speechBubble.alpha = 1;
+            this.speechBubbleText.alpha = 1;
+            this.speechBubbleText.setText(this.launchCountdown);
+
+            if(this.launchCountdown === 0) {
+                this.launchBubble();
+            }
+        }else {
+            this.speechBubble.alpha = 0;
+            this.speechBubbleText.alpha = 0;
+        }
+
+        this.launchCountdown--;
     }
 
     updateCursorInput() {
