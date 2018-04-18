@@ -1,11 +1,9 @@
+// creates a navigation group in any state
 class Navigation extends Phaser.Group {
     constructor(game, items, x, y, increment) {
         super(game);
         this.items = this.createItems(items, x, y, increment);
         this.currentIndex = 0;
-        // this.polnareffPosition = this.polnareffCoordinates(initialPosition, increment);
-        // this.polnareffthis.polnareff = this.add.sprite(CENTER_X - 105, this.polnareffPosition[this.navigationIndex], 'polnareff-1', 0);
-
         this.setAll('anchor.x', 0.5);
         this.setAll('anchor.y', 0.5);
     }

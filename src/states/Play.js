@@ -6,18 +6,18 @@ import {
 } from '../utils/Constants';
 import Player from '../entities/Player';
 import Bubble from '../entities/Bubble';
-import Round from '../entities/Round';
 import Boundary from '../entities/Boundary';
+import Round from '../entities/Round';
+import Status from '../entities/Status';
 import { Colors } from '../utils/Colors';
 import { EntityMap } from '../utils/EntityMap';
 
 class Play extends Phaser.State {
     preload() {
-        this.round = new Round(this.game.player.currentRound.level, TILE_SIZE, ANCHOR_OFFSET);
-
         // stats
         this.score = 0
         this.nowPlaying = false;
+        // this.bubbleLaunched = false;
         this.roundComplete = false;
         this.gameover = false;
         this.paused = false;
@@ -27,6 +27,8 @@ class Play extends Phaser.State {
     }
 
     create() {       
+        this.round = new Round(this.game.player.currentRound.level, TILE_SIZE, ANCHOR_OFFSET);
+
         // builder
         this.createTiles();
         this.createBoundaries();
@@ -34,13 +36,23 @@ class Play extends Phaser.State {
         this.createStage();
         this.createScoreboard();
         this.createInitialLaunchBubbles();
-        this.createOverlay('READY');
+
+        this.status = new Status(this.game);
+        this.createStatusOverlay(
+            { fill: 0x00000 },
+            { 
+                x: CENTER_X, y: CENTER_Y, font: 'upheaval', message: 'READY', fontSize: 30 
+            }
+        );   
 
         // game logic
         this.pregame(this.startGame);
 
         // events
         this.game.keySpace.onDown.add(this.launchBubble, this);
+        this.game.keyEnter.onDown.addOnce(this.changeState, this);
+        this.game.keyDown.onDown.add(this.changeCurrentNavigation, this);
+        this.game.keyUp.onDown.add(this.changeCurrentNavigation, this); 
     }
 
     createTiles() {
@@ -105,10 +117,9 @@ class Play extends Phaser.State {
             for (let i = 0; i < blocksLength; i++) {
                 // left
                 this.blocks.create((TILE_SIZE * i) + ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
-                // this.blocks.create((ANCHOR_OFFSET * i) + blockOffset, TILE_SIZE * ROWS / 2, 'blocks-vertical-half-1');
                 // right
                 this.blocks.create(CANVAS_WIDTH - (TILE_SIZE * i) - ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
-                // this.blocks.create(CANVAS_WIDTH - (ANCHOR_OFFSET * i) - blockOffset, TILE_SIZE * ROWS / 2, 'blocks-vertical-half-1');
+                
             }
 
             // add half blocks
@@ -219,25 +230,17 @@ class Play extends Phaser.State {
         return this.createBubble(x, y, randomColorCode, group);
     }
 
+    createStatusOverlay(overlayConfig, headerConfig, statsConfig, navigationConfig) {
+        if(overlayConfig) this.status.overlay = this.status.createOverlay(overlayConfig);
+        if(headerConfig) this.status.header = this.status.createHeader(headerConfig);
+        if(statsConfig) this.status.stats = this.status.createStats(statsConfig);
+        if(navigationConfig) this.status.navigation = this.status.createNavigation(navigationConfig);
+    }
+
     getRandomBubbleCode() {
         let min = EntityMap.BUBBLE_START;
         let max = EntityMap.BUBBLE_END;
         return Math.floor(Math.random() * (max - min) + min);
-    }
-
-    createOverlay(message) {
-        this.overlay = this.add.graphics(0, 0);
-        this.overlay.beginFill(0x000000);
-        this.overlay.drawRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        this.overlay.alpha = 0.3;
-
-        this.message = this.add.bitmapText(CENTER_X, CENTER_Y, 'upheaval', message, 30);
-        this.message.anchor.set(0.5, 0.5);
-    }
-
-    removeOverlay() {
-        this.overlay.destroy();
-        this.message.destroy();
     }
 
     // add 'ready go' text before starting the game.
@@ -250,7 +253,7 @@ class Play extends Phaser.State {
             let pregameTimer2 = this.time.create(true);
             pregameTimer2.add(Phaser.Timer.SECOND * 1.5, cb, this);
             pregameTimer2.start();
-            this.message.setText('GO');
+            this.status.header.setText('GO');
         }, this);
 
         pregameTimer1.start();
@@ -260,13 +263,13 @@ class Play extends Phaser.State {
     startGame() {
         console.log('NOW PLAYING...');
         this.nowPlaying = true;
-        this.removeOverlay();
+        this.status.removeAll(true);
     }
 
     win() {
         console.log('GAME OVER PLAYER WINS...');
         this.nowPlaying = false;
-        this.createOverlay('YOU WIN!!!');
+        // this.createOverlay('YOU WIN!!!');
     }
 
     winAll() {
@@ -276,11 +279,49 @@ class Play extends Phaser.State {
     lose() {
         console.log('GAME OVER PLAYER LOSES...');
         this.nowPlaying = false;
-        this.createOverlay('YOU LOSE');
+        this.createStatusOverlay(
+            { fill: 0x00000 },
+            {
+                x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU LOSE', fontSize: 45
+            },
+            {
+                x: CENTER_X + 10, y: CENTER_Y, font: 'upheaval', fontSize: 30, distance: 50,
+                message: { time: 20, score: 1000, bonus: 122}
+            },
+            {
+                items: [
+                    { name: 'CONTINUE', stateName: 'play', font: 'upheaval', fontSize: 30 },
+                    { name: 'QUIT', stateName: 'menu', font: 'upheaval', fontSize: 30 },
+                ], 
+                x: CENTER_X, y: CENTER_Y + 110, increment: 40
+            }
+        );   
+
+        this.status.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
     }
 
     gameover() {
 
+    }
+
+    changeCurrentNavigation(e) {
+        if(!this.nowPlaying && this.status.navigation) {
+            if (e.keyCode === this.game.keyDown.keyCode) {
+                this.status.navigation.changeCurrentNavigation(1);
+            }
+    
+            if (e.keyCode === this.game.keyUp.keyCode) {
+                this.status.navigation.changeCurrentNavigation(-1);
+            }
+        }
+    }
+
+    changeState(e) {
+        if(!this.nowPlaying && this.status.navigation) {
+            let currentIndex = this.status.navigation.currentIndex;
+            let state = this.status.navigation.children[currentIndex].stateName;
+            this.status.navigation.tweenNavigation(currentIndex, () => this.state.start(state));
+        }
     }
 
     update() {
@@ -389,7 +430,7 @@ class Play extends Phaser.State {
     }
 
     shutdown() {
-
+        this.round = null;
     }
 }
 
