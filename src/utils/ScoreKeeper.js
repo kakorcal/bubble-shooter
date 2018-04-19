@@ -43,8 +43,13 @@ class ScoreKeeper {
         });
     }
 
-    calculateTotal() {
-
+    calculateFinalResult(win) {
+        if(win) {
+            this.calculateBonus();
+        }else {
+            this.bonus = 0;
+            this.score = 0;
+        }
     }
 
     calculateBonus() {
@@ -55,7 +60,6 @@ class ScoreKeeper {
             this.bonus = maxBonusPoints - (bonusInterval * (this.time - 5));
         }else {
             this.bonus = 0;
-            this.score = 0;
         }
     }
 

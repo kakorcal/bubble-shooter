@@ -4,7 +4,7 @@ import {
     SCOREBOARD_HEIGHT, MAX_ARROW_RANGE, CURRENT_BUBBLE_X, 
     LAUNCH_COUNTDOWN, CURRENT_BUBBLE_Y, NEXT_BUBBLE_X, 
     NEXT_BUBBLE_Y, BUBBLE_PHYSICS_SIZE, TOP_BOUNDARY_LAUNCH_LIMIT,
-    ROUND_MODE_1, ROUND_MODE_2
+    ROUND_MODE_1, ROUND_MODE_2, TOTAL_ROUNDS
 } from '../utils/Constants';
 import Player from '../entities/Player';
 import Bubble from '../entities/Bubble';
@@ -22,10 +22,7 @@ class Play extends Phaser.State {
         // stats
         this.nowPlaying = false;
         // this.bubbleLaunched = false;
-        this.roundComplete = false;
-        this.gameover = false;
         this.paused = false;
-        this.timeCompleted = 0;
         this.navigation = null;
         this.scoreKeeper = new ScoreKeeper();
         this.launchCountdown = LAUNCH_COUNTDOWN;
@@ -273,7 +270,7 @@ class Play extends Phaser.State {
         
         this.launchTimer.destroy();
         this.gameTimer.destroy();
-        this.scoreKeeper.calculateBonus();
+        this.scoreKeeper.calculateFinalResult(true);
 
         let {score, time, bonus} = this.scoreKeeper;
 
@@ -292,10 +289,35 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
 
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+        this.updatePlayerStatus();
     }
 
     winAll() {
+        console.log('GAME OVER PLAYER COMPLETED GAME...');
+        this.nowPlaying = false;
 
+        this.launchTimer.destroy();
+        this.gameTimer.destroy();
+
+        this.scoreKeeper.calculateFinalResult(true);
+
+        let { score, time, bonus } = this.scoreKeeper;
+
+        this.status = new Status(this.game,
+            { fill: 0x00000 },
+            { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'CONGRATULATIONS!', fontSize: 45 },
+            {
+                x: CENTER_X - 92, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 110,
+                message: { score, time, bonus }
+            }
+        );
+
+        this.navigation = new Navigation(this.game, [
+            { name: 'CONTINUE', stateName: 'menu', font: 'upheaval', fontSize: 30 }
+        ], CENTER_X, CENTER_Y + 110, 40);
+
+        this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+        this.updatePlayerStatus();
     }
 
     lose() {
@@ -304,7 +326,7 @@ class Play extends Phaser.State {
 
         this.launchTimer.destroy();
         this.gameTimer.destroy();
-        this.scoreKeeper.calculateBonus();
+        this.scoreKeeper.calculateFinalResult(false);
 
         let { score, time, bonus } = this.scoreKeeper;
 
@@ -321,9 +343,38 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
         
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+        this.updatePlayerStatus();
     }
 
+    // no more credits
     gameover() {
+        console.log('GAME OVER PLAYER LOSES NO MORE CREDITS...');
+        this.nowPlaying = false;
+
+        this.launchTimer.destroy();
+        this.gameTimer.destroy();
+        this.scoreKeeper.calculateFinalResult(false);
+
+        let { score, time, bonus } = this.scoreKeeper;
+
+        this.status = new Status(this.game,
+            { fill: 0x00000 },
+            { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'GAME OVER', fontSize: 45 },
+            {
+                x: CENTER_X - 92, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 110,
+                message: { score, time, bonus }
+            }
+        );
+
+        this.navigation = new Navigation(this.game, [
+            { name: 'CONTINUE', stateName: 'menu', font: 'upheaval', fontSize: 30 }
+        ], CENTER_X, CENTER_Y + 110, 40);
+
+        this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+        this.updatePlayerStatus();
+    }
+
+    updatePlayerStatus() {
 
     }
 
@@ -431,7 +482,7 @@ class Play extends Phaser.State {
         }
 
         if (this.round.matrix[i][j] === EntityMap.outOfBounds) {
-            this.lose();
+            this.checkLose();
         }else {
             // adjustments for empty spaces
             if (this.round.matrix[i][j] === EntityMap.empty) {
@@ -618,7 +669,7 @@ class Play extends Phaser.State {
     
                 this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
     
-                if(!isValid) this.lose();
+                if(!isValid) this.checkLose();
             }else {
                 console.log('LAUNCH LIMIT ', this.topBoundaryLaunchLimit);
                 this.topBoundaryLaunchLimit--;
@@ -651,10 +702,22 @@ class Play extends Phaser.State {
         this.scoreKeeper.refreshMaps();
     }
 
+    checkLose() {
+        if (this.game.player.credits === 0) {
+            this.gameover();
+        }else {
+            this.lose();
+        }
+    }
+
     checkWin() {
         if(!this.bubbles.length ||
             this.bubbles.children.every(bubble => bubble.colorCode === EntityMap.gold)) {
-            this.win();
+            if(this.game.player.currentRound.level === TOTAL_ROUNDS) {
+                this.winAll();
+            }else {
+                this.win();
+            }
         }
     }
 
