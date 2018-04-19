@@ -6,7 +6,7 @@ const EntityMap = {
     COLOR_START: 1,
     COLOR_END: 9,
     BUBBLE_START: 1,
-    BUBBLE_END: 7,
+    BUBBLE_END: 8,
     red: 1,
     blue: 2,
     green: 3,
