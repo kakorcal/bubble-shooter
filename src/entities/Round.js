@@ -104,10 +104,6 @@ class Round {
     isSmallRow(i) {
         return this.matrix[i][this.cols - 1] === null;
     }
-
-    isMatch(i, j, colorCode) {
-        return this.matrix[i][j] === colorCode;
-    }
 }
 
 export default Round;

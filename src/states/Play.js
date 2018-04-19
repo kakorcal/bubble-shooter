@@ -261,12 +261,37 @@ class Play extends Phaser.State {
         this.launchTimer = this.time.create(false);
         this.launchTimer.loop(Phaser.Timer.SECOND * 1, this.updateLaunchCountdown, this);
         this.launchTimer.start();
+
+        this.gameTimer = this.time.create(false);
+        this.gameTimer.loop(Phaser.Timer.SECOND * 1, () => {this.scoreKeeper.time++;}, this);
+        this.gameTimer.start();
     }
 
     win() {
         console.log('GAME OVER PLAYER WINS...');
         this.nowPlaying = false;
-        // this.createOverlay('YOU WIN!!!');
+        
+        this.launchTimer.destroy();
+        this.gameTimer.destroy();
+        this.scoreKeeper.calculateBonus();
+
+        let {score, time, bonus} = this.scoreKeeper;
+
+        this.status = new Status(this.game,
+            { fill: 0x00000 },
+            { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU WIN', fontSize: 45 },
+            {
+                x: CENTER_X - 92, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 110,
+                message: { score, time, bonus }
+            }
+        );
+
+        this.navigation = new Navigation(this.game, [
+            { name: 'CONTINUE', stateName: 'play', font: 'upheaval', fontSize: 30 },
+            { name: 'QUIT', stateName: 'menu', font: 'upheaval', fontSize: 30 },
+        ], CENTER_X, CENTER_Y + 110, 40);
+
+        this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
     }
 
     winAll() {
@@ -278,12 +303,16 @@ class Play extends Phaser.State {
         this.nowPlaying = false;
 
         this.launchTimer.destroy();
+        this.gameTimer.destroy();
+        this.scoreKeeper.calculateBonus();
+
+        let { score, time, bonus } = this.scoreKeeper;
 
         this.status = new Status(this.game,
             { fill: 0x00000 },
             { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU LOSE', fontSize: 45},
-            { x: CENTER_X + 10, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 50,
-             message: { time: 20, score: 1000, bonus: 122}}
+            { x: CENTER_X - 92, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 110,
+                message: { score, time, bonus }}
         );  
         
         this.navigation = new Navigation(this.game, [
@@ -439,6 +468,9 @@ class Play extends Phaser.State {
                     this.bubbles.destroy();
                     this.createStage();
                     this.updateScore(currentColor);
+                    
+                    console.log('REMAINING BUBBLES...', this.bubbles);
+                    this.checkWin();
                 }
             }
         }
@@ -576,19 +608,21 @@ class Play extends Phaser.State {
     }
 
     updateTopBoundary() {
-        if (this.topBoundaryLaunchLimit === 0) {
-            let isValid = this.round.shiftTopBoundary();
-
-            console.log('SHIFTING TOP BOUNDARY... RESETTING LIMIT');
-            this.bubbles.destroy();
-            this.createStage();
-
-            this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
-
-            if(!isValid) this.lose();
-        }else {
-            console.log('LAUNCH LIMIT ', this.topBoundaryLaunchLimit);
-            this.topBoundaryLaunchLimit--;
+        if(this.nowPlaying) {
+            if (this.topBoundaryLaunchLimit === 0) {
+                let isValid = this.round.shiftTopBoundary();
+    
+                console.log('SHIFTING TOP BOUNDARY... RESETTING LIMIT');
+                this.bubbles.destroy();
+                this.createStage();
+    
+                this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
+    
+                if(!isValid) this.lose();
+            }else {
+                console.log('LAUNCH LIMIT ', this.topBoundaryLaunchLimit);
+                this.topBoundaryLaunchLimit--;
+            }
         }
     }
 
@@ -607,7 +641,7 @@ class Play extends Phaser.State {
             scoreText.anchor.set(0.5, 0.5);
 
             let scoreTween = this.add.tween(scoreText)
-                .to({ alpha: 0 }, 700, Phaser.Easing.Linear.None, true, idx * 10);
+                .to({ alpha: 0, y: y-10}, 600, Phaser.Easing.Linear.None, true, 0);
             
             scoreTween.onComplete.add(() => scoreText.destroy(), this);
         });
@@ -615,6 +649,13 @@ class Play extends Phaser.State {
         //this.totalScoreText.setText();
 
         this.scoreKeeper.refreshMaps();
+    }
+
+    checkWin() {
+        if(!this.bubbles.length ||
+            this.bubbles.children.every(bubble => bubble.colorCode === EntityMap.gold)) {
+            this.win();
+        }
     }
 
     shutdown() {

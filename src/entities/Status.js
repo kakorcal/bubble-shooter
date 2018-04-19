@@ -49,13 +49,11 @@ class Status extends Phaser.Group {
 
         let propText = `TIME\nSCORE\nBONUS`;
         let valueText = `${time}\n${score}\n${bonus}`;
-        let props = new Phaser.BitmapText(this.game, x - distance, y, font, propText, fontSize);
+        let props = new Phaser.BitmapText(this.game, x, y, font, propText, fontSize);
         let values = new Phaser.BitmapText(this.game, x + distance, y, font, valueText, fontSize);
 
-        // props.alpha = 0;
-        props.anchor.set(0.5, 0.5);
-        // values.alpha = 0;
-        values.anchor.set(0.5, 0.5);
+        props.anchor.set(0, 0.5);
+        values.anchor.set(0, 0.5);
         return this.addMultiple([props, values]);
     }
 }

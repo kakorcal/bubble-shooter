@@ -1,4 +1,6 @@
 const bubblePoints = 10;
+const maxBonusPoints = 50000;
+const bonusInterval = 840;
 
 class ScoreKeeper {
     constructor() {
@@ -43,6 +45,18 @@ class ScoreKeeper {
 
     calculateTotal() {
 
+    }
+
+    calculateBonus() {
+        if(this.time <= 5) {
+            this.bonus = maxBonusPoints;
+        }else if(this.time > 6 && this.time <= 64) {
+            // 50000 - (840 * (64 - 5))
+            this.bonus = maxBonusPoints - (bonusInterval * (this.time - 5));
+        }else {
+            this.bonus = 0;
+            this.score = 0;
+        }
     }
 
     refreshMaps() {
