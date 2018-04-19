@@ -12,6 +12,7 @@ import Boundary from '../entities/Boundary';
 import Round from '../entities/Round';
 import Status from '../entities/Status';
 import Navigation from '../entities/Navigation';
+import ScoreKeeper from '../utils/ScoreKeeper';
 import { Colors } from '../utils/Colors';
 import { EntityMap } from '../utils/EntityMap';
 import { getRandomInteger } from '../utils/Helpers';
@@ -19,17 +20,16 @@ import { getRandomInteger } from '../utils/Helpers';
 class Play extends Phaser.State {
     preload() {
         // stats
-        this.score = 0
         this.nowPlaying = false;
         // this.bubbleLaunched = false;
         this.roundComplete = false;
         this.gameover = false;
         this.paused = false;
         this.timeCompleted = 0;
-        this.bonus = 0;
+        this.navigation = null;
+        this.scoreKeeper = new ScoreKeeper();
         this.launchCountdown = LAUNCH_COUNTDOWN;
         this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
-        this.navigation = null;
         this.round = new Round(this.game.player.currentRound.level, TILE_SIZE, ANCHOR_OFFSET);
     }
 
@@ -137,8 +137,8 @@ class Play extends Phaser.State {
     }
 
     createScoreboard() {
-        this.scoreText = this.add.bitmapText(5, 11, 'upheaval', 'SCORE 000000000', 25);
-        this.scoreText.anchor.set(0, 0.5);
+        this.totalScoreText = this.add.bitmapText(5, 11, 'upheaval', 'SCORE 000000000', 25);
+        this.totalScoreText.anchor.set(0, 0.5);
 
         this.roundText = this.add.bitmapText(CANVAS_WIDTH - 130, 11, 'upheaval', 'ROUND 001', 25);
         this.roundText.anchor.set(0, 0.5);
@@ -420,8 +420,9 @@ class Play extends Phaser.State {
                 let { x, y } = this.round.getCoordinates(i, j);
                 console.log('SNAPING TO x: ' + x + ' y: ' + y + ' i: ' + i + ' j: ' + j);
     
-                let newBubble = this.createBubble(x, y, this.currentBubble.colorCode, this.bubbles);
-                this.round.matrix[i][j] = this.currentBubble.colorCode;
+                let currentColor = this.currentBubble.colorCode;
+                let newBubble = this.createBubble(x, y, currentColor, this.bubbles);
+                this.round.matrix[i][j] = currentColor;
                 newBubble.body.immovable = true;
                 newBubble.body.allowGravity = false;
     
@@ -434,7 +435,11 @@ class Play extends Phaser.State {
                 this.currentBubble.y = CURRENT_BUBBLE_Y;
                 this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
 
-                this.removeMatchingBubbles(i, j);
+                if(this.removeMatchingBubbles(i, j)) {
+                    this.bubbles.destroy();
+                    this.createStage();
+                    this.updateScore(currentColor);
+                }
             }
         }
     }
@@ -457,8 +462,8 @@ class Play extends Phaser.State {
             let neighbors = this.getNeighbors(indices.i, indices.j);
 
             neighbors.forEach(hash => {
-                let bubble = this.round.fromBubbleHash(hash);
-                if (bubble.colorCode === targetColor && !matches.has(hash)) {
+                let { colorCode } = this.round.fromBubbleHash(hash);
+                if (colorCode === targetColor && !matches.has(hash)) {
                     queue.push(hash);
                 }
             });
@@ -468,13 +473,52 @@ class Play extends Phaser.State {
             console.log('MATCH DETECTED REMOVING BUBBLES...');
             
             matches.forEach(hash => {
-                let { indices } = this.round.fromBubbleHash(hash);
-                this.round.matrix[indices.i][indices.j] = EntityMap.zero;
+                let { indices, colorCode } = this.round.fromBubbleHash(hash);
+                let { i, j } = indices;
+                this.scoreKeeper.add(colorCode, i, j);
+                this.round.matrix[i][j] = EntityMap.zero;
             });
 
             this.removeFloatingBubbles();
-            this.bubbles.destroy();
-            this.createStage();
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    removeFloatingBubbles() {
+        let topRow = this.round.matrix[this.round.topRow];
+        let memo = new Set();
+
+        topRow.forEach((el, j) => {
+            if (this.round.isBubble(this.round.topRow, j)) {
+                this.floodFill(this.round.topRow, j, memo);
+            }
+        });
+
+        console.log('REMOVING POTENTIAL FLOATING BUBBLES... ', memo);
+
+        for (let i = 0; i < this.round.matrix.length; i++) {
+            for (let j = 0; j < this.round.matrix[i].length; j++) {
+                let hash = this.round.getBubbleHash(i, j);
+                if (this.round.isBubble(i, j) && !memo.has(hash)) {
+                    this.scoreKeeper.add(this.round.matrix[i][j], i, j);
+                    this.round.matrix[i][j] = EntityMap.zero;
+                }
+            }
+        }
+    }
+
+    floodFill(i, j, memo) {
+        memo.add(this.round.getBubbleHash(i, j));
+
+        let neighbors = this.getNeighbors(i, j).filter(hash => !memo.has(hash));
+
+        if (neighbors.length) {
+            neighbors.forEach(hash => {
+                let { indices } = this.round.fromBubbleHash(hash);
+                this.floodFill(indices.i, indices.j, memo);
+            });
         }
     }
 
@@ -531,41 +575,6 @@ class Play extends Phaser.State {
         return neighbors;
     }
 
-    removeFloatingBubbles() {
-        let topRow = this.round.matrix[this.round.topRow];
-        let memo = new Set();
-
-        topRow.forEach((el, j) => {
-            if (this.round.isBubble(this.round.topRow, j)) {
-                this.floodFill(this.round.topRow, j, memo);
-            }
-        });
-
-        console.log('REMOVING BUBBLES THAT ARE NOT IN SET... ', memo);
-
-        for(let i = 0; i < this.round.matrix.length; i++) {
-            for(let j = 0; j < this.round.matrix[i].length; j++) {
-                let hash = this.round.getBubbleHash(i, j);
-                if(this.round.isBubble(i, j) && !memo.has(hash)) {
-                    this.round.matrix[i][j] = EntityMap.zero;
-                }
-            }
-        }
-    }
-
-    floodFill(i, j, memo) {
-        memo.add(this.round.getBubbleHash(i, j));
-
-        let neighbors = this.getNeighbors(i, j).filter(hash => !memo.has(hash));
-
-        if(neighbors.length) {
-            neighbors.forEach(hash => {
-                let { indices } = this.round.fromBubbleHash(hash);
-                this.floodFill(indices.i, indices.j, memo);
-            });
-        }
-    }
-
     updateTopBoundary() {
         if (this.topBoundaryLaunchLimit === 0) {
             let isValid = this.round.shiftTopBoundary();
@@ -581,6 +590,31 @@ class Play extends Phaser.State {
             console.log('LAUNCH LIMIT ', this.topBoundaryLaunchLimit);
             this.topBoundaryLaunchLimit--;
         }
+    }
+
+    updateScore(currentColor) {
+        console.log('UPDATING SCORE');
+
+        this.scoreKeeper.calculate(currentColor);
+        //this.scoreKeeper.calculateTotal();
+
+        // animate scores
+        this.scoreKeeper.mergeMap.forEach((bubble, idx) => {
+            let {i, j, score} = bubble;
+            let {x, y} = this.round.getCoordinates(i, j);
+
+            let scoreText = this.add.bitmapText(x, y, 'upheaval', score, 20);
+            scoreText.anchor.set(0.5, 0.5);
+
+            let scoreTween = this.add.tween(scoreText)
+                .to({ alpha: 0 }, 700, Phaser.Easing.Linear.None, true, idx * 10);
+            
+            scoreTween.onComplete.add(() => scoreText.destroy(), this);
+        });
+
+        //this.totalScoreText.setText();
+
+        this.scoreKeeper.refreshMaps();
     }
 
     shutdown() {
