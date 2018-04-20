@@ -15,7 +15,7 @@ import Navigation from '../entities/Navigation';
 import ScoreKeeper from '../utils/ScoreKeeper';
 import { Colors } from '../utils/Colors';
 import { EntityMap } from '../utils/EntityMap';
-import { getRandomInteger } from '../utils/Helpers';
+import { getRandomInteger, appendDigits } from '../utils/Helpers';
 
 class Play extends Phaser.State {
     preload() {
@@ -27,7 +27,7 @@ class Play extends Phaser.State {
         this.scoreKeeper = new ScoreKeeper();
         this.launchCountdown = LAUNCH_COUNTDOWN;
         this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
-        this.round = new Round(this.game.player.currentRound.level, TILE_SIZE, ANCHOR_OFFSET);
+        this.round = new Round(this.game.player.currentRound, TILE_SIZE, ANCHOR_OFFSET);
     }
 
     create() {       
@@ -112,7 +112,6 @@ class Play extends Phaser.State {
                 this.blocks.create((TILE_SIZE * i) + ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
                 // right
                 this.blocks.create(CANVAS_WIDTH - (TILE_SIZE * i) - ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
-                
             }
 
             // add half blocks
@@ -134,11 +133,19 @@ class Play extends Phaser.State {
     }
 
     createScoreboard() {
-        this.totalScoreText = this.add.bitmapText(5, 11, 'upheaval', 'SCORE 000000000', 25);
+        this.totalScoreText = this.add.bitmapText(13, 13, 'upheaval', appendDigits(9, this.game.player.totalScore, 'SCORE'), 25);
         this.totalScoreText.anchor.set(0, 0.5);
 
-        this.roundText = this.add.bitmapText(CANVAS_WIDTH - 130, 11, 'upheaval', 'ROUND 001', 25);
-        this.roundText.anchor.set(0, 0.5);
+        this.roundText = this.add.bitmapText(CANVAS_WIDTH - 13, 13, 'upheaval', appendDigits(3, this.game.player.currentRound, 'ROUND'), 25);
+        this.roundText.anchor.set(1, 0.5);
+
+        this.creditText = this.add.text(
+            CANVAS_WIDTH - 15, CANVAS_HEIGHT - 12,
+            `CREDITS ${this.game.player.credits}`,
+            { font: "12px monospace", fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
+        );
+
+        this.creditText.anchor.set(1, 0.5);
     }
 
     createLauncher() {
@@ -229,7 +236,7 @@ class Play extends Phaser.State {
 
     createRandomBubble(x, y, group) {
         let min = EntityMap.BUBBLE_START;
-        let max = EntityMap.BUBBLE_END - 1;
+        let max = EntityMap.BUBBLE_END;
         let randomColorCode = getRandomInteger(min, max);
         return this.createBubble(x, y, randomColorCode, group);
     }
@@ -289,7 +296,7 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
 
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
-        this.updatePlayerStatus();
+        this.updatePlayerStatus(score, time, bonus);
     }
 
     winAll() {
@@ -317,7 +324,7 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
 
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
-        this.updatePlayerStatus();
+        this.updatePlayerStatus(score, time, bonus);
     }
 
     lose() {
@@ -343,7 +350,7 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
         
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
-        this.updatePlayerStatus();
+        this.updatePlayerStatus(score, time, bonus);
     }
 
     // no more credits
@@ -371,11 +378,43 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
 
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
-        this.updatePlayerStatus();
+        this.updatePlayerStatus(score, time, bonus);
     }
 
-    updatePlayerStatus() {
+    updatePlayerStatus(score, time, bonus) {
+        if (this.game.player.credits === 0) {
+            this.game.player = null;
+            return;
+        }
 
+        if(score) {
+            this.game.player.completedRound.round = this.game.player.currentRound;
+            this.game.player.completedRound.score = score;
+            this.game.player.completedRound.time = time;
+            this.game.player.completedRound.bonus = bonus;
+
+            if (!this.game.player.gameCompleted) {
+                this.game.player.totalScore += bonus;
+            }
+
+            if (this.game.player.highScore < this.game.player.totalScore) {
+                this.game.player.highScore = this.game.player.totalScore;
+            }
+
+            if (this.game.player.currentRound === TOTAL_ROUNDS) {
+                if (!this.game.player.gameCompleted) {
+                    this.game.player.gameCompleted = true;
+                }
+            }else {
+                this.game.player.currentRound++;
+            }
+        }else {
+            this.game.player.totalScore = 0;
+            this.game.player.credits--;
+        }
+
+        this.totalScoreText.setText(appendDigits(9, this.game.player.totalScore, 'SCORE '));
+        this.game.player.save();
     }
 
     changeCurrentNavigation(e) {
@@ -681,7 +720,6 @@ class Play extends Phaser.State {
         console.log('UPDATING SCORE');
 
         this.scoreKeeper.calculate(currentColor);
-        //this.scoreKeeper.calculateTotal();
 
         // animate scores
         this.scoreKeeper.mergeMap.forEach((bubble, idx) => {
@@ -697,8 +735,10 @@ class Play extends Phaser.State {
             scoreTween.onComplete.add(() => scoreText.destroy(), this);
         });
 
-        //this.totalScoreText.setText();
-
+        if (!this.game.player.gameCompleted) {
+            this.game.player.totalScore += this.scoreKeeper.currentScore;
+        }
+        this.totalScoreText.setText(appendDigits(9, this.game.player.totalScore, 'SCORE'));
         this.scoreKeeper.refreshMaps();
     }
 
@@ -713,7 +753,7 @@ class Play extends Phaser.State {
     checkWin() {
         if(!this.bubbles.length ||
             this.bubbles.children.every(bubble => bubble.colorCode === EntityMap.gold)) {
-            if(this.game.player.currentRound.level === TOTAL_ROUNDS) {
+            if(this.game.player.currentRound === TOTAL_ROUNDS) {
                 this.winAll();
             }else {
                 this.win();

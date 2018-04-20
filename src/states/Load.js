@@ -89,7 +89,8 @@ class Load extends Phaser.State {
         // load continuing user if they exist
         let player = Player.getExistingPlayer();
         if(player) {
-            this.game.player = player;
+            let { name, credits, totalScore, highScore, currentRound, gameCompleted, completedRound } = player;
+            this.game.player = new Player(name, credits, totalScore, highScore, currentRound, gameCompleted, completedRound);
         }else {
             this.game.player = null;
         }

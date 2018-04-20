@@ -1,15 +1,22 @@
 class Player {
-    constructor(name = 'GUEST', currentRound = 2, credits = 0, totalScore = 0, highScore = 0) {
+    constructor(name = 'GUEST', credits = 2, totalScore = 0, highScore = 0, currentRound = 1, gameCompleted = false, completedRound) {
         this.name = name;
         this.credits = credits;
         this.totalScore = totalScore;
         this.highScore = highScore;
-        this.currentRound = {
-            level: currentRound,
-            time: null,
-            bonus: null,
-            score: null
-        };
+        this.currentRound = currentRound;
+        this.gameCompleted = gameCompleted;
+
+        if (completedRound) {
+            this.completedRound = completedRound;
+        }else {
+            this.completedRound = {
+                round: currentRound,
+                time: null,
+                bonus: null,
+                score: null
+            };
+        }
     }
 
     static getExistingPlayer() {
