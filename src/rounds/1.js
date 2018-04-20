@@ -16,7 +16,7 @@ let { _,x,b,c,d,e,f,g,h,i,j,k,l,m } = AlphabetizedMap;
     m=block=gold
 */
 
-export const matrix = [
+export default [
     [m,0,m,m,m,m,m,m,b,m,m,m,m,m,m,0,m],
      [m,m,0,0,0,0,0,b,b,0,0,0,0,0,m,m,_],
     [0,m,0,f,f,f,b,b,d,b,b,e,e,e,0,m,0],
@@ -32,4 +32,4 @@ export const matrix = [
     [x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x]
 ];
 
-export const selection = [b, f, e, d];
+// export const selection = [b, f, e, d];

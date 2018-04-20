@@ -1,6 +1,7 @@
-export function getRandomInteger(arr) {
-    let len = arr.length;
+export function getRandomInteger(selection) {
+    let len = selection.size;
     let idx = Math.floor(Math.random() * len);
+    let arr = [...selection];
     return arr[idx];
 }
 

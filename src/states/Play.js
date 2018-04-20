@@ -181,6 +181,7 @@ class Play extends Phaser.State {
     // TODO: refactor
     createStage() {
         this.bubbles = this.add.physicsGroup(Phaser.Physics.ARCADE, this.world, "bubbles");
+        this.round.clearSelection();
 
         for(let i = 0; i < this.round.matrix.length; i++) {
             for(let j = 0; j < this.round.matrix[i].length; j++) {
@@ -206,8 +207,11 @@ class Play extends Phaser.State {
                         this.topBoundary.y = TILE_SIZE + (TILE_SIZE * i);
                     }
                 }else {
-                    let { x, y } = this.round.getCoordinates(i, j);  
+                    let { x, y } = this.round.getCoordinates(i, j);
                     this.createBubble(x, y, colorCode, this.bubbles);
+                    if (colorCode !== EntityMap.gold) {
+                        this.round.addSelection(colorCode);
+                    }
                 }
             }
         }        
