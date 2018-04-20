@@ -1,19 +1,26 @@
-import {AlphabetizedMap} from '../utils/EntityMap';
+import { AlphabetizedMap } from '../utils/EntityMap';
 
-let {_,x,a,b,c,d,e,f,g,h,i,o,p} = AlphabetizedMap;
+let { _,x,b,c,d,e,f,g,h,i,j,k,l } = AlphabetizedMap;
 /* 
     b=flame=red
-    f=solidBlack=purple
+    c=N=blue
     d=coin=green
     e=star=yellow
-    i=block=gold
+    f=solidBlack=purple
+    g=moon=skyBlue
+    h=heart=orange
+    i=triangle=pink
+    j=blank=white
+    k=special=rainbow
+    l=block=gold
 */
-export default [
-    [i,0,i,i,i,i,i,i,b,i,i,i,i,i,i,0,i],
-     [i,i,0,0,0,0,0,b,b,0,0,0,0,0,i,i,_],
-    [0,i,0,f,f,f,b,b,d,b,b,e,e,e,0,i,0],
-     [i,0,f,d,0,e,e,d,d,f,f,0,d,e,0,i,_],
-    [i,0,0,f,d,0,e,0,b,0,f,0,d,e,0,0,i],
+
+export const matrix = [
+    [j,0,j,j,j,j,j,j,b,j,j,j,j,j,j,0,j],
+     [j,j,0,0,0,0,0,b,b,0,0,0,0,0,j,j,_],
+    [0,j,0,f,f,f,b,b,d,b,b,e,e,e,0,j,0],
+     [j,0,f,d,0,e,e,d,d,f,f,0,d,e,0,j,_],
+    [j,0,0,f,d,0,e,0,b,0,f,0,d,e,0,0,j],
      [0,0,0,b,d,d,0,b,b,0,d,d,b,0,0,0,_],
     [0,0,0,b,b,0,f,f,0,e,e,0,b,b,0,0,0],
      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,_],
@@ -23,3 +30,5 @@ export default [
      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,_],
     [x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x]
 ];
+
+export const selection = [b, f, e, d];

@@ -1,5 +1,7 @@
-export function getRandomInteger(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
+export function getRandomInteger(arr) {
+    let len = arr.length;
+    let idx = Math.floor(Math.random() * len);
+    return arr[idx];
 }
 
 // adds leading zeros digitNumbers times to number

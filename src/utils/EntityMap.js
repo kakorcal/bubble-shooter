@@ -14,8 +14,10 @@ const EntityMap = {
     purple: 5,
     skyBlue: 6,
     orange: 7,
-    gold: 8,
-    grey: 9,
+    pink: 8,
+    white: 9,
+    rainbow: 10,
+    gold: 11,
     colors: {
         1: 'red',
         2: 'blue',
@@ -24,8 +26,10 @@ const EntityMap = {
         5: 'purple',
         6: 'skyBlue',
         7: 'orange',
-        8: 'gold',
-        9: 'grey',
+        8: 'pink',
+        9: 'white',
+        10: 'rainbow',
+        11: 'gold'
     },
 
     // Game Objects
@@ -62,14 +66,16 @@ const AlphabetizedMap = {
     h: 7,
     i: 8,
     j: 9,
+    k: 10,
+    l: 11,
 
     // Game Objects
-    k: 50,
-    l: 51,
-    m: 52,
-    n: 53,
-    o: 54,
-    p: 55
+    A: 50,
+    B: 51,
+    C: 52,
+    D: 53,
+    E: 54,
+    F: 55
 };
 
 export {EntityMap, AlphabetizedMap};

@@ -1,17 +1,21 @@
 import { AlphabetizedMap } from '../utils/EntityMap';
 
-let { _,x,a,b,c,d,e,f,g,h,i,o,p } = AlphabetizedMap;
+let { _,x,b,c,d,e,f,g,h,i,j,k,l } = AlphabetizedMap;
 /* 
     b=flame=red
-    f=solidBlack=purple
+    c=N=blue
     d=coin=green
     e=star=yellow
-    i=block=gold
+    f=solidBlack=purple
     g=moon=skyBlue
     h=heart=orange
+    i=triangle=pink
+    j=blank=white
+    k=special=rainbow
+    l=block=gold
 */
 
-export default [
+export const matrix = [
     [0,0,0,g,g,0,0,0],
      [0,0,0,f,g,0,0,_],
     [0,0,0,f,0,0,0,0],
@@ -26,3 +30,5 @@ export default [
      [0,0,0,0,0,0,0,_],
     [x,x,x,x,x,x,x,x]
 ];
+
+export const selection = [g, f, h, d, e];

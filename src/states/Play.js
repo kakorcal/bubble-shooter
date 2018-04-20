@@ -237,7 +237,7 @@ class Play extends Phaser.State {
     createRandomBubble(x, y, group) {
         let min = EntityMap.BUBBLE_START;
         let max = EntityMap.BUBBLE_END;
-        let randomColorCode = getRandomInteger(min, max);
+        let randomColorCode = getRandomInteger(this.round.selection);
         return this.createBubble(x, y, randomColorCode, group);
     }
 

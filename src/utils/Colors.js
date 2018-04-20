@@ -41,16 +41,35 @@ export const Colors = {
         stroke: 0xFFA500,
         strokeWidth: 2
     },
+    pink: {
+        fill: 0xff91c8,
+        alpha: 1,
+        stroke: 0xFF69B4,
+        strokeWidth: 2
+    },
+    white: {
+        fill: 0xFFFFFF,
+        alpha: 1,
+        stroke: 0x000000,
+        strokeWidth: 2
+    },
+    // TODO
+    rainbow: {
+        fill: 0xFFFFFF,
+        alpha: 1,
+        stroke: 0x000000,
+        strokeWidth: 2 
+    }
     gold: {
         fill: 0xFEEA89,
         alpha: 1,
         stroke: 0xDAA520,
         strokeWidth: 2
-    },
-    grey: {
-        fill: 0xEEEEEE,
-        alpha: 1,
-        stroke: 0xEEEEEE,
-        strokeWidth: 2
     }
+    // grey: {
+    //     fill: 0xEEEEEE,
+    //     alpha: 1,
+    //     stroke: 0xEEEEEE,
+    //     strokeWidth: 2
+    // }
 };

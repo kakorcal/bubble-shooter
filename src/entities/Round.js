@@ -5,8 +5,9 @@ import { CANVAS_WIDTH, CANVAS_HEIGHT, TILE_SIZE, ANCHOR_OFFSET,
 
 class Round {
     constructor(roundNumber) {
-        let round = require(`../rounds/${roundNumber}`).default;
-        this.matrix = round.map(row => row.slice());
+        let {matrix, selection} = require(`../rounds/${roundNumber}`);
+        this.matrix = matrix.map(row => row.slice());
+        this.selection = selection;
         this.topRow = 0;
         
         if(this.matrix.length && this.matrix[0].length) {
