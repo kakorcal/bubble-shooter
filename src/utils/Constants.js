@@ -19,3 +19,5 @@ export const BUBBLE_PHYSICS_SIZE = TILE_SIZE - 10;
 export const ROUND_MODE_1 = 17;
 export const ROUND_MODE_2 = 8;
 export const TOTAL_ROUNDS = 2;
+// https://stackoverflow.com/questions/307179/what-is-javascripts-highest-integer-value-that-a-number-can-go-to-without-losin
+export const MAX_SCORE = 99999999999999;

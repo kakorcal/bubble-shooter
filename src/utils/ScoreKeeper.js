@@ -4,8 +4,8 @@ const bonusInterval = 840;
 
 class ScoreKeeper {
     constructor() {
-        this.score = 0;
         this.currentScore = 0;
+        this.score = 0;
         this.time = 0;
         this.bonus = 0;
         // stores the colorCode as key and value

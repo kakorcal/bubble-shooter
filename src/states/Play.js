@@ -4,7 +4,7 @@ import {
     SCOREBOARD_HEIGHT, MAX_ARROW_RANGE, CURRENT_BUBBLE_X, 
     LAUNCH_COUNTDOWN, CURRENT_BUBBLE_Y, NEXT_BUBBLE_X, 
     NEXT_BUBBLE_Y, BUBBLE_PHYSICS_SIZE, TOP_BOUNDARY_LAUNCH_LIMIT,
-    ROUND_MODE_1, ROUND_MODE_2, TOTAL_ROUNDS
+    ROUND_MODE_1, ROUND_MODE_2, TOTAL_ROUNDS, MAX_SCORE
 } from '../utils/Constants';
 import Player from '../entities/Player';
 import Bubble from '../entities/Bubble';
@@ -21,13 +21,12 @@ class Play extends Phaser.State {
     preload() {
         // stats
         this.nowPlaying = false;
-        // this.bubbleLaunched = false;
-        this.paused = false;
-        this.navigation = null;
         this.scoreKeeper = new ScoreKeeper();
         this.launchCountdown = LAUNCH_COUNTDOWN;
         this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
         this.round = new Round(this.game.player.currentRound, TILE_SIZE, ANCHOR_OFFSET);
+        // this.bubbleLaunched = false;
+        // this.paused = false;
     }
 
     create() {       
@@ -65,22 +64,16 @@ class Play extends Phaser.State {
     }
 
     createBoundaries() {
-        this.topBoundary = this.add.sprite(0, 0);
-        this.topBoundary.addChild(
-            new Boundary(this.game,
-                { x1: this.round.startX, y1: this.round.startY },
-                { x2: this.round.endX, y2: this.round.startY },
-                Colors.skyBlue
-            )
+        this.topBoundary = new Boundary(this.game,
+            { x1: this.round.startX, y1: this.round.startY },
+            { x2: this.round.endX, y2: this.round.startY },
+            Colors.skyBlue
         );
-
-        this.bottomBoundary = this.add.sprite(0, 0);
-        this.bottomBoundary.addChild(
-            new Boundary(this.game,
-                { x1: this.round.startX, y1: this.round.endY },
-                { x2: this.round.endX, y2: this.round.endY },
-                Colors.skyBlue
-            )
+        
+        this.bottomBoundary = new Boundary(this.game,
+            { x1: this.round.startX, y1: this.round.endY },
+            { x2: this.round.endX, y2: this.round.endY },
+            Colors.skyBlue
         );
 
         this.physics.enable(this.topBoundary, Phaser.Physics.ARCADE);
@@ -133,7 +126,7 @@ class Play extends Phaser.State {
     }
 
     createScoreboard() {
-        this.totalScoreText = this.add.bitmapText(13, 13, 'upheaval', appendDigits(9, this.game.player.totalScore, 'SCORE'), 25);
+        this.totalScoreText = this.add.bitmapText(13, 13, 'upheaval', appendDigits(14, this.game.player.totalScore, 'TOTAL'), 25);
         this.totalScoreText.anchor.set(0, 0.5);
 
         this.roundText = this.add.bitmapText(CANVAS_WIDTH - 13, 13, 'upheaval', appendDigits(3, this.game.player.currentRound, 'ROUND'), 25);
@@ -235,8 +228,6 @@ class Play extends Phaser.State {
     }
 
     createRandomBubble(x, y, group) {
-        let min = EntityMap.BUBBLE_START;
-        let max = EntityMap.BUBBLE_END;
         let randomColorCode = getRandomInteger(this.round.selection);
         return this.createBubble(x, y, randomColorCode, group);
     }
@@ -271,16 +262,40 @@ class Play extends Phaser.State {
         this.gameTimer.start();
     }
 
-    win() {
-        console.log('GAME OVER PLAYER WINS...');
+    stopGame(result) {
+        let win = result === 'WIN' || result === 'WINALL';
         this.nowPlaying = false;
-        
         this.launchTimer.destroy();
         this.gameTimer.destroy();
-        this.scoreKeeper.calculateFinalResult(true);
+        this.scoreKeeper.calculateFinalResult(win);
+        let { score, time, bonus } = this.scoreKeeper;
 
-        let {score, time, bonus} = this.scoreKeeper;
+        switch(result) {
+            case 'WIN':
+                this.win(score, time, bonus);
+                break;
+            case 'WINALL':
+                this.winAll(score, time, bonus);
+                break;
+            case 'LOSE':
+                this.lose(score, time, bonus);
+                break;
+            case 'GAMEOVER':
+                this.gameover(score, time, bonus);
+                this.game.player = null;
+                break;
+            default:
+                this.win(score, time, bonus);
+                break;
+        }
 
+        if (this.game.player) {
+            this.updatePlayerStatus(score, time, bonus);
+        }
+    }
+
+    win(score, time, bonus) {
+        console.log('GAME OVER PLAYER WINS...');
         this.status = new Status(this.game,
             { fill: 0x00000 },
             { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU WIN', fontSize: 45 },
@@ -296,20 +311,10 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
 
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
-        this.updatePlayerStatus(score, time, bonus);
     }
 
-    winAll() {
+    winAll(score, time, bonus) {
         console.log('GAME OVER PLAYER COMPLETED GAME...');
-        this.nowPlaying = false;
-
-        this.launchTimer.destroy();
-        this.gameTimer.destroy();
-
-        this.scoreKeeper.calculateFinalResult(true);
-
-        let { score, time, bonus } = this.scoreKeeper;
-
         this.status = new Status(this.game,
             { fill: 0x00000 },
             { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'CONGRATULATIONS!', fontSize: 45 },
@@ -324,19 +329,10 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
 
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
-        this.updatePlayerStatus(score, time, bonus);
     }
 
-    lose() {
+    lose(score, time, bonus) {
         console.log('GAME OVER PLAYER LOSES...');
-        this.nowPlaying = false;
-
-        this.launchTimer.destroy();
-        this.gameTimer.destroy();
-        this.scoreKeeper.calculateFinalResult(false);
-
-        let { score, time, bonus } = this.scoreKeeper;
-
         this.status = new Status(this.game,
             { fill: 0x00000 },
             { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU LOSE', fontSize: 45},
@@ -350,20 +346,11 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
         
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
-        this.updatePlayerStatus(score, time, bonus);
     }
 
     // no more credits
-    gameover() {
+    gameover(score, time, bonus) {
         console.log('GAME OVER PLAYER LOSES NO MORE CREDITS...');
-        this.nowPlaying = false;
-
-        this.launchTimer.destroy();
-        this.gameTimer.destroy();
-        this.scoreKeeper.calculateFinalResult(false);
-
-        let { score, time, bonus } = this.scoreKeeper;
-
         this.status = new Status(this.game,
             { fill: 0x00000 },
             { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'GAME OVER', fontSize: 45 },
@@ -378,25 +365,17 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
 
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
-        this.updatePlayerStatus(score, time, bonus);
     }
 
     updatePlayerStatus(score, time, bonus) {
-        if (this.game.player.credits === 0) {
-            this.game.player = null;
-            return;
-        }
+        if(score > 0) {
+            this.game.player.totalScore += bonus;
 
-        if(score) {
-            this.game.player.completedRound.round = this.game.player.currentRound;
-            this.game.player.completedRound.score = score;
-            this.game.player.completedRound.time = time;
-            this.game.player.completedRound.bonus = bonus;
-
-            if (!this.game.player.gameCompleted) {
-                this.game.player.totalScore += bonus;
+            if (this.game.player.totalScore >= MAX_SCORE) {
+                this.game.player.totalScore = MAX_SCORE; 
             }
 
+            // TODO: only applicable if we are going to store results to db
             if (this.game.player.highScore < this.game.player.totalScore) {
                 this.game.player.highScore = this.game.player.totalScore;
             }
@@ -405,16 +384,19 @@ class Play extends Phaser.State {
                 if (!this.game.player.gameCompleted) {
                     this.game.player.gameCompleted = true;
                 }
+
+                this.game.player.currentRound = 1;
             }else {
                 this.game.player.currentRound++;
             }
         }else {
-            this.game.player.totalScore = 0;
+            // this.game.player.totalScore = 0;
             this.game.player.credits--;
         }
 
-        this.totalScoreText.setText(appendDigits(9, this.game.player.totalScore, 'SCORE '));
+        this.totalScoreText.setText(appendDigits(14, this.game.player.totalScore, 'TOTAL'));
         this.game.player.save();
+        console.log('PLAYER STATUS UPDATE ', Player.getExistingPlayer());
     }
 
     changeCurrentNavigation(e) {
@@ -539,7 +521,7 @@ class Play extends Phaser.State {
                 let { x, y } = this.round.getCoordinates(i, j);
                 console.log('SNAPING TO x: ' + x + ' y: ' + y + ' i: ' + i + ' j: ' + j);
     
-                let currentColor = this.currentBubble.colorCode;
+                let currentColor = this.currentBubble.data.colorCode;
                 let newBubble = this.createBubble(x, y, currentColor, this.bubbles);
                 this.round.matrix[i][j] = currentColor;
                 newBubble.body.immovable = true;
@@ -735,28 +717,26 @@ class Play extends Phaser.State {
             scoreTween.onComplete.add(() => scoreText.destroy(), this);
         });
 
-        if (!this.game.player.gameCompleted) {
-            this.game.player.totalScore += this.scoreKeeper.currentScore;
-        }
-        this.totalScoreText.setText(appendDigits(9, this.game.player.totalScore, 'SCORE'));
+        this.game.player.totalScore += this.scoreKeeper.currentScore;
+        this.totalScoreText.setText(appendDigits(14, this.game.player.totalScore, 'TOTAL'));
         this.scoreKeeper.refreshMaps();
     }
 
     checkLose() {
         if (this.game.player.credits === 0) {
-            this.gameover();
+            this.stopGame('GAMEOVER');
         }else {
-            this.lose();
+            this.stopGame('LOSE');
         }
     }
 
     checkWin() {
         if(!this.bubbles.length ||
-            this.bubbles.children.every(bubble => bubble.colorCode === EntityMap.gold)) {
+            this.bubbles.children.every(bubble => bubble.data.colorCode === EntityMap.gold)) {
             if(this.game.player.currentRound === TOTAL_ROUNDS) {
-                this.winAll();
+                this.stopGame('WINALL');
             }else {
-                this.win();
+                this.stopGame('WIN');
             }
         }
     }

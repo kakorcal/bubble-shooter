@@ -3,10 +3,8 @@ const EntityMap = {
     outOfBounds: -1,
     zero: 0,
     // Colors
-    COLOR_START: 1,
-    COLOR_END: 9,
     BUBBLE_START: 1,
-    BUBBLE_END: 8,
+    BUBBLE_END: 12,
     red: 1,
     blue: 2,
     green: 3,
@@ -16,8 +14,10 @@ const EntityMap = {
     orange: 7,
     pink: 8,
     white: 9,
-    rainbow: 10,
-    gold: 11,
+    grey: 10,
+    rainbow: 11,
+    gold: 12,
+    // TODO: stripe (knocks all bubbles that it touches), creature (???)
     colors: {
         1: 'red',
         2: 'blue',
@@ -28,8 +28,9 @@ const EntityMap = {
         7: 'orange',
         8: 'pink',
         9: 'white',
-        10: 'rainbow',
-        11: 'gold'
+        10: 'grey',
+        11: 'rainbow',
+        12: 'gold'
     },
 
     // Game Objects
@@ -68,6 +69,7 @@ const AlphabetizedMap = {
     j: 9,
     k: 10,
     l: 11,
+    m: 12,
 
     // Game Objects
     A: 50,
