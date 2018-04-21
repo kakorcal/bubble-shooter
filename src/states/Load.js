@@ -15,6 +15,7 @@ const blocksHorizontalHalf1 = './assets/images/blocks-horizontal-half-md-1.png';
 const blockContour1 = './assets/images/block-contour-md-1.png';
 const polnareff1 = './assets/images/polnareff-sp-1.png';
 const speechBubble1 = './assets/images/speech-bubble-sm-1.png';
+const rainbow1 = './assets/images/rainbow-sm-1.png';
 const launcherPlatform1 = './assets/images/launcher-platform-md-1.png';
 const launcherWheel1 = './assets/images/launcher-wheel-md-1.png';
 const happyHellPng = './assets/fonts/happy-hell/font.png';
@@ -59,6 +60,7 @@ class Load extends Phaser.State {
         this.load.image('launcher-platform-1', launcherPlatform1);
         this.load.image('launcher-wheel-1', launcherWheel1);
         this.load.image('speech-bubble-1', speechBubble1);
+        this.load.image('rainbow-1', rainbow1);
 
         // polnareff spritesheet
         // key, url, frameWidth, frameHeight, frameMax, margin, spacing

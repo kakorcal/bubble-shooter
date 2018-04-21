@@ -209,7 +209,9 @@ class Play extends Phaser.State {
                 }else {
                     let { x, y } = this.round.getCoordinates(i, j);
                     this.createBubble(x, y, colorCode, this.bubbles);
-                    if (colorCode !== EntityMap.gold) {
+                    if (colorCode !== EntityMap.gold && 
+                        colorCode !== EntityMap.white && 
+                        colorCode !== EntityMap.rainbow) {
                         this.round.addSelection(colorCode);
                     }
                 }
@@ -221,7 +223,13 @@ class Play extends Phaser.State {
     }
 
     createBubble(x, y, colorCode, group) {
-        let bubble = new Bubble(this.game, TILE_SIZE, x, y, colorCode, group);
+        let bubble = null;
+
+        if (colorCode === EntityMap.rainbow) {
+            bubble = new Bubble(this.game, TILE_SIZE, x, y, colorCode, group, 'rainbow-1', 0);
+        }else {
+            bubble = new Bubble(this.game, TILE_SIZE, x, y, colorCode, group);
+        }
 
         // physics
         this.physics.enable(bubble, Phaser.Physics.ARCADE);
@@ -479,18 +487,35 @@ class Play extends Phaser.State {
     }
 
     updateCollision() {
-        let blockCollision = this.physics.arcade.collide(this.currentBubble, this.blocks, () => console.log('BLOCK COLLISION'), null, this);
-        let topBoundaryCollsion = this.physics.arcade.collide(this.currentBubble, this.topBoundary, () => console.log('TOP BOUNDARY COLLISION'), null, this);
-        let bubbleCollision = this.physics.arcade.collide(this.currentBubble, this.bubbles, () => console.log('BUBBLE COLLISION'), null, this);
+        let blockCollision = this.physics.arcade.collide(
+            this.currentBubble, this.blocks, () => {
+                console.log('BLOCK COLLISION');
+        }, null, this);
 
-        if (topBoundaryCollsion || bubbleCollision) {
-            this.snapToGrid();
+        let topBoundaryCollsion = this.physics.arcade.collide(
+            this.currentBubble, this.topBoundary, () => {
+                console.log('TOP BOUNDARY COLLISION');
+            }, null, this);
+        
+        // NOTE: will need to research further.
+        // ideally want the snapToGrid and updateTopBoundary methods within
+        // the collision callback since it is unsure whether the cb is async
+        let bubbles = {};
+        let bubbleCollision = this.physics.arcade.collide(
+            this.currentBubble, this.bubbles, (currentBubble, collidingBubble) => {
+                console.log('BUBBLE COLLISION');
+                bubbles.currentBubble = currentBubble;
+                bubbles.collidingBubble = collidingBubble;
+            }, null, this);
+
+        if(topBoundaryCollsion || bubbleCollision) {
+            this.snapToGrid(bubbles.currentBubble, bubbles.collidingBubble);
             this.updateTopBoundary();
         }
     }
 
     // TODO: refactor
-    snapToGrid() {
+    snapToGrid(currentBubble, collidingBubble) {
         let curx = this.currentBubble.x;
         let cury = this.currentBubble.y;
         let { i, j } = this.round.getIndices(curx, cury);
@@ -540,7 +565,7 @@ class Play extends Phaser.State {
                 this.currentBubble.y = CURRENT_BUBBLE_Y;
                 this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
 
-                if(this.removeMatchingBubbles(i, j)) {
+                if (this.removeMatchingBubbles(i, j, currentBubble, collidingBubble)) {
                     this.bubbles.destroy();
                     this.createStage();
                     this.updateScore(currentColor);
@@ -552,21 +577,65 @@ class Play extends Phaser.State {
         }
     }
 
-    removeMatchingBubbles(i, j) {
+    removeMatchingBubbles(i, j, currentBubble, collidingBubble) {
         // remove bubbles connected to target
         // identify floating bubbles
         // partition by colorCode
-        
-        // // start from the currentBubble indices
+        if ((currentBubble || collidingBubble) && (currentBubble.key || collidingBubble.key)) {
+            return this.handleSpecialCollision(i, j, currentBubble, collidingBubble);
+        }else {
+            return this.handleDefaultCollision(i, j);
+        }
+    }
+
+    handleSpecialCollision(curI, curJ, currentBubble, collidingBubble) {
+        // TODO: refactor if other special collision are to be included
+        // will only add the rainbow collision for now
+        if (currentBubble.key === EntityMap.collision.rainbow || collidingBubble.key === EntityMap.collision.rainbow) {
+            // set the targetColor and rainbow at x,y to 0
+            // remove floaters
+            let targetColor = null;
+            let collidingBubbleIndices = this.round.getIndices(collidingBubble.x, collidingBubble.y);
+            let collidingBubbleI = collidingBubbleIndices.i;
+            let collidingBubbleJ = collidingBubbleIndices.j;
+
+            if(currentBubble.key) {
+                targetColor = this.round.matrix[collidingBubbleI][collidingBubbleJ];
+                this.scoreKeeper.add(this.round.matrix[curI][curJ], curI, curJ);
+                this.round.matrix[curI][curJ] = EntityMap.zero;
+            }else {
+                targetColor = this.round.matrix[curI][curJ];
+                this.scoreKeeper.add(this.round.matrix[collidingBubbleI][collidingBubbleJ], collidingBubbleI, collidingBubbleJ);
+                this.round.matrix[collidingBubbleI][collidingBubbleJ] = EntityMap.zero;
+            }
+
+            for(let i = 0; i < this.round.matrix.length; i++) {
+                for(let j = 0; j < this.round.matrix[i].length; j++) {
+                    if (this.round.matrix[i][j] === targetColor) {
+                        this.scoreKeeper.add(this.round.matrix[i][j], i, j);
+                        this.round.matrix[i][j] = EntityMap.zero;
+                    }
+                }
+            }
+
+            this.removeFloatingBubbles();
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    handleDefaultCollision(i, j) {
+        // start from the currentBubble indices
         let targetColor = this.round.matrix[i][j];
-        let target = this.round.getBubbleHash(i, j);        
+        let target = this.round.getBubbleHash(i, j);
         let matches = new Set();
         let queue = [target];
-        
+
         while (queue.length) {
             let current = queue.shift();
             matches.add(current);
-            let {indices} = this.round.fromBubbleHash(current);
+            let { indices } = this.round.fromBubbleHash(current);
             let neighbors = this.getNeighbors(indices.i, indices.j);
 
             neighbors.forEach(hash => {
@@ -577,9 +646,9 @@ class Play extends Phaser.State {
             });
         }
 
-        if(matches.size > 2) {
+        if (matches.size > 2) {
             console.log('MATCH DETECTED REMOVING BUBBLES...');
-            
+
             matches.forEach(hash => {
                 let { indices, colorCode } = this.round.fromBubbleHash(hash);
                 let { i, j } = indices;
@@ -589,7 +658,7 @@ class Play extends Phaser.State {
 
             this.removeFloatingBubbles();
             return true;
-        }else {
+        } else {
             return false;
         }
     }

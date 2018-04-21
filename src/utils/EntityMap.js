@@ -49,6 +49,11 @@ const EntityMap = {
         53: 'bubble',
         54: 'block',
         55: 'halfBlock'
+    },
+
+    // special collisions
+    collision: {
+        rainbow: 'rainbow-1'
     }
 };
 

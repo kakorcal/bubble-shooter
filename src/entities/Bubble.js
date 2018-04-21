@@ -1,10 +1,9 @@
 import { EntityMap } from '../utils/EntityMap';
 import { Colors } from '../utils/Colors';
 
-// TODO: attach props to .data to prevent overwrite
 class Bubble extends Phaser.Sprite {
-    constructor(game, diameter, x, y, colorCode, group) {
-        super(game, x, y);
+    constructor(game, diameter, x, y, colorCode, group, key) {
+        super(game, x, y, key);
         let color = EntityMap.colors[colorCode];
         let { fill, alpha, stroke, strokeWidth } = Colors[color];
 
@@ -15,13 +14,14 @@ class Bubble extends Phaser.Sprite {
         this.data.stroke = stroke;
         this.data.strokeWidth = strokeWidth;
         this.data.colorCode = colorCode;
-        
-        this.draw();
-
-        this.addChild(this.data.graphic);
         this.anchor.set(0.5, 0.5);
         this.scale.set(0.9, 0.9);
-
+        
+        if(!key) {
+            this.draw();
+            this.addChild(this.data.graphic);
+        }
+        
         if(group) {
             group.add(this);
         }else {
@@ -48,7 +48,7 @@ class Bubble extends Phaser.Sprite {
     }
     
     // TODO
-    addGradient(cb) {
+    addRainbow(cb) {
         if(cb()) {
 
         }

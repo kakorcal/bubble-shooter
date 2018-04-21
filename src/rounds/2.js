@@ -31,5 +31,3 @@ export default [
      [0,0,0,0,0,0,0,_],
     [x,x,x,x,x,x,x,x]
 ];
-
-// export const selection = [g, f, h, d, e];

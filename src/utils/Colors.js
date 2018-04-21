@@ -61,10 +61,10 @@ export const Colors = {
     },
     // TODO
     rainbow: {
-        fill: 0xFFFFFF,
-        alpha: 1,
-        stroke: 0x000000,
-        strokeWidth: 2 
+        fill: null,
+        alpha: null,
+        stroke: null,
+        strokeWidth: null 
     },
     gold: {
         fill: 0xFEEA89,
