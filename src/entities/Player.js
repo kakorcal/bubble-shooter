@@ -1,5 +1,5 @@
 class Player {
-    constructor(name = 'GUEST', credits = 2, totalScore = 0, highScore = 0, currentRound = 1, gameCompleted = false) {
+    constructor(name = 'GUEST', credits = 2, totalScore = 0, highScore = 0, currentRound = 20, gameCompleted = false) {
         this.name = name;
         this.credits = credits;
         this.totalScore = totalScore;

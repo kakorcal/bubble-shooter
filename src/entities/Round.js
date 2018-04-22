@@ -69,7 +69,7 @@ class Round {
         this.matrix.unshift(topRow);
         
         let outOfBounds = this.matrix.pop();
-        let validMatrix = this.matrix[this.rows - 1].every(el => el === EntityMap.zero || el === EntityMap.empty);
+        let validMatrix = this.matrix[this.rows - 1].every(el => el === EntityMap.zero || el === EntityMap.empty || el === EntityMap.gold);
 
         if(validMatrix) {
             this.matrix.pop();
@@ -111,7 +111,7 @@ class Round {
     }
 
     clearSelection() {
-        if(this.selection.size > 3) {
+        if(this.selection.size > 2) {
             this.selection.clear();
         }
     }

@@ -7,28 +7,28 @@ const EntityMap = {
     BUBBLE_END: 12,
     red: 1,
     blue: 2,
-    green: 3,
+    grey: 3,
     yellow: 4,
     purple: 5,
     skyBlue: 6,
     orange: 7,
     pink: 8,
     white: 9,
-    grey: 10,
+    green: 10,
     rainbow: 11,
     gold: 12,
     // TODO: stripe (knocks all bubbles that it touches), creature (???)
     colors: {
         1: 'red',
         2: 'blue',
-        3: 'green',
+        3: 'grey',
         4: 'yellow',
         5: 'purple',
         6: 'skyBlue',
         7: 'orange',
         8: 'pink',
         9: 'white',
-        10: 'grey',
+        10: 'green',
         11: 'rainbow',
         12: 'gold'
     },
@@ -55,7 +55,7 @@ const EntityMap = {
     collision: {
         rainbow: {
             name: 'rainbow-1',
-            stages: [3]
+            stages: [3,16,20]
         }
         
     }
