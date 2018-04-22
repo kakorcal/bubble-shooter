@@ -55,7 +55,7 @@ const EntityMap = {
     collision: {
         rainbow: {
             name: 'rainbow-1',
-            stages: [3,16,20,24,38]
+            stages: [3,16,20,24,38,45,49,50]
         }
         
     }
