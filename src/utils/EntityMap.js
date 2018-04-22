@@ -53,7 +53,11 @@ const EntityMap = {
 
     // special collisions
     collision: {
-        rainbow: 'rainbow-1'
+        rainbow: {
+            name: 'rainbow-1',
+            stages: [3]
+        }
+        
     }
 };
 

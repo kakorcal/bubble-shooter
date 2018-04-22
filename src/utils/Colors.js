@@ -50,13 +50,13 @@ export const Colors = {
     white: {
         fill: 0xFFFFFF,
         alpha: 1,
-        stroke: 0x000000,
+        stroke: 0xDDDDDD,
         strokeWidth: 2
     },
     grey: {
         fill: 0xEEEEEE,
         alpha: 1,
-        stroke: 0xEEEEEE,
+        stroke: 0xCCCCCC,
         strokeWidth: 2
     },
     // TODO

@@ -37,7 +37,12 @@ class Play extends Phaser.State {
         this.createStage();
         this.createScoreboard();
         
-        this.currentBubble = this.createRandomBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
+        let specialCollision = EntityMap.collision.rainbow.stages.includes(this.game.player.currentRound);
+        if(specialCollision) {
+            this.currentBubble = this.createBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y, EntityMap.rainbow);
+        }else {
+            this.currentBubble = this.createRandomBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
+        }
         this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
 
         // game logic
@@ -129,11 +134,11 @@ class Play extends Phaser.State {
         this.totalScoreText = this.add.bitmapText(13, 13, 'upheaval', appendDigits(14, this.game.player.totalScore, 'TOTAL'), 25);
         this.totalScoreText.anchor.set(0, 0.5);
 
-        this.roundText = this.add.bitmapText(CANVAS_WIDTH - 13, 13, 'upheaval', appendDigits(3, this.game.player.currentRound, 'ROUND'), 25);
+        this.roundText = this.add.bitmapText(CANVAS_WIDTH - 12, 13, 'upheaval', appendDigits(3, this.game.player.currentRound, 'ROUND'), 25);
         this.roundText.anchor.set(1, 0.5);
 
         this.creditText = this.add.text(
-            CANVAS_WIDTH - 15, CANVAS_HEIGHT - 12,
+            CANVAS_WIDTH - 10, CANVAS_HEIGHT - 12,
             `CREDITS ${this.game.player.credits}`,
             { font: "12px monospace", fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
         );
@@ -226,7 +231,7 @@ class Play extends Phaser.State {
         let bubble = null;
 
         if (colorCode === EntityMap.rainbow) {
-            bubble = new Bubble(this.game, TILE_SIZE, x, y, colorCode, group, 'rainbow-1', 0);
+            bubble = new Bubble(this.game, TILE_SIZE, x, y, colorCode, group, EntityMap.collision.rainbow.name, 0);
         }else {
             bubble = new Bubble(this.game, TILE_SIZE, x, y, colorCode, group);
         }
@@ -591,7 +596,7 @@ class Play extends Phaser.State {
     handleSpecialCollision(curI, curJ, currentBubble, collidingBubble) {
         // TODO: refactor if other special collision are to be included
         // will only add the rainbow collision for now
-        if (currentBubble.key === EntityMap.collision.rainbow || collidingBubble.key === EntityMap.collision.rainbow) {
+        if (currentBubble.key === EntityMap.collision.rainbow.name || collidingBubble.key === EntityMap.collision.rainbow.name) {
             // set the targetColor and rainbow at x,y to 0
             // remove floaters
             let targetColor = null;
