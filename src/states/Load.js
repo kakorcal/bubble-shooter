@@ -127,6 +127,7 @@ class Load extends Phaser.State {
         // enable physics
         this.physics.startSystem(Phaser.Physics.ARCADE);
         this.state.start('menu');
+        this.game.data.audio.theme0.play(null, 0, 1, true);
 
         console.log('LAUNCHING GAME ', this.game);
     }

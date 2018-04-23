@@ -18,6 +18,6 @@ export const NEXT_BUBBLE_Y = CANVAS_HEIGHT - TILE_SIZE - ANCHOR_OFFSET;
 export const BUBBLE_PHYSICS_SIZE = TILE_SIZE - 10;
 export const ROUND_MODE_1 = 17;
 export const ROUND_MODE_2 = 8;
-export const TOTAL_ROUNDS = 20;
+export const TOTAL_ROUNDS = 50;
 // https://stackoverflow.com/questions/307179/what-is-javascripts-highest-integer-value-that-a-number-can-go-to-without-losin
 export const MAX_SCORE = 99999999999999;

@@ -255,7 +255,7 @@ class Play extends Phaser.State {
     createRandomBubble(x, y, group) {
         let randomColorCode = getRandomInteger(this.round.selection);
         let rainbowChance = Math.floor(Math.random() * 100);
-        if(rainbowChance <= 5) {
+        if(rainbowChance === 10) {
             randomColorCode = EntityMap.rainbow;
         }
         return this.createBubble(x, y, randomColorCode, group);
