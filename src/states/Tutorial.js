@@ -282,6 +282,14 @@ class Tutorial extends Phaser.State {
         );
 
         instructions.anchor.set(0, 0.5);
+
+        instructions.alpha = 0;
+
+        // Yoyo the text
+        let instructionsTween = this.add.tween(instructions).
+            to({ alpha: 1 }, 500, "Linear", true, 0, -1);
+
+        instructionsTween.yoyo(true, 300); 
     }
 
     // remove overlay, starts timer, setups stats, enable input
@@ -371,8 +379,6 @@ class Tutorial extends Phaser.State {
             if (this.totalScore >= MAX_SCORE) {
                 this.totalScore = MAX_SCORE; 
             }
-
-
         }
 
         this.totalScoreText.setText(appendDigits(14, this.totalScore, 'TOTAL'));
