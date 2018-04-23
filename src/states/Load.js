@@ -17,6 +17,8 @@ class Load extends Phaser.State {
         let loadTimer = this.time.create(true);
         loadTimer.add(Phaser.Timer.SECOND * 1.5, () => {
             document.getElementsByTagName('canvas')[0].style.opacity = 1;
+            document.getElementById('github').style.opacity = 1;
+
             let loadingText = this.add.text(
                 CENTER_X, CENTER_Y, "LOADING...",
                 { font: "40px monospace", fill: "yellow", align: "center", strokeThickness: 5 }
@@ -99,6 +101,8 @@ class Load extends Phaser.State {
 
     create() {
         document.getElementsByTagName('canvas')[0].style.opacity = 1;
+        document.getElementById('github').style.opacity = 1;
+        
         // adding data object to prevent overwriting phaser props
         this.game.data = {};
 
