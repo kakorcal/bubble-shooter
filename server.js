@@ -1,29 +1,37 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const PORT = 3000;
+const ENV = process.env.NODE_ENV || 'development';
+const PORT = process.env.PORT || 3000;
 
-app.use('/assets', express.static(path.join(__dirname, 'src/assets')))
+// https://expressjs.com/en/advanced/best-practice-performance.html
+app.use(require('helmet')());
+app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
 
-// TODO: add condition for production
-const webpack = require('webpack');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const config = require('./webpack.config.js');
-const compiler = webpack(config);
+if(ENV === 'development') {
+    const webpack = require('webpack');
+    const webpackDevMiddleware = require('webpack-dev-middleware');
+    const config = require('./webpack.config.js');
+    const compiler = webpack(config);
+    
+    app.use(webpackDevMiddleware(compiler, {
+        publicPath: config.output.publicPath,
+        noInfo: true,
+        stats: {colors: true},
+        historyApiFallback: true
+    }));
+    
+    app.use(require("webpack-hot-middleware")(compiler, {
+        log: false,
+        path: '/__webpack_hmr',
+        heartbeat: 10 * 1000
+    }));
+}else {
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'dist/index.html'));
+    });
+}
 
-app.use(webpackDevMiddleware(compiler, {
-    publicPath: config.output.publicPath,
-    noInfo: true,
-    stats: {colors: true},
-    historyApiFallback: true
-}));
-
-app.use(require("webpack-hot-middleware")(compiler, {
-    log: false,
-    path: '/__webpack_hmr',
-    heartbeat: 10 * 1000
-}));
-
-app.listen(PORT, function () {
+app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
 });

@@ -4,7 +4,10 @@
   "description": "",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "build:prod": "webpack --config webpack.prod.config.js",
+    "server:prod": "NODE_ENV=production node server.js",
+    "prod": "npm run build:prod && npm run server:prod"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +29,7 @@
   },
   "dependencies": {
     "express": "^4.16.3",
+    "helmet": "^3.12.0",
     "phaser": "^3.3.0",
     "phaser-ce": "^2.10.3",
     "webfontloader": "^1.6.28"
