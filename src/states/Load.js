@@ -94,7 +94,7 @@ class Load extends Phaser.State {
             Phaser.Keyboard.DOWN, 
             Phaser.Keyboard.SPACEBAR,
             Phaser.Keyboard.ENTER
-        ]);
+        ]);        
     }
 
     create() {

@@ -37,6 +37,7 @@ class Tutorial extends Phaser.State {
         this.createLauncher();
         this.createStage();
         this.createScoreboard();
+        this.createInstructions();
         this.currentBubble = this.createRandomBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
         this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
         this.theme = this.game.data.audio.theme0;
@@ -237,6 +238,52 @@ class Tutorial extends Phaser.State {
         return this.createBubble(x, y, randomColorCode, group);
     }
 
+    createInstructions() {
+        let style1 = {
+            font: "15px monospace",
+            fill: "white",
+            align: "left",
+            stroke: 'black',
+            strokeThickness: 3
+        };
+
+        let style2 = { 
+            font: "11px monospace", 
+            fill: "white", 
+            align: "left",
+            stroke: 'black', 
+            strokeThickness: 3
+        };
+
+        let rules = "• Clear all bubbles\nusing the launcher\n"
+            + "• Remove bubble by\nattaching to clusters\nof 3 or more with the\nsame color\n"
+            + "• Bubbles hanging from\nclusters are removed\n"
+            + "• Each bubble removed\nis worth 10 points\n"
+            + "• Each hanging bubble\nremoved is worth\n10^(hanging bubbles)\npoints per color\n"
+            + "• There are a total\nof 50 rounds and\n6 credits per game\nGood Luck!"
+
+        // adding rules and controls
+        let rulesHeader = this.add.text(30, 34, "OBJECTIVE:" ,style1);
+        let rulesDesc = this.add.text(5, 60, rules, style2);
+
+        let controls = "• SPACE:\nLaunch bubble\n"
+            + "• ARROW LEFT/RIGHT:\nRotate launcher\n"
+            + "• ENTER:\nSelect navigation\n"
+            + "• ARROW UP/DOWN:\nSwitch navigation"
+        
+        let controlHeader = this.add.text(CANVAS_WIDTH - 120, 34, "CONTROLS:", style1);
+        let controlDesc = this.add.text(CANVAS_WIDTH - 150, 60, controls, style2);
+
+        // adding instruction text
+        let instructions = this.add.text(
+            7, CANVAS_HEIGHT - 10,
+            "Press ENTER to go back",
+            { font: "12px monospace", fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
+        );
+
+        instructions.anchor.set(0, 0.5);
+    }
+
     // remove overlay, starts timer, setups stats, enable input
     startGame() {
         console.log('NOW PLAYING TUTORIAL...');
@@ -351,6 +398,8 @@ class Tutorial extends Phaser.State {
             let state = this.navigation.children[currentIndex].stateName;
             this.navigation.tweenNavigation(currentIndex, () => this.state.start(state));
             this.game.data.audio.selectNavigation.play();
+        }else {
+            this.state.start('menu');
         }
     }
 
