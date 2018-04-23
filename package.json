@@ -7,7 +7,8 @@
     "start": "node server.js",
     "build:prod": "webpack --config webpack.prod.config.js",
     "server:prod": "NODE_ENV=production node server.js",
-    "prod": "npm run build:prod && npm run server:prod"
+    "prod": "npm run build:prod && npm run server:prod",
+    "forever:prod": "NODE_ENV=production forever start server.js"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,7 @@
     "html-webpack-plugin": "^3.2.0",
     "raw-loader": "^0.5.1",
     "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.15",
     "webpack-dev-middleware": "^3.1.2",
     "webpack-hot-middleware": "^2.21.2",
     "xml-loader": "^1.2.1"

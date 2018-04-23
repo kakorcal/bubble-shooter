@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 // https://expressjs.com/en/advanced/best-practice-performance.html
 app.use(require('helmet')());
-app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 if(ENV === 'development') {
     const webpack = require('webpack');
@@ -28,7 +28,7 @@ if(ENV === 'development') {
     }));
 }else {
     app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, 'dist/index.html'));
+        res.sendFile(path.join(__dirname, 'public/dist/index.html'));
     });
 }
 

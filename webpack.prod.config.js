@@ -18,7 +18,8 @@ module.exports = {
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'public/dist'),
+        publicPath: '/dist'
     },
     module: {
         rules: [
@@ -33,6 +34,7 @@ module.exports = {
             {
                 test: /\.html$/,
                 exclude: /node_modules/,
+                include: path.join(__dirname, 'src'),
                 use: {
                     loader: 'raw-loader'
                 }
@@ -40,6 +42,7 @@ module.exports = {
             {
                 test: /\.(xml|fnt)$/,
                 exclude: /node_modules/,
+                include: path.join(__dirname, 'src/assets'),
                 use: {
                     loader: 'xml-loader'
                 }
@@ -47,6 +50,7 @@ module.exports = {
             {
                 test: /\.(png|svg|jpg|gif)$/,
                 exclude: /node_modules/,
+                include: path.join(__dirname, 'src/assets'),
                 use: {
                     loader: 'file-loader'
                 }
@@ -86,7 +90,7 @@ module.exports = {
         }
     },
     plugins: [
-        new CleanWebpackPlugin(['dist']),
+        new CleanWebpackPlugin(['public/dist']),
         new HtmlWebpackPlugin({
             template: './src/index.html',
             chunks: ['vendor', 'app']
