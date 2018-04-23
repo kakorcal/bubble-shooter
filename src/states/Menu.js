@@ -3,6 +3,10 @@ import Navigation from '../entities/Navigation';
 import {ROWS, COLUMNS, TILE_SIZE, CANVAS_HEIGHT, CENTER_X, CENTER_Y} from '../utils/Constants';
 
 class Menu extends Phaser.State {
+    preload() {
+        this.game.data.audio.theme0.play(null, 0, 1, true);
+    }
+
     create() {
         // TODO: https://stackoverflow.com/questions/39152877/consider-marking-event-handler-as-passive-to-make-the-page-more-responsive
         this.createTiles();
@@ -36,7 +40,7 @@ class Menu extends Phaser.State {
 
     createNavigation() {        
         // adding logo text
-        if(this.game.player) {
+        if(this.game.data.player) {
             this.navigation = new Navigation(this.game, [
                 {name: 'CONTINUE', stateName: 'continue', font: 'upheaval', fontSize: 30},
                 {name: 'NEW GAME', stateName: 'newGame', font: 'upheaval', fontSize: 30},
@@ -69,6 +73,8 @@ class Menu extends Phaser.State {
         if (e.keyCode === this.game.keyUp.keyCode) {
             this.navigation.changeCurrentNavigation(-1);
         }
+
+        this.game.data.audio.switchNavigation.play();
     }
 
     changeState(e) {     
@@ -76,13 +82,22 @@ class Menu extends Phaser.State {
 
         if(state === 'newGame') {
             Player.clear();
-            this.game.player = new Player();
+            this.game.data.player = new Player();
             state = 'play';
         }else if(state === 'continue') {
             state = 'play';
         }
         
-        this.navigation.tweenNavigation(this.navigation.currentIndex, () => this.state.start(state));
+        this.navigation.tweenNavigation(this.navigation.currentIndex, () => { 
+                this.state.start(state);
+
+                if(state !== 'tutorial') {
+                    this.game.data.audio.theme0.stop();
+                }
+                
+            });
+            
+        this.game.data.audio.selectNavigation.play();
     }
 
     shutdown() {

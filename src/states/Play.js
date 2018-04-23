@@ -24,9 +24,17 @@ class Play extends Phaser.State {
         this.scoreKeeper = new ScoreKeeper();
         this.launchCountdown = LAUNCH_COUNTDOWN;
         this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
-        this.round = new Round(this.game.player.currentRound, TILE_SIZE, ANCHOR_OFFSET);
+        this.round = new Round(this.game.data.player.currentRound, TILE_SIZE, ANCHOR_OFFSET);
         // this.bubbleLaunched = false;
         // this.paused = false;
+
+        if (this.game.data.player.currentRound % 2 === 0) {
+            this.theme = this.game.data.audio.theme1;
+        }else {
+            this.theme = this.game.data.audio.theme2;
+        }
+
+        this.theme.restart(null, 0, 1, true);
     }
 
     create() {       
@@ -37,7 +45,7 @@ class Play extends Phaser.State {
         this.createStage();
         this.createScoreboard();
         
-        let specialCollision = EntityMap.collision.rainbow.stages.includes(this.game.player.currentRound);
+        let specialCollision = EntityMap.collision.rainbow.stages.includes(this.game.data.player.currentRound);
         if(specialCollision) {
             this.currentBubble = this.createBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y, EntityMap.rainbow);
         }else {
@@ -131,15 +139,15 @@ class Play extends Phaser.State {
     }
 
     createScoreboard() {
-        this.totalScoreText = this.add.bitmapText(13, 13, 'upheaval', appendDigits(14, this.game.player.totalScore, 'TOTAL'), 25);
+        this.totalScoreText = this.add.bitmapText(13, 13, 'upheaval', appendDigits(14, this.game.data.player.totalScore, 'TOTAL'), 25);
         this.totalScoreText.anchor.set(0, 0.5);
 
-        this.roundText = this.add.bitmapText(CANVAS_WIDTH - 12, 13, 'upheaval', appendDigits(3, this.game.player.currentRound, 'ROUND'), 25);
+        this.roundText = this.add.bitmapText(CANVAS_WIDTH - 12, 13, 'upheaval', appendDigits(3, this.game.data.player.currentRound, 'ROUND'), 25);
         this.roundText.anchor.set(1, 0.5);
 
         this.creditText = this.add.text(
             CANVAS_WIDTH - 10, CANVAS_HEIGHT - 12,
-            `CREDITS ${this.game.player.credits}`,
+            `CREDITS ${this.game.data.player.credits}`,
             { font: "12px monospace", fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
         );
 
@@ -246,6 +254,10 @@ class Play extends Phaser.State {
 
     createRandomBubble(x, y, group) {
         let randomColorCode = getRandomInteger(this.round.selection);
+        let rainbowChance = Math.floor(Math.random() * 100);
+        if(rainbowChance <= 5) {
+            randomColorCode = EntityMap.rainbow;
+        }
         return this.createBubble(x, y, randomColorCode, group);
     }
 
@@ -299,16 +311,18 @@ class Play extends Phaser.State {
                 break;
             case 'GAMEOVER':
                 this.gameover(score, time, bonus);
-                this.game.player = null;
+                this.game.data.player = null;
                 break;
             default:
                 this.win(score, time, bonus);
                 break;
         }
 
-        if (this.game.player) {
+        if (this.game.data.player) {
             this.updatePlayerStatus(score, time, bonus);
         }
+
+        this.theme.stop();
     }
 
     win(score, time, bonus) {
@@ -328,6 +342,8 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
 
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+
+        this.game.data.audio.gameWin.play();
     }
 
     winAll(score, time, bonus) {
@@ -346,6 +362,8 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
 
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+
+        this.game.data.audio.gameWin.play();
     }
 
     lose(score, time, bonus) {
@@ -363,6 +381,8 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
         
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+
+        this.game.data.audio.gameLose.play();
     }
 
     // no more credits
@@ -382,37 +402,39 @@ class Play extends Phaser.State {
         ], CENTER_X, CENTER_Y + 110, 40);
 
         this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+
+        this.game.data.audio.gameLose.play();
     }
 
     updatePlayerStatus(score, time, bonus) {
         if(score > 0) {
-            this.game.player.totalScore += bonus;
+            this.game.data.player.totalScore += bonus;
 
-            if (this.game.player.totalScore >= MAX_SCORE) {
-                this.game.player.totalScore = MAX_SCORE; 
+            if (this.game.data.player.totalScore >= MAX_SCORE) {
+                this.game.data.player.totalScore = MAX_SCORE; 
             }
 
             // TODO: only applicable if we are going to store results to db
-            if (this.game.player.highScore < this.game.player.totalScore) {
-                this.game.player.highScore = this.game.player.totalScore;
+            if (this.game.data.player.highScore < this.game.data.player.totalScore) {
+                this.game.data.player.highScore = this.game.data.player.totalScore;
             }
 
-            if (this.game.player.currentRound === TOTAL_ROUNDS) {
-                if (!this.game.player.gameCompleted) {
-                    this.game.player.gameCompleted = true;
+            if (this.game.data.player.currentRound === TOTAL_ROUNDS) {
+                if (!this.game.data.player.gameCompleted) {
+                    this.game.data.player.gameCompleted = true;
                 }
 
-                this.game.player.currentRound = 1;
+                this.game.data.player.currentRound = 1;
             }else {
-                this.game.player.currentRound++;
+                this.game.data.player.currentRound++;
             }
         }else {
-            // this.game.player.totalScore = 0;
-            this.game.player.credits--;
+            // this.game.data.player.totalScore = 0;
+            this.game.data.player.credits--;
         }
 
-        this.totalScoreText.setText(appendDigits(14, this.game.player.totalScore, 'TOTAL'));
-        this.game.player.save();
+        this.totalScoreText.setText(appendDigits(14, this.game.data.player.totalScore, 'TOTAL'));
+        this.game.data.player.save();
         console.log('PLAYER STATUS UPDATE ', Player.getExistingPlayer());
     }
 
@@ -426,6 +448,8 @@ class Play extends Phaser.State {
                 this.navigation.changeCurrentNavigation(-1);
             }
         }
+
+        this.game.data.audio.switchNavigation.play();
     }
 
     changeState(e) {
@@ -433,6 +457,7 @@ class Play extends Phaser.State {
             let currentIndex = this.navigation.currentIndex;
             let state = this.navigation.children[currentIndex].stateName;
             this.navigation.tweenNavigation(currentIndex, () => this.state.start(state));
+            this.game.data.audio.selectNavigation.play();
         }
     }
 
@@ -444,6 +469,8 @@ class Play extends Phaser.State {
                 // https://phaser.io/docs/2.4.4/Phaser.Physics.Arcade.html#velocityFromRotation
                 // need to subtract 90 to get the coordinates adjusted
                 this.arrow.angle - 90, 330, this.currentBubble.body.velocity);
+            
+            this.game.data.audio.launchBubble.play();
         }
     }
 
@@ -455,10 +482,13 @@ class Play extends Phaser.State {
     }
 
     updateLaunchCountdown() {
-        if (this.launchCountdown <= Math.floor(LAUNCH_COUNTDOWN / 2)) {
+        if (this.launchCountdown <= Math.floor(LAUNCH_COUNTDOWN / 4)) {
             this.speechBubble.alpha = 1;
             this.speechBubbleText.alpha = 1;
             this.speechBubbleText.setText(this.launchCountdown);
+
+            // TODO: use another soundfx
+            this.game.data.audio.switchNavigation.play();
 
             if(this.launchCountdown === 0) {
                 this.launchBubble();
@@ -671,6 +701,7 @@ class Play extends Phaser.State {
     removeFloatingBubbles() {
         let topRow = this.round.matrix[this.round.topRow];
         let memo = new Set();
+        let hasFloats = false;
 
         topRow.forEach((el, j) => {
             if (this.round.isBubble(this.round.topRow, j)) {
@@ -686,8 +717,15 @@ class Play extends Phaser.State {
                 if (this.round.isBubble(i, j) && !memo.has(hash)) {
                     this.scoreKeeper.add(this.round.matrix[i][j], i, j);
                     this.round.matrix[i][j] = EntityMap.zero;
+                    hasFloats = true;
                 }
             }
+        }
+
+        if(hasFloats) {
+            this.game.data.audio.nonTargetBubble.play();
+        }else {
+            this.game.data.audio.targetBubble.play();
         }
     }
 
@@ -795,13 +833,13 @@ class Play extends Phaser.State {
             scoreTween.onComplete.add(() => scoreText.destroy(), this);
         });
 
-        this.game.player.totalScore += this.scoreKeeper.currentScore;
-        this.totalScoreText.setText(appendDigits(14, this.game.player.totalScore, 'TOTAL'));
+        this.game.data.player.totalScore += this.scoreKeeper.currentScore;
+        this.totalScoreText.setText(appendDigits(14, this.game.data.player.totalScore, 'TOTAL'));
         this.scoreKeeper.refreshMaps();
     }
 
     checkLose() {
-        if (this.game.player.credits === 0) {
+        if (this.game.data.player.credits === 0) {
             this.stopGame('GAMEOVER');
         }else {
             this.stopGame('LOSE');
@@ -811,7 +849,7 @@ class Play extends Phaser.State {
     checkWin() {
         if(!this.bubbles.length ||
             this.bubbles.children.every(bubble => bubble.data.colorCode === EntityMap.gold)) {
-            if(this.game.player.currentRound === TOTAL_ROUNDS) {
+            if(this.game.data.player.currentRound === TOTAL_ROUNDS) {
                 this.stopGame('WINALL');
             }else {
                 this.stopGame('WIN');
