@@ -26,8 +26,7 @@ class Tutorial extends Phaser.State {
         this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
         this.round = new Round(0, TILE_SIZE, ANCHOR_OFFSET);
         this.totalScore = 0;
-        // this.bubbleLaunched = false;
-        // this.paused = false;
+        this.bubbleLaunched = false;
     }
 
     create() {       
@@ -410,7 +409,7 @@ class Tutorial extends Phaser.State {
     }
 
     launchBubble() {
-        if (this.nowPlaying) {
+        if (this.nowPlaying && !this.bubbleLaunched) {
             console.log('LAUNCH BUBBLE... RESETTING COUNTDOWN ', this.launchCountdown);
             this.launchCountdown = LAUNCH_COUNTDOWN;
             this.physics.arcade.velocityFromAngle(
@@ -419,6 +418,7 @@ class Tutorial extends Phaser.State {
                 this.arrow.angle - 90, 330, this.currentBubble.body.velocity);
             
             this.game.data.audio.launchBubble.play();
+            this.bubbleLaunched = true;
         }
     }
 
@@ -494,6 +494,7 @@ class Tutorial extends Phaser.State {
         if(topBoundaryCollsion || bubbleCollision) {
             this.snapToGrid(bubbles.currentBubble, bubbles.collidingBubble);
             this.updateTopBoundary();
+            this.bubbleLaunched = false;
         }
     }
 
