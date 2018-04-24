@@ -455,7 +455,7 @@ class Play extends Phaser.State {
         if(!this.nowPlaying && this.navigation) {
             let currentIndex = this.navigation.currentIndex;
             let state = this.navigation.children[currentIndex].stateName;
-            this.navigation.tweenNavigation(currentIndex, () => this.state.start(state));
+            this.navigation.tweenNavigation(currentIndex, () => this.state.start(state, true, false, 'play'));
             this.game.data.audio.selectNavigation.play();
         }
     }
