@@ -149,7 +149,7 @@ class Play extends Phaser.State {
         this.physics.enable(this.topBoundary, Phaser.Physics.ARCADE);
         this.topBoundary.body.immovable = true;
         this.topBoundary.body.allowGravity = false;
-        this.topBoundary.body.setSize(CANVAS_WIDTH, 31);
+        this.topBoundary.body.setSize(CANVAS_WIDTH, TILE_SIZE + 1);
     }
 
     createScoreboard() {
