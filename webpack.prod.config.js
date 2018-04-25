@@ -19,7 +19,7 @@ module.exports = {
     output: {
         filename: '[name].js',
         path: path.resolve(__dirname, 'static/dist'),
-        publicPath: '/dist'
+        publicPath: '/static/dist'
     },
     module: {
         rules: [
