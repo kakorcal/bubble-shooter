@@ -32,7 +32,7 @@ if(ENV === 'development') {
 }else {
     console.log('ENV', ENV);
     app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, 'public/dist/index.html'));
+        res.sendFile(path.join(__dirname, 'static/dist/index.html'));
     });
 }
 
