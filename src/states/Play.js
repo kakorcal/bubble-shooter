@@ -39,6 +39,7 @@ class Play extends Phaser.State {
     create() {       
         // builder
         this.createTiles();
+        this.createBlocks();        
         this.createBoundaries();
         this.createLauncher();
         this.createStage();
@@ -75,6 +76,63 @@ class Play extends Phaser.State {
         this.tiles.align(COLUMNS, ROWS, TILE_SIZE, TILE_SIZE);
     }
 
+    createBlocks() {
+        this.blocks = this.add.physicsGroup();
+
+        // top / bottom blocks
+        for(let i = 0; i < COLUMNS; i++) {
+            this.blocks.create((i * TILE_SIZE) + ANCHOR_OFFSET, ANCHOR_OFFSET, 'block-1');
+            this.blocks.create((i * TILE_SIZE) + ANCHOR_OFFSET, CANVAS_HEIGHT - ANCHOR_OFFSET, 'block-1');
+        }
+
+        let colLength = Math.floor((COLUMNS - this.round.cols) / 2);
+        for(let i = 1; i < ROWS - 1; i++) {
+            for (let j = 0; j < colLength; j++) {
+                let left = this.blocks.create((j * TILE_SIZE) + ANCHOR_OFFSET, (i * TILE_SIZE) + ANCHOR_OFFSET, 'block-1');
+                let right = this.blocks.create((CANVAS_WIDTH - ANCHOR_OFFSET) - (j * TILE_SIZE), (i * TILE_SIZE) + ANCHOR_OFFSET, 'block-1');
+
+                left.body.checkCollision.up = false;
+                left.body.checkCollision.down = false;
+                left.body.checkCollision.left = false;
+                right.body.checkCollision.up = false;
+                right.body.checkCollision.down = false;
+                right.body.checkCollision.right = false;
+            }
+        }
+
+        this.blocks.setAll('width', TILE_SIZE);
+        this.blocks.setAll('height', TILE_SIZE);
+
+        // half blocks
+        if (this.round.cols === ROUND_MODE_2) {
+            this.createHalfBlocks(colLength);
+        }
+
+        this.blocks.setAll('anchor', {x: 0.5, y: 0.5});
+        this.blocks.setAll('body.immovable', true);
+        this.blocks.setAll('body.allowGravity', false);
+    }
+
+    createHalfBlocks() {
+        for (let i = 2; i < (ROWS - 1) * 2; i++) {
+            // left
+            let left = this.blocks.create(this.round.startX - (ANCHOR_OFFSET / 2), (i * (TILE_SIZE / 2)) + (ANCHOR_OFFSET / 2), 'block-1');
+            left.width = TILE_SIZE / 2;
+            left.height = TILE_SIZE / 2;
+            left.body.checkCollision.up = false;
+            left.body.checkCollision.down = false;
+            left.body.checkCollision.left = false;
+
+            // right
+            let right = this.blocks.create(this.round.endX + (ANCHOR_OFFSET / 2), (i * (TILE_SIZE / 2)) + (ANCHOR_OFFSET / 2), 'block-1');
+            right.width = TILE_SIZE / 2;
+            right.height = TILE_SIZE / 2;
+            right.body.checkCollision.up = false;
+            right.body.checkCollision.down = false;
+            right.body.checkCollision.right = false;
+        }
+    }
+
     createBoundaries() {
         this.topBoundary = new Boundary(this.game,
             { x1: this.round.startX, y1: this.round.startY },
@@ -92,49 +150,6 @@ class Play extends Phaser.State {
         this.topBoundary.body.immovable = true;
         this.topBoundary.body.allowGravity = false;
         this.topBoundary.body.setSize(CANVAS_WIDTH, 31);
-
-        // blocks
-        this.blocks = this.add.physicsGroup(Phaser.Physics.ARCADE, this.world, "blocks");
-
-        // top
-        this.blocks.create(0 + ANCHOR_OFFSET, 0 + ANCHOR_OFFSET, 'block-1').scale.set(0.1, 0.1)
-        this.blocks.create(0 + (TILE_SIZE * COLUMNS) / 2, 0 + ANCHOR_OFFSET, 'blocks-horizontal-1');
-        this.blocks.create(CANVAS_WIDTH - ANCHOR_OFFSET, 0 + ANCHOR_OFFSET, 'block-1').scale.set(0.1, 0.1);
-        
-        // bottom
-        this.blocks.create(0 + ANCHOR_OFFSET, CANVAS_HEIGHT - ANCHOR_OFFSET, 'block-1').scale.set(0.1, 0.1)
-        this.blocks.create(0 + (TILE_SIZE * COLUMNS) / 2, CANVAS_HEIGHT - ANCHOR_OFFSET, 'blocks-horizontal-1');
-        this.blocks.create(CANVAS_WIDTH - ANCHOR_OFFSET, CANVAS_HEIGHT - ANCHOR_OFFSET, 'block-1').scale.set(0.1, 0.1);
-
-        let blocksLength = (COLUMNS - this.round.cols) / 2;
-
-        if(Math.ceil(blocksLength) - blocksLength !== 0) {
-            blocksLength = Math.floor(blocksLength);
-            let blockOffset = ANCHOR_OFFSET / 2;
-
-            for (let i = 0; i < blocksLength; i++) {
-                // left
-                this.blocks.create((TILE_SIZE * i) + ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
-                // right
-                this.blocks.create(CANVAS_WIDTH - (TILE_SIZE * i) - ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
-            }
-
-            // add half blocks
-            this.blocks.create((ANCHOR_OFFSET * blocksLength * 2) + blockOffset, TILE_SIZE * ROWS / 2, 'blocks-vertical-half-1');
-            this.blocks.create(CANVAS_WIDTH - (ANCHOR_OFFSET * blocksLength * 2) - blockOffset, TILE_SIZE * ROWS / 2, 'blocks-vertical-half-1');
-
-        }else {
-            for (let i = 0; i < blocksLength; i++) {
-                // left
-                this.blocks.create((TILE_SIZE * i) + ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
-                // right
-                this.blocks.create(CANVAS_WIDTH - (TILE_SIZE * i) - ANCHOR_OFFSET, TILE_SIZE * ROWS / 2, 'blocks-vertical-1');
-            }
-        }
-
-        this.blocks.setAll('anchor', { x: 0.5, y: 0.5 });
-        this.blocks.setAll('body.immovable', true);
-        this.blocks.setAll('body.allowGravity', false);
     }
 
     createScoreboard() {
@@ -201,31 +216,13 @@ class Play extends Phaser.State {
                 if (colorCode === EntityMap.zero || 
                     colorCode === EntityMap.empty || 
                     colorCode === EntityMap.outOfBounds) continue;
-                if (colorCode === EntityMap.block || colorCode === EntityMap.halfBlock) {
-                    if(j === 0) {
-                        if(this.round.cols === ROUND_MODE_1) {
-                            let topBlock = this.blocks.create((TILE_SIZE * COLUMNS) / 2, (TILE_SIZE + ANCHOR_OFFSET) + (TILE_SIZE * i), 'blocks-horizontal-1');
-                            topBlock.anchor.set(0.5, 0.5);
-                            topBlock.body.immovable = true;
-                            topBlock.body.allowGravity = false;
-                        } else if (this.round.cols === ROUND_MODE_2) {
-                            let halfBlock1 = this.blocks.create(this.round.startX, (TILE_SIZE) + (TILE_SIZE * i), 'blocks-horizontal-half-1');
-                            halfBlock1.body.immovable = true;
-                            halfBlock1.body.allowGravity = false;
-                            let halfBlock2 = this.blocks.create(this.round.startX, (TILE_SIZE + ANCHOR_OFFSET) + (TILE_SIZE * i), 'blocks-horizontal-half-1');
-                            halfBlock2.body.immovable = true;
-                            halfBlock2.body.allowGravity = false;
-                        }
-                        this.topBoundary.y = TILE_SIZE + (TILE_SIZE * i);
-                    }
-                }else {
-                    let { x, y } = this.round.getCoordinates(i, j);
-                    this.createBubble(x, y, colorCode, this.bubbles);
-                    if (colorCode !== EntityMap.gold && 
-                        colorCode !== EntityMap.white && 
-                        colorCode !== EntityMap.rainbow) {
-                        this.round.addSelection(colorCode);
-                    }
+
+                let { x, y } = this.round.getCoordinates(i, j);
+                this.createBubble(x, y, colorCode, this.bubbles);
+                if (colorCode !== EntityMap.gold && 
+                    colorCode !== EntityMap.white && 
+                    colorCode !== EntityMap.rainbow) {
+                    this.round.addSelection(colorCode);
                 }
             }
         }        
@@ -239,6 +236,8 @@ class Play extends Phaser.State {
 
         if (colorCode === EntityMap.rainbow) {
             bubble = new Bubble(this.game, TILE_SIZE, x, y, colorCode, group, EntityMap.collision.rainbow.name, 0);
+            bubble.width = TILE_SIZE;
+            bubble.height = TILE_SIZE;
         }else {
             bubble = new Bubble(this.game, TILE_SIZE, x, y, colorCode, group);
         }
@@ -530,7 +529,7 @@ class Play extends Phaser.State {
         let topBoundaryCollsion = this.physics.arcade.collide(
             this.currentBubble, this.topBoundary, () => {
                 console.log('TOP BOUNDARY COLLISION');
-            }, null, this);
+        }, null, this);
         
         // NOTE: will need to research further.
         // ideally want the snapToGrid and updateTopBoundary methods within
@@ -804,7 +803,7 @@ class Play extends Phaser.State {
                 console.log('SHIFTING TOP BOUNDARY... RESETTING LIMIT');
                 this.bubbles.destroy();
                 this.createStage();
-    
+                this.topBoundary.y += TILE_SIZE;
                 this.topBoundaryLaunchLimit = TOP_BOUNDARY_LAUNCH_LIMIT;
     
                 if(!isValid) this.checkLose();

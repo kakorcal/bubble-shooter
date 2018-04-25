@@ -40,13 +40,9 @@ class Load extends Phaser.State {
         this.load.image('tile-2', image + 'tile-sm-2.png');
         this.load.image('cloud-1', image + 'cloud-md-1.png');
         this.load.image('arrow-1', image + 'arrow-sm-1.png');
-        this.load.image('block-1', image + 'block-md-1.png');
-        this.load.image('blocks-vertical-1', image + 'blocks-vertical-md-1.png');
-        this.load.image('blocks-vertical-half-1', image + 'blocks-vertical-half-md-1.png');
-        this.load.image('blocks-horizontal-1', image + 'blocks-horizontal-md-1.png');
-        this.load.image('blocks-horizontal-half-1', image + 'blocks-horizontal-half-md-1.png');
+        this.load.image('block-1', image + 'block-sm-1.png');
         this.load.image('launcher-platform-1', image + 'launcher-platform-md-1.png');
-        this.load.image('launcher-wheel-1', image + 'launcher-wheel-md-1.png');
+        this.load.image('launcher-wheel-1', image + 'launcher-wheel-sm-1.png');
         this.load.image('speech-bubble-1', image + 'speech-bubble-sm-1.png');
         this.load.image('rainbow-1', image + 'rainbow-sm-1.png');
 

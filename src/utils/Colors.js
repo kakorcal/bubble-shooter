@@ -18,7 +18,7 @@ export const Colors = {
         strokeWidth: 2 
     },
     yellow: {
-        fill: 0xEBEE89,
+        fill: 0xfff44f,
         alpha: 1,
         stroke: 0xd7df01,
         strokeWidth: 2 
