@@ -3,11 +3,11 @@ import {CENTER_X, CENTER_Y} from '../utils/Constants';
 
 // images and fonts will be served from express static since there are no 
 // webpack loaders available for the fnt extension
-const image = './assets/images/';
-const font = './assets/fonts/';
-const wav = './assets/audio/wav/';
-const mp3 = './assets/audio/mp3/';
-const ogg = './assets/audio/ogg/';
+const image = './static/assets/images/';
+const font = './static/assets/fonts/';
+const wav = './static/assets/audio/wav/';
+const mp3 = './static/assets/audio/mp3/';
+const ogg = './static/assets/audio/ogg/';
 
 // phaser state has direct references to certain props so we don't have
 // invoke methods using this.game... 
@@ -38,6 +38,7 @@ class Load extends Phaser.State {
         // load image sprites
         this.load.image('tile-1', image + 'tile-sm-1.png');
         this.load.image('tile-2', image + 'tile-sm-2.png');
+        this.load.image('tile-3', image + 'tile-sm-3.png');
         this.load.image('cloud-1', image + 'cloud-md-1.png');
         this.load.image('arrow-1', image + 'arrow-sm-1.png');
         this.load.image('block-1', image + 'block-sm-1.png');
@@ -126,7 +127,7 @@ class Load extends Phaser.State {
 
         // enable physics
         this.physics.startSystem(Phaser.Physics.ARCADE);
-        this.state.start('menu');
+        this.state.start('tutorial');
         this.game.data.audio.theme0.play(null, 0, 1, true);
 
         console.log('LAUNCHING GAME ', this.game);

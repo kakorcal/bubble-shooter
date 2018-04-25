@@ -32,18 +32,18 @@ class Tutorial extends Phaser.State {
     create() {       
         // builder
         this.createTiles();
-        this.createBlocks();    
-        this.createBoundaries();
-        this.createLauncher();
-        this.createStage();
-        this.createScoreboard();
+        // this.createBlocks();    
+        // this.createBoundaries();
+        // this.createLauncher();
+        // this.createStage();
+        // this.createScoreboard();
         this.createInstructions();
-        this.currentBubble = this.createRandomBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
-        this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
+        // this.currentBubble = this.createRandomBubble(CURRENT_BUBBLE_X, CURRENT_BUBBLE_Y);
+        // this.nextBubble = this.createRandomBubble(NEXT_BUBBLE_X, NEXT_BUBBLE_Y);
         this.theme = this.game.data.audio.theme0;
 
         // game logic
-        this.startGame();
+        // this.startGame();
 
         // events
         this.game.keySpace.onDown.add(this.launchBubble, this);
@@ -54,7 +54,7 @@ class Tutorial extends Phaser.State {
 
     createTiles() {
         this.tiles = this.add.group();
-        this.tiles.createMultiple(ROWS * COLUMNS, 'tile-2', null, true);
+        this.tiles.createMultiple(ROWS * COLUMNS, 'tile-3', null, true);
         this.tiles.setAll('width', TILE_SIZE);
         this.tiles.setAll('height', TILE_SIZE);
         // rows and columns are opposites for this method
@@ -237,6 +237,8 @@ class Tutorial extends Phaser.State {
     }
 
     createInstructions() {
+        this.instructions = this.add.group();
+
         let style1 = {
             font: "15px monospace",
             fill: "white",
@@ -261,16 +263,20 @@ class Tutorial extends Phaser.State {
             + "• There are a total\nof 50 rounds and\n6 credits per game\nGood Luck!"
 
         // adding rules and controls
-        let rulesHeader = this.add.text(30, 34, "OBJECTIVE:" ,style1);
-        let rulesDesc = this.add.text(5, 60, rules, style2);
+        // let rulesHeader = this.add.text(30, 34, "RULES:" ,style1);
+        let rulesHeader = this.add.bitmapText(ANCHOR_OFFSET, 0, 'upheaval', 'RULES', 60, instructions);
+        // let rulesDesc = this.add.text(5, 60, rules, style2);
 
         let controls = "• SPACE:\nLaunch bubble\n"
             + "• ARROW LEFT/RIGHT:\nRotate launcher\n"
             + "• ENTER:\nSelect navigation\n"
             + "• ARROW UP/DOWN:\nSwitch navigation"
+
+        this.instructions.setAll('anchor.x', 0.5);
+        this.instructions.setAll('anchor.y', 0.5);
         
-        let controlHeader = this.add.text(CANVAS_WIDTH - 120, 34, "CONTROLS:", style1);
-        let controlDesc = this.add.text(CANVAS_WIDTH - 150, 60, controls, style2);
+        // let controlHeader = this.add.text(CANVAS_WIDTH - 120, 34, "CONTROLS:", style1);
+        // let controlDesc = this.add.text(CANVAS_WIDTH - 150, 60, controls, style2);
 
         // adding instruction text
         let instructions = this.add.text(
@@ -288,6 +294,10 @@ class Tutorial extends Phaser.State {
             to({ alpha: 1 }, 500, "Linear", true, 0, -1);
 
         instructionsTween.yoyo(true, 300); 
+    }
+
+    addInstruction(x, y, fontSize) {
+
     }
 
     // remove overlay, starts timer, setups stats, enable input

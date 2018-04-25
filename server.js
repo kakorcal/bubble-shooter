@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 // https://expressjs.com/en/advanced/best-practice-performance.html
 app.use(require('helmet')());
-app.use(express.static(path.join(__dirname, '/public')));
+app.use('/static', express.static(path.join(__dirname, '/static')));
 
 if(ENV === 'development') {
     const webpack = require('webpack');
