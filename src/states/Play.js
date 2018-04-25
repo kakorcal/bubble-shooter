@@ -4,7 +4,8 @@ import {
     SCOREBOARD_HEIGHT, MAX_ARROW_RANGE, CURRENT_BUBBLE_X, 
     LAUNCH_COUNTDOWN, CURRENT_BUBBLE_Y, NEXT_BUBBLE_X, 
     NEXT_BUBBLE_Y, BUBBLE_PHYSICS_SIZE, TOP_BOUNDARY_LAUNCH_LIMIT,
-    ROUND_MODE_1, ROUND_MODE_2, TOTAL_ROUNDS, MAX_SCORE
+    ROUND_MODE_1, ROUND_MODE_2, TOTAL_ROUNDS, MAX_SCORE,
+    HEADER_FONT_SIZE, DESC_FONT_SIZE, NAV_FONT_SIZE
 } from '../utils/Constants';
 import Player from '../entities/Player';
 import Bubble from '../entities/Bubble';
@@ -153,19 +154,19 @@ class Play extends Phaser.State {
     }
 
     createScoreboard() {
-        this.totalScoreText = this.add.bitmapText(13, 13, 'upheaval', appendDigits(14, this.game.data.player.totalScore, 'TOTAL'), 25);
-        this.totalScoreText.anchor.set(0, 0.5);
+        this.totalScoreText = this.add.bitmapText(ANCHOR_OFFSET, ANCHOR_OFFSET, 'upheaval', appendDigits(14, this.game.data.player.totalScore, 'TOTAL'), DESC_FONT_SIZE * 2);
+        this.totalScoreText.anchor.set(0, 0.6);
 
-        this.roundText = this.add.bitmapText(CANVAS_WIDTH - 12, 13, 'upheaval', appendDigits(3, this.game.data.player.currentRound, 'ROUND'), 25);
-        this.roundText.anchor.set(1, 0.5);
+        this.roundText = this.add.bitmapText(CANVAS_WIDTH - ANCHOR_OFFSET, ANCHOR_OFFSET, 'upheaval', appendDigits(3, this.game.data.player.currentRound, 'ROUND'), DESC_FONT_SIZE * 2);
+        this.roundText.anchor.set(1, 0.6);
 
         this.creditText = this.add.text(
-            CANVAS_WIDTH - 10, CANVAS_HEIGHT - 12,
+            CANVAS_WIDTH - ANCHOR_OFFSET, CANVAS_HEIGHT - ANCHOR_OFFSET,
             `CREDITS ${this.game.data.player.credits}`,
-            { font: "12px monospace", fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
+            { font: `${DESC_FONT_SIZE}px monospace`, fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
         );
 
-        this.creditText.anchor.set(1, 0.5);
+        this.creditText.anchor.set(1, 0.35);
     }
 
     createLauncher() {

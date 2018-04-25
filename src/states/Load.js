@@ -5,7 +5,7 @@ import {CENTER_X, CENTER_Y} from '../utils/Constants';
 // webpack loaders available for the fnt extension
 const image = './static/assets/images/';
 const font = './static/assets/fonts/';
-const wav = './static/assets/audio/wav/';
+// const wav = './static/assets/audio/wav/';
 const mp3 = './static/assets/audio/mp3/';
 const ogg = './static/assets/audio/ogg/';
 
@@ -59,23 +59,23 @@ class Load extends Phaser.State {
         this.load.audio('theme-0', 
             [mp3 + 'theme-0.mp3', ogg + 'theme-0.ogg']);
         this.load.audio('theme-1',
-            [wav + 'theme-1.wav', mp3 + 'theme-1.mp3', ogg + 'theme-1.ogg']);
+            [mp3 + 'theme-1.mp3', ogg + 'theme-1.ogg']);
         this.load.audio('theme-2',
             [mp3 + 'theme-2.mp3', ogg + 'theme-2.ogg']);
         this.load.audio('game-win',
-            [wav + 'game-win.wav', mp3 + 'game-win.mp3', ogg + 'game-win.ogg']);
+            [mp3 + 'game-win.mp3', ogg + 'game-win.ogg']);
         this.load.audio('game-lose',
-            [wav + 'game-lose.wav', mp3 + 'game-lose.mp3', ogg + 'game-lose.ogg']);
+            [mp3 + 'game-lose.mp3', ogg + 'game-lose.ogg']);
         this.load.audio('launch-bubble',
-            [wav + 'launch-bubble.wav', mp3 + 'launch-bubble.mp3', ogg + 'launch-bubble.ogg']);
+            [mp3 + 'launch-bubble.mp3', ogg + 'launch-bubble.ogg']);
         this.load.audio('target-bubble',
-            [wav + 'target-bubble.wav', mp3 + 'target-bubble.mp3', ogg + 'target-bubble.ogg']);
+            [mp3 + 'target-bubble.mp3', ogg + 'target-bubble.ogg']);
         this.load.audio('non-target-bubble',
-            [wav + 'non-target-bubble.wav', mp3 + 'non-target-bubble.mp3', ogg + 'non-target-bubble.ogg']);
+            [mp3 + 'non-target-bubble.mp3', ogg + 'non-target-bubble.ogg']);
         this.load.audio('select-navigation',
-            [wav + 'select-navigation.wav', mp3 + 'select-navigation.mp3', ogg + 'select-navigation.ogg']);
+            [mp3 + 'select-navigation.mp3', ogg + 'select-navigation.ogg']);
         this.load.audio('switch-navigation',
-            [wav + 'switch-navigation.wav', mp3 + 'switch-navigation.mp3', ogg + 'switch-navigation.ogg']);
+            [mp3 + 'switch-navigation.mp3', ogg + 'switch-navigation.ogg']);
 
         // register keys. registering through the game object so each state can have access
         this.game.keyLeft = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -127,7 +127,7 @@ class Load extends Phaser.State {
 
         // enable physics
         this.physics.startSystem(Phaser.Physics.ARCADE);
-        this.state.start('tutorial');
+        this.state.start('menu');
         this.game.data.audio.theme0.play(null, 0, 1, true);
 
         console.log('LAUNCHING GAME ', this.game);
