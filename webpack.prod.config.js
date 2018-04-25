@@ -18,7 +18,7 @@ module.exports = {
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'public/dist'),
+        path: path.resolve(__dirname, 'static/dist'),
         publicPath: '/dist'
     },
     module: {
@@ -39,22 +39,20 @@ module.exports = {
                     loader: 'raw-loader'
                 }
             },
-            {
-                test: /\.(xml|fnt)$/,
-                exclude: /node_modules/,
-                include: path.join(__dirname, 'src/assets'),
-                use: {
-                    loader: 'xml-loader'
-                }
-            },
-            {
-                test: /\.(png|svg|jpg|gif)$/,
-                exclude: /node_modules/,
-                include: path.join(__dirname, 'src/assets'),
-                use: {
-                    loader: 'file-loader'
-                }
-            },
+            // {
+            //     test: /\.(xml|fnt)$/,
+            //     exclude: /node_modules/,
+            //     use: {
+            //         loader: 'xml-loader'
+            //     }
+            // },
+            // {
+            //     test: /\.(png|svg|jpg|gif)$/,
+            //     exclude: /node_modules/,
+            //     use: {
+            //         loader: 'file-loader'
+            //     }
+            // },
             {
                 test: /pixi\.js/,
                 use: ['expose-loader?PIXI']
@@ -90,7 +88,7 @@ module.exports = {
         }
     },
     plugins: [
-        new CleanWebpackPlugin(['public/dist']),
+        new CleanWebpackPlugin(['static/dist']),
         new HtmlWebpackPlugin({
             template: './src/index.html',
             chunks: ['vendor', 'app']

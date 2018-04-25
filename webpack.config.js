@@ -39,20 +39,20 @@ module.exports = {
                     loader: 'raw-loader'
                 }
             },
-            {
-                test: /\.(xml|fnt)$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'xml-loader'
-                }
-            },
-            {
-                test: /\.(png|svg|jpg|gif)$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'file-loader'
-                }
-            },
+            // {
+            //     test: /\.(xml|fnt)$/,
+            //     exclude: /node_modules/,
+            //     use: {
+            //         loader: 'xml-loader'
+            //     }
+            // },
+            // {
+            //     test: /\.(png|svg|jpg|gif)$/,
+            //     exclude: /node_modules/,
+            //     use: {
+            //         loader: 'file-loader'
+            //     }
+            // },
             { 
                 test: /pixi\.js/, 
                 use: ['expose-loader?PIXI'] 
