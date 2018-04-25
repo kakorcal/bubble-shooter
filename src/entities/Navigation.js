@@ -23,7 +23,6 @@ class Navigation extends Phaser.Group {
         });
 
         this.polnareff = this.game.add.sprite(x, y, 'polnareff-1', 0);
-        this.polnareff.scale.set(0.6, 0.6);
         this.polnareff.anchor.set(0.5, 0.5);
         this.polnareff.animations.add('bounce', [0,1], 2, true);
         this.polnareff.animations.play('bounce');  

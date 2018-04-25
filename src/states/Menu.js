@@ -1,8 +1,11 @@
 import Player from '../entities/Player';
 import Navigation from '../entities/Navigation';
-import {ROWS, COLUMNS, TILE_SIZE, ANCHOR_OFFSET, CANVAS_HEIGHT, CANVAS_WIDTH, 
+import {ROWS, COLUMNS, TILE_SIZE, ANCHOR_OFFSET, CANVAS_HEIGHT, CANVAS_WIDTH, MIN_HEIGHT,
     CENTER_X, CENTER_Y, TITLE_FONT_SIZE, HEADER_FONT_SIZE, DESC_FONT_SIZE, NAV_FONT_SIZE
 } from '../utils/Constants';
+import {setSize} from '../utils/Helpers';
+
+const adjustSize = setSize(MIN_HEIGHT, CANVAS_HEIGHT);
 
 class Menu extends Phaser.State {
     init(prevState) {
@@ -34,10 +37,12 @@ class Menu extends Phaser.State {
 
     createLogo() {
         let logo = this.add.group();
-        logo.create(CENTER_X, CENTER_Y - 10, 'cloud-1');
+        let cloud = logo.create(CENTER_X, CENTER_Y - adjustSize(10), 'cloud-1');
+        cloud.width = adjustSize(510);
+        cloud.height = adjustSize(450);
         // x, y, font, text, size, group
-        this.add.bitmapText(CENTER_X - 50, CENTER_Y - 45, 'happy-hell', 'BUBBLE', TITLE_FONT_SIZE, logo);
-        this.add.bitmapText(CENTER_X + 30, CENTER_Y + 40, 'happy-hell', 'SHOOTER', TITLE_FONT_SIZE, logo);
+        this.add.bitmapText(CENTER_X - adjustSize(50), CENTER_Y - adjustSize(45), 'happy-hell', 'BUBBLE', TITLE_FONT_SIZE, logo);
+        this.add.bitmapText(CENTER_X + adjustSize(30), CENTER_Y + adjustSize(40), 'happy-hell', 'SHOOTER', TITLE_FONT_SIZE, logo);
         logo.setAll('anchor.x', 0.5);
         logo.setAll('anchor.y', 0.5);
     }
@@ -49,19 +54,21 @@ class Menu extends Phaser.State {
                 {name: 'CONTINUE', stateName: 'continue', font: 'upheaval', fontSize: NAV_FONT_SIZE},
                 {name: 'NEW GAME', stateName: 'newGame', font: 'upheaval', fontSize: NAV_FONT_SIZE},
                 {name: 'TUTORIAL', stateName: 'tutorial', font: 'upheaval', fontSize: NAV_FONT_SIZE},
-            ], CENTER_X, CENTER_Y + 110, 40);
+            ], CENTER_X, CENTER_Y + adjustSize(110), adjustSize(40));
         }else {
             this.navigation = new Navigation(this.game, [
                 { name: 'NEW GAME', stateName: 'newGame', font: 'upheaval', fontSize: NAV_FONT_SIZE },
                 { name: 'TUTORIAL', stateName: 'tutorial', font: 'upheaval', fontSize: NAV_FONT_SIZE },
-            ], CENTER_X, CENTER_Y + 110, 40);
+            ], CENTER_X, CENTER_Y + adjustSize(110), adjustSize(40));
         }
 
-        this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+        this.navigation.createPolnareff(CENTER_X - adjustSize(105), CENTER_Y + adjustSize(113), adjustSize(38));
+        this.navigation.polnareff.width = adjustSize(36);
+        this.navigation.polnareff.height = adjustSize(36);
 
         // adding instruction text
         let instructions = this.add.text(
-            ANCHOR_OFFSET, CANVAS_HEIGHT - ANCHOR_OFFSET,
+            ANCHOR_OFFSET - adjustSize(3), CANVAS_HEIGHT - ANCHOR_OFFSET,
             "Use arrow keys to move and press ENTER to select",
             { font: DESC_FONT_SIZE + "px monospace", fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
         );

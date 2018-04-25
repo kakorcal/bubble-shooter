@@ -4,8 +4,8 @@ import {
     SCOREBOARD_HEIGHT, MAX_ARROW_RANGE, CURRENT_BUBBLE_X, 
     LAUNCH_COUNTDOWN, CURRENT_BUBBLE_Y, NEXT_BUBBLE_X, 
     NEXT_BUBBLE_Y, BUBBLE_PHYSICS_SIZE, TOP_BOUNDARY_LAUNCH_LIMIT,
-    ROUND_MODE_1, ROUND_MODE_2, TOTAL_ROUNDS, MAX_SCORE,
-    HEADER_FONT_SIZE, DESC_FONT_SIZE, NAV_FONT_SIZE
+    ROUND_MODE_1, ROUND_MODE_2, TOTAL_ROUNDS, MAX_SCORE, MIN_HEIGHT,
+    HEADER_FONT_SIZE, DESC_FONT_SIZE, NAV_FONT_SIZE, MID_FONT_SIZE
 } from '../utils/Constants';
 import Player from '../entities/Player';
 import Bubble from '../entities/Bubble';
@@ -16,7 +16,9 @@ import Navigation from '../entities/Navigation';
 import ScoreKeeper from '../utils/ScoreKeeper';
 import { Colors } from '../utils/Colors';
 import { EntityMap } from '../utils/EntityMap';
-import { getRandomInteger, appendDigits } from '../utils/Helpers';
+import { getRandomInteger, appendDigits, setSize } from '../utils/Helpers';
+
+const adjustSize = setSize(MIN_HEIGHT, CANVAS_HEIGHT);
 
 class Play extends Phaser.State {
     preload() {
@@ -57,7 +59,7 @@ class Play extends Phaser.State {
         // game logic
         this.status = new Status(this.game,
             { fill: 0x00000 },
-            { x: CENTER_X, y: CENTER_Y, font: 'upheaval', message: 'READY', fontSize: 30 }
+            { x: CENTER_X, y: CENTER_Y, font: 'upheaval', message: 'READY', fontSize: NAV_FONT_SIZE }
         );
         this.pregame(this.startGame);
 
@@ -154,14 +156,14 @@ class Play extends Phaser.State {
     }
 
     createScoreboard() {
-        this.totalScoreText = this.add.bitmapText(ANCHOR_OFFSET, ANCHOR_OFFSET, 'upheaval', appendDigits(14, this.game.data.player.totalScore, 'TOTAL'), DESC_FONT_SIZE * 2);
-        this.totalScoreText.anchor.set(0, 0.6);
+        this.totalScoreText = this.add.bitmapText(ANCHOR_OFFSET - adjustSize(3), ANCHOR_OFFSET - adjustSize(3), 'upheaval', appendDigits(14, this.game.data.player.totalScore, 'TOTAL'), MID_FONT_SIZE);
+        this.totalScoreText.anchor.set(0, 0.5);
 
-        this.roundText = this.add.bitmapText(CANVAS_WIDTH - ANCHOR_OFFSET, ANCHOR_OFFSET, 'upheaval', appendDigits(3, this.game.data.player.currentRound, 'ROUND'), DESC_FONT_SIZE * 2);
-        this.roundText.anchor.set(1, 0.6);
+        this.roundText = this.add.bitmapText(CANVAS_WIDTH - ANCHOR_OFFSET + adjustSize(3), ANCHOR_OFFSET - adjustSize(3), 'upheaval', appendDigits(3, this.game.data.player.currentRound, 'ROUND'), MID_FONT_SIZE);
+        this.roundText.anchor.set(1, 0.5);
 
         this.creditText = this.add.text(
-            CANVAS_WIDTH - ANCHOR_OFFSET, CANVAS_HEIGHT - ANCHOR_OFFSET,
+            CANVAS_WIDTH - ANCHOR_OFFSET + adjustSize(3), CANVAS_HEIGHT - ANCHOR_OFFSET,
             `CREDITS ${this.game.data.player.credits}`,
             { font: `${DESC_FONT_SIZE}px monospace`, fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
         );
@@ -171,8 +173,9 @@ class Play extends Phaser.State {
 
     createLauncher() {
         // polnareff
-        this.polnareff = this.add.sprite(CENTER_X - 72, CANVAS_HEIGHT + 6 - (2 * TILE_SIZE), 'polnareff-1', 0);
-        this.polnareff.scale.set(0.8, 0.8);
+        this.polnareff = this.add.sprite(CENTER_X - adjustSize(72), CANVAS_HEIGHT + adjustSize(6) - (2 * TILE_SIZE), 'polnareff-1', 0);
+        this.polnareff.width = adjustSize(48);
+        this.polnareff.height = adjustSize(48);
         this.polnareff.anchor.set(0.5, 0.5);
         this.polnareff.animations.add('bounce', [0, 1], 2, true);
         this.polnareff.animations.play('bounce'); 
@@ -180,33 +183,35 @@ class Play extends Phaser.State {
         // launcher pieces
         this.arrow = this.add.sprite(CENTER_X, CANVAS_HEIGHT - LAUNCHER_HEIGHT + ANCHOR_OFFSET, 'arrow-1');
         this.arrow.anchor.set(0.5, 0.95);
+        this.arrow.width = adjustSize(14);
+        this.arrow.height = adjustSize(60);
 
         // wheel
-        this.launcherWheel = this.add.sprite(CENTER_X - 14, CANVAS_HEIGHT - (2 * TILE_SIZE), 'launcher-wheel-1');
+        this.launcherWheel = this.add.sprite(CENTER_X - adjustSize(14), CANVAS_HEIGHT - (2 * TILE_SIZE), 'launcher-wheel-1');
         this.launcherWheel.anchor.set(0.5, 0.5);
-        this.launcherWheel.width = 57;
-        this.launcherWheel.height = 57;
+        this.launcherWheel.width = adjustSize(57);
+        this.launcherWheel.height = adjustSize(57);
 
         // platform
-        this.launcherPlatform = this.add.sprite(CENTER_X - 1, CANVAS_HEIGHT - (2 * TILE_SIZE), 'launcher-platform-1');
+        this.launcherPlatform = this.add.sprite(CENTER_X - adjustSize(1), CANVAS_HEIGHT - (2 * TILE_SIZE), 'launcher-platform-1');
         this.launcherPlatform.anchor.set(0.26, 0.5);
-        this.launcherPlatform.width = 90;
-        this.launcherPlatform.height = 62;
+        this.launcherPlatform.width = adjustSize(90);
+        this.launcherPlatform.height = adjustSize(62);
         
         // next text
-        this.nextText = this.add.bitmapText(CENTER_X + 91, CANVAS_HEIGHT - LAUNCHER_HEIGHT + TILE_SIZE + 13, 'upheaval', 'NEXT', 20);
+        this.nextText = this.add.bitmapText(CENTER_X + adjustSize(91), CANVAS_HEIGHT - LAUNCHER_HEIGHT + TILE_SIZE + adjustSize(13), 'upheaval', 'NEXT', MID_FONT_SIZE);
         this.nextText.anchor.set(0.5, 0.5);
 
         // speech bubble 
-        this.speechBubble = this.add.sprite(CENTER_X - 118, CANVAS_HEIGHT - LAUNCHER_HEIGHT + 8, 'speech-bubble-1');
-        this.speechBubble.scale.set(0.7, 0.7);
+        this.speechBubble = this.add.sprite(CENTER_X - adjustSize(118), CANVAS_HEIGHT - LAUNCHER_HEIGHT + adjustSize(8), 'speech-bubble-1');
+        this.speechBubble.width = adjustSize(42);
+        this.speechBubble.height = adjustSize(42);
         this.speechBubble.alpha = 0;
-        this.speechBubbleText = this.add.bitmapText(CENTER_X - 97, CANVAS_HEIGHT - LAUNCHER_HEIGHT + 23, 'upheaval', this.launchCountdown, 20);
+        this.speechBubbleText = this.add.bitmapText(CENTER_X - adjustSize(97), CANVAS_HEIGHT - LAUNCHER_HEIGHT + adjustSize(23), 'upheaval', this.launchCountdown, MID_FONT_SIZE);
         this.speechBubbleText.alpha = 0;
         this.speechBubbleText.anchor.set(0.5, 0.5);
     }
 
-    // TODO: refactor
     createStage() {
         this.bubbles = this.add.physicsGroup(Phaser.Physics.ARCADE, this.world, "bubbles");
         this.round.clearSelection();
@@ -328,19 +333,21 @@ class Play extends Phaser.State {
         console.log('GAME OVER PLAYER WINS...');
         this.status = new Status(this.game,
             { fill: 0x00000 },
-            { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU WIN', fontSize: 45 },
+            { x: CENTER_X, y: CENTER_Y - adjustSize(100), font: 'upheaval', message: 'YOU WIN', fontSize: HEADER_FONT_SIZE },
             {
-                x: CENTER_X - 92, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 110,
+                x: CENTER_X - adjustSize(92), y: CENTER_Y + adjustSize(5), font: 'upheaval', fontSize: NAV_FONT_SIZE, distance: adjustSize(110),
                 message: { score, time, bonus }
             }
         );
 
         this.navigation = new Navigation(this.game, [
-            { name: 'CONTINUE', stateName: 'play', font: 'upheaval', fontSize: 30 },
-            { name: 'QUIT', stateName: 'menu', font: 'upheaval', fontSize: 30 },
-        ], CENTER_X, CENTER_Y + 110, 40);
+            { name: 'CONTINUE', stateName: 'play', font: 'upheaval', fontSize: NAV_FONT_SIZE },
+            { name: 'QUIT', stateName: 'menu', font: 'upheaval', fontSize: NAV_FONT_SIZE },
+        ], CENTER_X, CENTER_Y + adjustSize(110), adjustSize(40));
 
-        this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+        this.navigation.createPolnareff(CENTER_X - adjustSize(105), CENTER_Y + adjustSize(113), adjustSize(38));
+        this.navigation.polnareff.width = adjustSize(36);
+        this.navigation.polnareff.height = adjustSize(36);
 
         this.game.data.audio.gameWin.play();
     }
@@ -349,18 +356,20 @@ class Play extends Phaser.State {
         console.log('GAME OVER PLAYER COMPLETED GAME...');
         this.status = new Status(this.game,
             { fill: 0x00000 },
-            { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'CONGRATULATIONS!', fontSize: 45 },
+            { x: CENTER_X, y: CENTER_Y - adjustSize(100), font: 'upheaval', message: 'CONGRATULATIONS!', fontSize: HEADER_FONT_SIZE },
             {
-                x: CENTER_X - 92, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 110,
+                x: CENTER_X - adjustSize(92), y: CENTER_Y + adjustSize(5), font: 'upheaval', fontSize: NAV_FONT_SIZE, distance: adjustSize(110),
                 message: { score, time, bonus }
             }
         );
 
         this.navigation = new Navigation(this.game, [
-            { name: 'CONTINUE', stateName: 'menu', font: 'upheaval', fontSize: 30 }
-        ], CENTER_X, CENTER_Y + 110, 40);
+            { name: 'CONTINUE', stateName: 'menu', font: 'upheaval', fontSize: NAV_FONT_SIZE }
+        ], CENTER_X, CENTER_Y + adjustSize(110), adjustSize(40));
 
-        this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+        this.navigation.createPolnareff(CENTER_X - adjustSize(105), CENTER_Y + adjustSize(113), adjustSize(38));
+        this.navigation.polnareff.width = adjustSize(36);
+        this.navigation.polnareff.height = adjustSize(36);
 
         this.game.data.audio.gameWin.play();
     }
@@ -369,17 +378,20 @@ class Play extends Phaser.State {
         console.log('GAME OVER PLAYER LOSES...');
         this.status = new Status(this.game,
             { fill: 0x00000 },
-            { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'YOU LOSE', fontSize: 45},
-            { x: CENTER_X - 92, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 110,
+            { x: CENTER_X, y: CENTER_Y - adjustSize(100), font: 'upheaval', message: 'YOU LOSE', fontSize: HEADER_FONT_SIZE},
+            {
+                x: CENTER_X - adjustSize(92), y: CENTER_Y + adjustSize(5), font: 'upheaval', fontSize: NAV_FONT_SIZE, distance:adjustSize(110),
                 message: { score, time, bonus }}
         );  
         
         this.navigation = new Navigation(this.game, [
-            { name: 'CONTINUE', stateName: 'play', font: 'upheaval', fontSize: 30 },
-            { name: 'QUIT', stateName: 'menu', font: 'upheaval', fontSize: 30 },
-        ], CENTER_X, CENTER_Y + 110, 40);
+            { name: 'CONTINUE', stateName: 'play', font: 'upheaval', fontSize: NAV_FONT_SIZE },
+            { name: 'QUIT', stateName: 'menu', font: 'upheaval', fontSize: NAV_FONT_SIZE },
+        ], CENTER_X, CENTER_Y + adjustSize(110), adjustSize(40));
         
-        this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+        this.navigation.createPolnareff(CENTER_X - adjustSize(105), CENTER_Y + adjustSize(113), adjustSize(38));
+        this.navigation.polnareff.width = adjustSize(36);
+        this.navigation.polnareff.height = adjustSize(36);
 
         this.game.data.audio.gameLose.play();
     }
@@ -389,18 +401,20 @@ class Play extends Phaser.State {
         console.log('GAME OVER PLAYER LOSES NO MORE CREDITS...');
         this.status = new Status(this.game,
             { fill: 0x00000 },
-            { x: CENTER_X, y: CENTER_Y - 100, font: 'upheaval', message: 'GAME OVER', fontSize: 45 },
+            { x: CENTER_X, y: CENTER_Y - adjustSize(100), font: 'upheaval', message: 'GAME OVER', fontSize: HEADER_FONT_SIZE },
             {
-                x: CENTER_X - 92, y: CENTER_Y + 5, font: 'upheaval', fontSize: 30, distance: 110,
+                x: CENTER_X - adjustSize(92), y: CENTER_Y + adjustSize(5), font: 'upheaval', fontSize: NAV_FONT_SIZE, distance: adjustSize(110),
                 message: { score, time, bonus }
             }
         );
 
         this.navigation = new Navigation(this.game, [
-            { name: 'CONTINUE', stateName: 'menu', font: 'upheaval', fontSize: 30 }
-        ], CENTER_X, CENTER_Y + 110, 40);
+            { name: 'CONTINUE', stateName: 'menu', font: 'upheaval', fontSize: NAV_FONT_SIZE }
+        ], CENTER_X, CENTER_Y + adjustSize(110), adjustSize(40));
 
-        this.navigation.createPolnareff(CENTER_X - 105, CENTER_Y + 113, 38);
+        this.navigation.createPolnareff(CENTER_X - adjustSize(105), CENTER_Y + adjustSize(113), adjustSize(38));
+        this.navigation.polnareff.width = adjustSize(36);
+        this.navigation.polnareff.height = adjustSize(36);
 
         this.game.data.audio.gameLose.play();
     }
@@ -446,9 +460,8 @@ class Play extends Phaser.State {
             if (e.keyCode === this.game.keyUp.keyCode) {
                 this.navigation.changeCurrentNavigation(-1);
             }
+            this.game.data.audio.switchNavigation.play();
         }
-
-        this.game.data.audio.switchNavigation.play();
     }
 
     changeState(e) {
@@ -467,7 +480,7 @@ class Play extends Phaser.State {
             this.physics.arcade.velocityFromAngle(
                 // https://phaser.io/docs/2.4.4/Phaser.Physics.Arcade.html#velocityFromRotation
                 // need to subtract 90 to get the coordinates adjusted
-                this.arrow.angle - 90, 330, this.currentBubble.body.velocity);
+                this.arrow.angle - 90, adjustSize(400), this.currentBubble.body.velocity);
             
             this.game.data.audio.launchBubble.play();
             this.bubbleLaunched = true;
@@ -504,16 +517,16 @@ class Play extends Phaser.State {
     updateCursorInput() {
         if (this.game.keyLeft.isDown) {
             if (this.arrow.angle >= -MAX_ARROW_RANGE) {
-                this.arrow.angle -= 1.2;
-                this.launcherWheel.angle -= 1.2;
+                this.arrow.angle -= adjustSize(1.2);
+                this.launcherWheel.angle -= adjustSize(1.2);
             } else {
                 this.arrow.angle = -MAX_ARROW_RANGE;
                 this.launcherWheel.angle = -MAX_ARROW_RANGE;
             }
         } else if (this.game.keyRight.isDown) {
             if (this.arrow.angle <= MAX_ARROW_RANGE) {
-                this.arrow.angle += 1.2;
-                this.launcherWheel.angle += 1.2;
+                this.arrow.angle += adjustSize(1.2);
+                this.launcherWheel.angle += adjustSize(1.2);
             } else {
                 this.arrow.angle = MAX_ARROW_RANGE;
                 this.launcherWheel.angle = MAX_ARROW_RANGE;
@@ -825,7 +838,7 @@ class Play extends Phaser.State {
             let {i, j, score} = bubble;
             let {x, y} = this.round.getCoordinates(i, j);
 
-            let scoreText = this.add.bitmapText(x, y, 'upheaval', score, 20);
+            let scoreText = this.add.bitmapText(x, y, 'upheaval', score, MID_FONT_SIZE);
             scoreText.anchor.set(0.5, 0.5);
 
             let scoreTween = this.add.tween(scoreText)

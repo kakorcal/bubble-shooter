@@ -28,3 +28,9 @@ export function setCanvasHeight(min, max, viewportHeight, rows) {
         return Math.floor((viewportHeight - 20) / rows) * rows;
     }
 }
+
+export function setSize(minHeight, canvasHeight) {
+    return function(defaultValue) {
+        return (defaultValue / minHeight) * canvasHeight;
+    };
+}

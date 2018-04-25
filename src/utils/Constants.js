@@ -1,4 +1,4 @@
-import {setCanvasHeight} from './Helpers';
+import {setCanvasHeight, setSize} from './Helpers';
 export const MIN_HEIGHT = 510;
 export const MAX_HEIGHT = 1190;
 export const VIEWPORT_HEIGHT = window.innerHeight;
@@ -26,11 +26,8 @@ export const ROUND_MODE_2 = 8;
 export const TOTAL_ROUNDS = 50;
 // https://stackoverflow.com/questions/307179/what-is-javascripts-highest-integer-value-that-a-number-can-go-to-without-losin
 export const MAX_SCORE = 99999999999999;
-export const DEFAULT_TITLE_FONT_SIZE = 80;
-export const DEFAULT_HEADER_FONT_SIZE = 40;
-export const DEFAULT_DESC_FONT_SIZE = 12;
-export const DEFAULT_NAV_FONT_SIZE = 30;
-export const TITLE_FONT_SIZE = (DEFAULT_TITLE_FONT_SIZE / MIN_HEIGHT) * CANVAS_HEIGHT;
-export const HEADER_FONT_SIZE = (DEFAULT_HEADER_FONT_SIZE / MIN_HEIGHT) * CANVAS_HEIGHT;
-export const DESC_FONT_SIZE = (DEFAULT_DESC_FONT_SIZE / MIN_HEIGHT) * CANVAS_HEIGHT;
-export const NAV_FONT_SIZE = (DEFAULT_NAV_FONT_SIZE / MIN_HEIGHT) * CANVAS_HEIGHT;
+export const TITLE_FONT_SIZE = setSize(MIN_HEIGHT, CANVAS_HEIGHT)(80);
+export const HEADER_FONT_SIZE = setSize(MIN_HEIGHT, CANVAS_HEIGHT)(40);
+export const DESC_FONT_SIZE = setSize(MIN_HEIGHT, CANVAS_HEIGHT)(12);
+export const NAV_FONT_SIZE = setSize(MIN_HEIGHT, CANVAS_HEIGHT)(30);
+export const MID_FONT_SIZE = setSize(MIN_HEIGHT, CANVAS_HEIGHT)(20);

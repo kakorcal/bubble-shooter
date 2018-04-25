@@ -1,8 +1,11 @@
 import { 
     CANVAS_WIDTH, CANVAS_HEIGHT, CENTER_X, CENTER_Y, 
-    ROWS, COLUMNS, TILE_SIZE, ANCHOR_OFFSET,
+    ROWS, COLUMNS, TILE_SIZE, ANCHOR_OFFSET, MIN_HEIGHT,
     HEADER_FONT_SIZE, DESC_FONT_SIZE, NAV_FONT_SIZE
 } from '../utils/Constants';
+import { setSize } from '../utils/Helpers';
+
+const adjustSize = setSize(MIN_HEIGHT, CANVAS_HEIGHT);
 
 class Tutorial extends Phaser.State {
     create() {       
@@ -47,7 +50,7 @@ class Tutorial extends Phaser.State {
 
         // adding instruction text
         let instructions = this.add.text(
-            ANCHOR_OFFSET, CANVAS_HEIGHT - ANCHOR_OFFSET,
+            ANCHOR_OFFSET - adjustSize(3), CANVAS_HEIGHT - ANCHOR_OFFSET,
             "Press ENTER to go back",
             { font: DESC_FONT_SIZE + "px monospace", fill: "white", align: "left", stroke: 'black', strokeThickness: 3 },
         );
