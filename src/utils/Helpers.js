@@ -18,3 +18,13 @@ export function appendDigits(digits, n, additionalText) {
     value += nstr;
     return value;
 }
+
+export function setCanvasHeight(min, max, viewportHeight, rows) {
+    if(viewportHeight <= min) {
+        return min;
+    }else if(viewportHeight >= max) {
+        return max;
+    }else {
+        return Math.floor((viewportHeight - 20) / rows) * rows;
+    }
+}
