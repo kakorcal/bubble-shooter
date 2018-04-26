@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const ENV = process.env.NODE_ENV || 'development';
 const PORT = process.env.PORT || 3000;
 
-app.use(morgan('dev'));
+app.use(morgan('common'));
 // https://expressjs.com/en/advanced/best-practice-performance.html
 app.use(require('helmet')());
 app.use('/static', express.static(path.join(__dirname, '/static')));
