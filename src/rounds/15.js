@@ -17,7 +17,7 @@ let { _,x,b,c,d,e,f,g,h,i,j,k,l,m } = AlphabetizedMap;
 */
 
 export default [
-    [m,m,m,0,0,0,0,0,b,i,0,0,0,0,m,m,m],
+    [m,m,m,0,0,0,0,0,b,0,0,0,0,0,m,m,m],
      [m,m,0,0,k,e,b,i,f,h,c,g,0,0,m,m,_],
     [m,m,m,k,e,0,0,0,f,h,0,0,c,g,m,m,m],
      [m,m,0,0,k,e,b,i,f,h,c,g,0,0,m,m,_],
