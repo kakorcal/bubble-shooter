@@ -34,3 +34,4 @@ VIEW LIVE: https://html5bubbleshooter.co/
 * Input form for signup
 * MySQL server to persist user stats 
 * Rankings page
+* Toggle volume of sound
