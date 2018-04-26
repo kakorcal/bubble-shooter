@@ -1,3 +1,6 @@
+/* 
+    Map of colors used for bubbles
+ */
 export const Colors = {
     red: {
         fill: 0xFD8384,

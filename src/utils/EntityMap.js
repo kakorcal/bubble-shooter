@@ -1,3 +1,7 @@
+/* 
+    Map of entities (bubbles, blocks etc.. ) for quick access
+    AlphabetizedMap is used for creating readable rounds
+ */
 const EntityMap = {
     empty: null,
     outOfBounds: -1,
@@ -41,14 +45,12 @@ const EntityMap = {
     launcher: 52,
     bubble: 53,
     block: 54,
-    halfBlock: 55,
     gameObjects: {
         50: 'tile',
         51: 'polnareff',
         52: 'launcher',
         53: 'bubble',
         54: 'block',
-        55: 'halfBlock'
     },
 
     // special collisions
@@ -85,8 +87,7 @@ const AlphabetizedMap = {
     B: 51,
     C: 52,
     D: 53,
-    E: 54,
-    F: 55
+    E: 54
 };
 
 export {EntityMap, AlphabetizedMap};

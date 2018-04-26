@@ -1,3 +1,6 @@
+/* 
+    For setting boundaries between the bubble launcher and scoreboard
+ */
 class Boundary extends Phaser.Sprite {
     constructor(game, {x1, y1}, {x2, y2},  {fill, alpha, stroke, strokeWidth}) {
         super(game, 0, 0);

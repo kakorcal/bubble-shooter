@@ -20,6 +20,9 @@ import { getRandomInteger, appendDigits, setSize } from '../utils/Helpers';
 
 const adjustSize = setSize(MIN_HEIGHT, CANVAS_HEIGHT);
 
+/* 
+    Manage game play. Track score, update matrix, update player stats, collision
+*/
 class Play extends Phaser.State {
     preload() {
         // stats
@@ -39,8 +42,8 @@ class Play extends Phaser.State {
         this.theme.restart(null, 0, 1, true);
     }
 
+    // initialize round
     create() {       
-        // builder
         this.createTiles();
         this.createBlocks();        
         this.createBoundaries();
@@ -65,7 +68,7 @@ class Play extends Phaser.State {
 
         // events
         this.game.keySpace.onDown.add(this.launchBubble, this);
-        this.game.keyEnter.onDown.addOnce(this.changeState, this);
+        this.game.keyEnter.onDown.add(this.changeState, this);
         this.game.keyDown.onDown.add(this.changeCurrentNavigation, this);
         this.game.keyUp.onDown.add(this.changeCurrentNavigation, this); 
     }
@@ -269,7 +272,6 @@ class Play extends Phaser.State {
     // calls the startGame function after 'ready go' text disappears
     pregame(cb) {
         // create a one-off timers that autodestroys itself
-        // TODO: maybe use async await / yield / promises?
         let pregameTimer1 = this.time.create(true);
         pregameTimer1.add(Phaser.Timer.SECOND * 1.5, () => {
             let pregameTimer2 = this.time.create(true);
@@ -409,7 +411,7 @@ class Play extends Phaser.State {
         );
 
         this.navigation = new Navigation(this.game, [
-            { name: 'CONTINUE', stateName: 'menu', font: 'upheaval', fontSize: NAV_FONT_SIZE }
+            { name: 'MAIN MENU', stateName: 'menu', font: 'upheaval', fontSize: NAV_FONT_SIZE }
         ], CENTER_X, CENTER_Y + adjustSize(110), adjustSize(40));
 
         this.navigation.createPolnareff(CENTER_X - adjustSize(105), CENTER_Y + adjustSize(113), adjustSize(38));
@@ -487,6 +489,7 @@ class Play extends Phaser.State {
         }
     }
 
+    // game loop
     update() {
         if(this.nowPlaying) {
             this.updateCursorInput();
@@ -514,6 +517,7 @@ class Play extends Phaser.State {
         this.launchCountdown--;
     }
 
+    // handles angle of arrow
     updateCursorInput() {
         if (this.game.keyLeft.isDown) {
             if (this.arrow.angle >= -MAX_ARROW_RANGE) {
@@ -534,6 +538,7 @@ class Play extends Phaser.State {
         }
     }
 
+    // handles three types of collision against launched bubble
     updateCollision() {
         let blockCollision = this.physics.arcade.collide(
             this.currentBubble, this.blocks, () => {
@@ -564,6 +569,11 @@ class Play extends Phaser.State {
     }
 
     // TODO: refactor
+    // Finds indices of collision area
+    // Snaps current bubble to collision area and reinitializes current and next bubbles
+    // Removes any matches or floaters
+    // Updates matrix, redraws stage
+    // Check win lose status
     snapToGrid(currentBubble, collidingBubble) {
         let curx = this.currentBubble.x;
         let cury = this.currentBubble.y;
@@ -626,10 +636,10 @@ class Play extends Phaser.State {
         }
     }
 
+    // remove bubbles connected to target
+    // identify floating bubbles
+    // partition by colorCode
     removeMatchingBubbles(i, j, currentBubble, collidingBubble) {
-        // remove bubbles connected to target
-        // identify floating bubbles
-        // partition by colorCode
         if ((currentBubble || collidingBubble) && (currentBubble.key || collidingBubble.key)) {
             return this.handleSpecialCollision(i, j, currentBubble, collidingBubble);
         }else {
@@ -712,6 +722,8 @@ class Play extends Phaser.State {
         }
     }
 
+    // Identifies all clusters attached to the top row of matrix
+    // Otherwise they are removed from the matrix
     removeFloatingBubbles() {
         let topRow = this.round.matrix[this.round.topRow];
         let memo = new Set();
@@ -743,6 +755,9 @@ class Play extends Phaser.State {
         }
     }
 
+    // recursively checks each neighbor
+    // if neighbors exists they are added to the cluster
+    // using a memoization to prevent long runtime
     floodFill(i, j, memo) {
         memo.add(this.round.getBubbleHash(i, j));
 

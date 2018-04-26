@@ -2,6 +2,9 @@ const bubblePoints = 10;
 const maxBonusPoints = 50000;
 const bonusInterval = 840;
 
+/* 
+    Keeps tally of the score for the current round
+*/
 class ScoreKeeper {
     constructor() {
         this.currentScore = 0;
@@ -14,6 +17,7 @@ class ScoreKeeper {
         this.mergeMap = [];
     }
 
+    // used when a bubble match occurs or floaters are detected
     add(colorCode, i, j) {
         let current = this.colorMap.get(colorCode);
         if (current) {
@@ -24,6 +28,8 @@ class ScoreKeeper {
         }
     }
 
+    // 10 points per matching color
+    // 10^(non matching color count) per non matching color
     calculate(currentColorCode) {
         this.colorMap.forEach((arr, key) => {
             let pointsArr;

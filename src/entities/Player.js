@@ -1,3 +1,7 @@
+/* 
+    Class for adding, deleting, and updating player stats
+    Stored in the game.data object to be access throughout all phaser states
+*/
 class Player {
     constructor(name = 'GUEST', credits = 6, totalScore = 0, highScore = 0, currentRound = 1, gameCompleted = false) {
         this.name = name;
@@ -31,7 +35,6 @@ class Player {
     save() {
         localStorage.setItem('bubble-shooter', JSON.stringify(this));
     }
-
 }
 
 export default Player;

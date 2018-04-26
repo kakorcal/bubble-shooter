@@ -15,7 +15,7 @@ class Tutorial extends Phaser.State {
         this.theme = this.game.data.audio.theme0;
 
         // events
-        this.game.keyEnter.onDown.addOnce(this.changeState, this);
+        this.game.keyEnter.onDown.add(this.changeState, this);
     }
 
     createTiles() {

@@ -3,6 +3,10 @@ import { CANVAS_WIDTH, CANVAS_HEIGHT, TILE_SIZE, ANCHOR_OFFSET,
          LAUNCHER_HEIGHT, ROUND_MODE_1, ROUND_MODE_2
 } from '../utils/Constants';
 
+/* 
+    Processes rounds from the ../rounds directory
+    Keeps track of the remaining bubbles in the matrix 
+*/
 class Round {
     constructor(roundNumber) {
         let round = require(`../rounds/${roundNumber}`).default;
@@ -55,15 +59,15 @@ class Round {
 
     shiftTopBoundary() {
         // add blocks on top
-        // remove last row
-        // push out of bounds on bottom
         let topRow = [];
         for(let i = 0; i < this.cols; i++) {
             topRow.push(EntityMap.zero);
         }
-
+        
+        // remove last row
         this.matrix.unshift(topRow);
         
+        // push out of bounds on bottom
         let outOfBounds = this.matrix.pop();
         let validMatrix = this.matrix[this.rows - 1].every(el => el === EntityMap.zero || el === EntityMap.empty || el === EntityMap.gold);
 

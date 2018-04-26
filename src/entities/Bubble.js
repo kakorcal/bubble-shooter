@@ -1,6 +1,11 @@
 import { EntityMap } from '../utils/EntityMap';
 import { Colors } from '../utils/Colors';
 
+/* 
+    Sprite class for bubbles.
+    If sprite key does not exist, it will draw a Phaser Graphics
+    and append it to an empty sprite to enable physics
+*/
 class Bubble extends Phaser.Sprite {
     constructor(game, diameter, x, y, colorCode, group, key) {
         super(game, x, y, key);
@@ -44,13 +49,6 @@ class Bubble extends Phaser.Sprite {
             this.data.graphic.beginFill(this.data.stroke, 1);
             this.data.graphic.drawCircle(null, null, this.data.diameter / 4);
             this.data.graphic.endFill();
-        }
-    }
-    
-    // TODO
-    addRainbow(cb) {
-        if(cb()) {
-
         }
     }
 }

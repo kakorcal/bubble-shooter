@@ -9,11 +9,13 @@ const font = './static/assets/fonts/';
 const mp3 = './static/assets/audio/mp3/';
 const ogg = './static/assets/audio/ogg/';
 
-// phaser state has direct references to certain props so we don't have
-// invoke methods using this.game... 
+
+/* 
+    Loads all sprite, audio, and fonts. Enable arcade physics
+ */
 class Load extends Phaser.State {
     preload() {
-        // Preload text
+        // Preload text - show this if it takes a while for assets to load
         let loadTimer = this.time.create(true);
         loadTimer.add(Phaser.Timer.SECOND * 1.5, () => {
             document.getElementsByTagName('canvas')[0].style.opacity = 1;
@@ -23,11 +25,10 @@ class Load extends Phaser.State {
                 CENTER_X, CENTER_Y, "LOADING...",
                 { font: "40px monospace", fill: "yellow", align: "center", strokeThickness: 5 }
             );
-            // Set relative to center, not top left
+
             loadingText.anchor.set(0.5);
             loadingText.alpha = 0;
 
-            // Yoyo the text
             let loadingTween = this.add.tween(loadingText).
                 to({ alpha: 1 }, 500, "Linear", true, 0, -1);
 

@@ -1,6 +1,9 @@
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../utils/Constants';
 import Navigation from './Navigation';
-// pseudo state that displays user stats
+
+/* 
+    Pseudo state that displays user stats
+ */
 class Status extends Phaser.Group {
     constructor(game, overlayConfig, headerConfig, statsConfig) {
         super(game);

@@ -28,7 +28,7 @@ module.exports = {
                 exclude: /node_modules/,
                 include: path.join(__dirname, 'src'),
                 use: {
-                    loader: 'babel-loader'
+                    loader: 'babel-loader?cacheDirectory'
                 }
             },
             {
@@ -94,7 +94,9 @@ module.exports = {
             chunks: ['vendor', 'app']
         }),
         new UglifyJSPlugin({
-            sourceMap: true
+            sourceMap: true,
+            cache: true,
+            parallel: true
         }),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('production')

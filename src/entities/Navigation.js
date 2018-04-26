@@ -1,4 +1,6 @@
-// creates a navigation group in any state
+/* 
+    Reusable navigation component to be rendered in any Phaser state
+*/
 class Navigation extends Phaser.Group {
     constructor(game, items, x, y, increment) {
         super(game);

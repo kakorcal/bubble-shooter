@@ -21,7 +21,7 @@ class Menu extends Phaser.State {
         this.createNavigation();
 
         // event listeners
-        this.game.keyEnter.onDown.addOnce(this.changeState, this);
+        this.game.keyEnter.onDown.add(this.changeState, this);
         this.game.keyDown.onDown.add(this.changeCurrentNavigation, this);
         this.game.keyUp.onDown.add(this.changeCurrentNavigation, this);  
     }
