@@ -32,6 +32,6 @@ export function setCanvasHeight(min, max, viewportHeight, rows) {
 // adjust size of game object relative to canvas height
 export function setSize(minHeight, canvasHeight) {
     return function(defaultValue) {
-        return (defaultValue / minHeight) * canvasHeight;
+        return Math.floor((defaultValue / minHeight) * canvasHeight);
     };
 }

@@ -31,8 +31,12 @@ if(ENV === 'development') {
     }));
 }else {
     console.log('ENV', ENV);
-    app.get('*', (req, res) => {
+    app.get('/', (req, res) => {
         res.sendFile(path.join(__dirname, 'static/dist/index.html'));
+    });
+
+    app.get('*', (req, res) => {
+        res.redirect('/');
     });
 }
 

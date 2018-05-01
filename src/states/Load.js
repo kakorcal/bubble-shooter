@@ -53,7 +53,7 @@ class Load extends Phaser.State {
         this.load.spritesheet('polnareff-1', image + 'polnareff-sp-1.png', 60, 60, 2, 0, 0);
 
         // load fonts
-        this.load.bitmapFont('happy-hell', font + 'happy-hell/font.png', font + 'happy-hell/font.fnt');
+        this.load.bitmapFont('happy-hell', font + 'happy-hell/medium/font.png', font + 'happy-hell/medium/font.fnt');
         this.load.bitmapFont('upheaval', font + 'upheaval/font.png', font + 'upheaval/font.fnt');
 
         // load audio (wav, mp3, ogg)
