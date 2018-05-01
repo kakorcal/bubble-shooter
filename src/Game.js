@@ -12,6 +12,8 @@ class Game extends Phaser.Game {
             width,
             height,
             renderer: Phaser.AUTO,
+            // TODO: scale accordlingly to device resolution
+            // resolution: window.devicePixelRatio,
             state: {
                 create: () => {
                     this.state.add('load', Load);
@@ -21,7 +23,10 @@ class Game extends Phaser.Game {
                     this.state.start('load');                    
                 }
             }
-        });        
+        });     
+        
+        console.log('resolution', window.devicePixelRatio);
+        
     }        
 }
 

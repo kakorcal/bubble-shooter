@@ -41,6 +41,7 @@ class Menu extends Phaser.State {
         cloud.width = adjustSize(510);
         cloud.height = adjustSize(450);
         // x, y, font, text, size, group
+        // large: 130, medium: 100, small: 72
         this.add.bitmapText(CENTER_X - adjustSize(50), CENTER_Y - adjustSize(45), 'happy-hell', 'BUBBLE', TITLE_FONT_SIZE, logo);
         this.add.bitmapText(CENTER_X + adjustSize(30), CENTER_Y + adjustSize(40), 'happy-hell', 'SHOOTER', TITLE_FONT_SIZE, logo);
         logo.setAll('anchor.x', 0.5);
