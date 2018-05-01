@@ -96,7 +96,13 @@ module.exports = {
         new UglifyJSPlugin({
             sourceMap: true,
             cache: true,
-            parallel: true
+            parallel: true,
+            extractComments: true,
+            uglifyOptions: {
+                compress: {
+                    drop_console: true
+                }
+            }
         }),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('production')
