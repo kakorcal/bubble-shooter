@@ -22,15 +22,51 @@
             bottom: 0;
             left: 0;
             opacity: 0;
+            display: block;
         }
+        #github {
+            opacity: 0;
+            display: block;
+        }
+        #github img {
+            position: absolute; 
+            top: 0; 
+            right: 0; 
+            border: 0;
+        }
+        .warning-message {
+            display: none;
+        }
+
+        @media only screen and (max-width: 500px) {
+            .warning-message {
+                font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+                font-weight: 300;
+                font-size: 1rem;
+                color: #000;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                text-align: center;
+                right: 0;
+                left: 0;
+                margin: 0 auto;
+                width: 50%;
+                line-height: 2;
+                display: block;
+            }
+            canvas, #github {
+                display: none !important;
+            }
+        } 
     </style>
 </head>
 <body>
-    <a id="github" style="opacity: 0;" href="https://github.com/kakorcal/bubble-shooter" target="_blank">
-        <img 
-            style="position: absolute; top: 0; right: 0; border: 0;" 
-            src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
-            alt="Fork me on GitHub">
+    <div class="warning-message">
+        Bubble Shooter is not supported on mobile devices at this time. Please switch to a laptop or desktop to play the game.
+    </div>
+    <a id="github" href="https://github.com/kakorcal/bubble-shooter" target="_blank">
+        <img src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub" />
     </a>
 </body>
 </html>
