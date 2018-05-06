@@ -9,8 +9,8 @@ const adjustSize = setSize(MIN_HEIGHT, CANVAS_HEIGHT);
 
 class Menu extends Phaser.State {
     init(prevState) {
-        if(prevState) {
-            this.game.data.audio.theme0.play();
+        if(prevState === 'play') {
+            this.game.data.audio.theme0.play(null, 0, 1, true);
         }
     }
 

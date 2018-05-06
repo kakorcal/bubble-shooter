@@ -95,8 +95,6 @@ class Load extends Phaser.State {
             Phaser.Keyboard.SPACEBAR,
             Phaser.Keyboard.ENTER
         ]);  
-
-        this.toggleSound();
     }
 
     create() {
@@ -131,8 +129,11 @@ class Load extends Phaser.State {
 
         // enable physics
         this.physics.startSystem(Phaser.Physics.ARCADE);
+        // change start
         this.state.start('menu');
+        // initialize sounds
         this.game.data.audio.theme0.play(null, 0, 1, true);
+        this.toggleSound();
 
         console.log('LAUNCHING GAME ', this.game);
     }
@@ -140,12 +141,17 @@ class Load extends Phaser.State {
     // https://github.com/photonstorm/phaser/issues/2913
     toggleSound() {
         let soundElement = document.getElementById('sound');
-
+ 
         if (this.game.sound.context.state === 'suspended') {
             soundElement.style.backgroundImage = "url('" + image + "volume-mute.svg')";
-        }else {
+        } else {
             soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
         }
+
+        this.game.data.audio.theme0.onPlay.addOnce(() => {
+            console.log('STARTING THEME 0');
+            soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
+        });
 
         soundElement.addEventListener('click', () => {
             console.log('toggle sound');
