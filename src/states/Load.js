@@ -141,12 +141,6 @@ class Load extends Phaser.State {
     // https://github.com/photonstorm/phaser/issues/2913
     toggleSound() {
         let soundElement = document.getElementById('sound');
- 
-        // if (this.game.sound.context.state === 'suspended') {
-        //     soundElement.style.backgroundImage = "url('" + image + "volume-mute.svg')";
-        // } else {
-        //     soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
-        // }
 
         this.game.data.audio.theme0.onPlay.addOnce(() => {
             console.log('STARTING THEME 0');
