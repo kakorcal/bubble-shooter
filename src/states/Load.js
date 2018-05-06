@@ -94,12 +94,15 @@ class Load extends Phaser.State {
             Phaser.Keyboard.DOWN, 
             Phaser.Keyboard.SPACEBAR,
             Phaser.Keyboard.ENTER
-        ]);        
+        ]);  
+
+        this.toggleSound();
     }
 
     create() {
         document.getElementsByTagName('canvas')[0].style.opacity = 1;
         document.getElementById('github').style.opacity = 1;
+        document.getElementById('sound').style.opacity = 1;
         
         // adding data object to prevent overwriting phaser props
         this.game.data = {};
@@ -132,6 +135,30 @@ class Load extends Phaser.State {
         this.game.data.audio.theme0.play(null, 0, 1, true);
 
         console.log('LAUNCHING GAME ', this.game);
+    }
+
+    // https://github.com/photonstorm/phaser/issues/2913
+    toggleSound() {
+        let soundElement = document.getElementById('sound');
+
+        if (this.game.sound.context.state === 'suspended') {
+            soundElement.style.backgroundImage = "url('" + image + "volume-mute.svg')";
+        }else {
+            soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
+        }
+
+        soundElement.addEventListener('click', () => {
+            console.log('toggle sound');
+            if (this.game.sound.context.state === 'suspended') {
+                this.game.sound.context.resume().then(() => {
+                    soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
+                });
+            } else {
+                this.game.sound.context.suspend().then(() => {
+                    soundElement.style.backgroundImage = "url('" + image + "volume-mute.svg')";
+                });
+            }            
+        });
     }
 }
 

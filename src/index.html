@@ -33,6 +33,22 @@
             top: 0; 
             right: 0; 
             border: 0;
+            width: 15vw;
+            height: 15vw;
+        }
+        #sound {
+            opacity: 0;
+            width: 5vw;
+            height: 5vw;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 100%;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        #sound:hover {
+            cursor: pointer;
         }
         .warning-message {
             display: none;
@@ -55,7 +71,7 @@
                 line-height: 2;
                 display: block;
             }
-            canvas, #github {
+            canvas, #github, #sound {
                 display: none !important;
             }
         } 
@@ -68,5 +84,6 @@
     <a id="github" href="https://github.com/kakorcal/bubble-shooter" target="_blank">
         <img src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub" />
     </a>
+    <div id="sound"></div>
 </body>
 </html>
