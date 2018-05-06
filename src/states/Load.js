@@ -146,10 +146,12 @@ class Load extends Phaser.State {
             console.log('STARTING THEME 0');
             if (this.game.sound.context.state === 'suspended') {
                 this.game.sound.context.suspend().then(() => {
+                    this.game.sound.mute = true;
                     soundElement.style.backgroundImage = "url('" + image + "volume-mute.svg')";
                 });
             } else {
                 this.game.sound.context.resume().then(() => {
+                    this.game.sound.mute = false;
                     soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
                 });
             }
@@ -157,15 +159,15 @@ class Load extends Phaser.State {
 
         soundElement.addEventListener('click', () => {
             console.log('toggle sound');
-            if (this.game.sound.context.state === 'suspended') {
-                this.game.sound.context.resume().then(() => {
+            this.game.sound.context.resume().then(() => {
+                if (this.game.sound.mute) {
+                    this.game.sound.mute = false;
                     soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
-                });
-            } else {
-                this.game.sound.context.suspend().then(() => {
+                }else {
+                    this.game.sound.mute = true;
                     soundElement.style.backgroundImage = "url('" + image + "volume-mute.svg')";
-                });
-            }            
+                }         
+            });
         });
     }
 }
