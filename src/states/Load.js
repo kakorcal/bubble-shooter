@@ -142,15 +142,23 @@ class Load extends Phaser.State {
     toggleSound() {
         let soundElement = document.getElementById('sound');
  
-        if (this.game.sound.context.state === 'suspended') {
-            soundElement.style.backgroundImage = "url('" + image + "volume-mute.svg')";
-        } else {
-            soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
-        }
+        // if (this.game.sound.context.state === 'suspended') {
+        //     soundElement.style.backgroundImage = "url('" + image + "volume-mute.svg')";
+        // } else {
+        //     soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
+        // }
 
         this.game.data.audio.theme0.onPlay.addOnce(() => {
             console.log('STARTING THEME 0');
-            soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
+            if (this.game.sound.context.state === 'suspended') {
+                this.game.sound.context.suspend().then(() => {
+                    soundElement.style.backgroundImage = "url('" + image + "volume-mute.svg')";
+                });
+            } else {
+                this.game.sound.context.resume().then(() => {
+                    soundElement.style.backgroundImage = "url('" + image + "volume-medium.svg')";
+                });
+            }
         });
 
         soundElement.addEventListener('click', () => {
