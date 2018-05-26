@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Bubble Shooter</title>
     <style>
-        html, body {
+        html,
+        body {
             margin: 0;
             padding: 0;
             background: #c8f1dd;
         }
+
         canvas {
             border: 2px solid #eee;
             border-radius: 2px;
@@ -24,18 +27,21 @@
             opacity: 0;
             display: block;
         }
+
         #github {
             opacity: 0;
             display: block;
         }
+
         #github img {
-            position: absolute; 
-            top: 0; 
-            right: 0; 
+            position: absolute;
+            top: 0;
+            right: 0;
             border: 0;
             width: 15vw;
             height: 15vw;
         }
+
         #sound {
             opacity: 0;
             width: 5vw;
@@ -47,16 +53,18 @@
             top: 10px;
             left: 10px;
         }
+
         #sound:hover {
             cursor: pointer;
         }
+
         .warning-message {
             display: none;
         }
 
         @media only screen and (max-width: 500px) {
             .warning-message {
-                font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+                font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
                 font-weight: 300;
                 font-size: 1rem;
                 color: #000;
@@ -71,12 +79,15 @@
                 line-height: 2;
                 display: block;
             }
-            canvas, #github, #sound {
+            canvas,
+            #github,
+            #sound {
                 display: none !important;
             }
-        } 
+        }
     </style>
 </head>
+
 <body>
     <div class="warning-message">
         Bubble Shooter is not supported on mobile devices at this time. Please switch to a laptop or desktop to play the game.
@@ -86,4 +97,5 @@
     </a>
     <div id="sound"></div>
 </body>
+
 </html>
