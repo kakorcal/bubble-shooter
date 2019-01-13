@@ -1,17 +1,13 @@
 import Player from '../entities/Player';
 import { CENTER_X, CENTER_Y } from '../utils/Constants';
 
-// TODO: when deploying to surge, we need to remove 'static' from the directory path
-// should probably add a NODE_ENV flag so manual editing is not needed when
-// switching from dev to prod
-
 // images and fonts will be served from express static since there are no
 // webpack loaders available for the fnt extension
-const image = './assets/images/';
-const font = './assets/fonts/';
+const image = DEVELOPMENT ? './static/assets/images/' : './assets/images/';
+const font = DEVELOPMENT ? './static/assets/fonts/' : './assets/fonts/';
 // const wav = './static/assets/audio/wav/';
-const mp3 = './assets/audio/mp3/';
-const ogg = './assets/audio/ogg/';
+const mp3 = DEVELOPMENT ? './static/assets/audio/mp3/' : './assets/audio/mp3/';
+const ogg = DEVELOPMENT ? './static/assets/audio/ogg/' : './assets/audio/ogg/';
 
 /*
     Loads all sprite, audio, and fonts. Enable arcade physics
