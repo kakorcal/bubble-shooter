@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "build:prod": "webpack --config webpack.prod.config.js",
+    "build:surge": "npm run build:prod && mv static/dist/index.html static/dist/200.html && cp -R static/assets static/dist && surge static/dist --domain html5bubbleshooter.surge.sh",
     "server:prod": "NODE_ENV=production node server.js",
     "prod": "npm run build:prod && npm run server:prod",
     "forever:prod": "NODE_ENV=production forever start server.js"
